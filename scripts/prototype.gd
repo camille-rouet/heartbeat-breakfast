@@ -1,6 +1,6 @@
 extends Node2D
 
-const BPM = 73 # in beat per minute
+const BPM = 73 # in beat per minute # 95 pour la samba de etienne
 const BARS = 4  #beat in one measure
 const BEAT_OFFSET = 1 # number of beat before the first beat of a bar of the music
 

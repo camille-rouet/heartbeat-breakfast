@@ -16,7 +16,9 @@ var target_camera_position : Vector3  # Position cible de la caméra
 var detected_cubes = []  # Liste des cubes déjà détectés
 
 var musicPlaying = false
+var musicMuted = false
 var musicPositionMemo = 0
+var blocTempoGood = true
 
 func _ready():
 	# Récupérer la caméra et les colonnes
@@ -99,7 +101,6 @@ func _check_proximity(obj: Node3D):
 
 
 func switchPauseMusique():
-	musicPlaying = !musicPlaying
 	if musicPlaying:
 		for i:AudioStreamPlayer in $Audio/Samba.get_children():
 			musicPositionMemo = i.get_playback_position()
@@ -107,17 +108,32 @@ func switchPauseMusique():
 	else:
 		for i:AudioStreamPlayer in $Audio/Samba.get_children():
 			i.play(musicPositionMemo)
+			AudioServer.set_bus_mute(3, true) # by default no BlocTempoBad
+	musicPlaying = !musicPlaying
 	
 		
 func switchMuteMusique():
-	musicPlaying = !musicPlaying
-	AudioServer.set_bus_mute(1, musicPlaying)
+	musicMuted = !musicMuted
+	AudioServer.set_bus_mute(1, musicMuted)
 		
 func _unhandled_input(event):
+	if event.is_action_pressed("ToucheA"):
+		if blocTempoGood:
+			$Audio/Bruitages/BlocGood.play()
+		else:
+			$Audio/Bruitages/BlocBad.play()
 	
 	if event.is_action_pressed("mute_switch"):
 		switchMuteMusique()
 		
 	if event.is_action_pressed("pause_switch"):
 		switchPauseMusique()
+		
+	if event.is_action_pressed("bloc_tempo_switch"):
+		switchBlocTempo()
+
+func switchBlocTempo():
+	blocTempoGood = !blocTempoGood
+	AudioServer.set_bus_mute(2, !blocTempoGood)
+	AudioServer.set_bus_mute(3, blocTempoGood)
 	
