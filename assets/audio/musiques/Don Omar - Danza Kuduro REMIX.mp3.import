@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://u4qw55jd38xj"
+path="res://.godot/imported/Don Omar - Danza Kuduro REMIX.mp3-03296a3285fd603b8bad8be6c7562a5e.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/musiques/Don Omar - Danza Kuduro REMIX.mp3"
+dest_files=["res://.godot/imported/Don Omar - Danza Kuduro REMIX.mp3-03296a3285fd603b8bad8be6c7562a5e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
