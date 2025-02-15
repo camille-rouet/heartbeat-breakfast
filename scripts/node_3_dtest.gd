@@ -15,6 +15,9 @@ var target_camera_position : Vector3  # Position cible de la caméra
 
 var detected_cubes = []  # Liste des cubes déjà détectés
 
+var musicPlaying = false
+var musicPositionMemo = 0
+
 func _ready():
 	# Récupérer la caméra et les colonnes
 	camera = $Camera3D  
@@ -93,3 +96,28 @@ func _check_proximity(obj: Node3D):
 			if abs(obj.position.x - column_position.x) < 1.0:
 				print("Cube colonne ", camera_column_index + 1, " touché !")
 				detected_cubes.erase(obj)  # Supprimer de la liste après détection unique
+
+
+func switchPauseMusique():
+	musicPlaying = !musicPlaying
+	if musicPlaying:
+		for i:AudioStreamPlayer in $Audio/Samba.get_children():
+			musicPositionMemo = i.get_playback_position()
+			i.stop()
+	else:
+		for i:AudioStreamPlayer in $Audio/Samba.get_children():
+			i.play(musicPositionMemo)
+	
+		
+func switchMuteMusique():
+	musicPlaying = !musicPlaying
+	AudioServer.set_bus_mute(1, musicPlaying)
+		
+func _unhandled_input(event):
+	
+	if event.is_action_pressed("mute_switch"):
+		switchMuteMusique()
+		
+	if event.is_action_pressed("pause_switch"):
+		switchPauseMusique()
+	

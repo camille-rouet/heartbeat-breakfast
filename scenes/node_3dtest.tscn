@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=20 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://ch43s4vv3sc8n" path="res://packs/kenney-ui-pack/PNG/Blue/Default/arrow_basic_s.png" id="1_uuo4p"]
@@ -6,6 +6,14 @@
 [ext_resource type="Script" path="res://addons/rhythm_notifier/rhythm_notifier.gd" id="4_6ahyy"]
 [ext_resource type="AudioStream" uid="uid://u4qw55jd38xj" path="res://assets/audio/musiques/Don Omar - Danza Kuduro REMIX.mp3" id="5_7076j"]
 [ext_resource type="AudioStream" uid="uid://c60g07hkagivh" path="res://assets/audio/musiques/electro-tribal-beat-179094.mp3" id="6_ewmxh"]
+[ext_resource type="AudioStream" uid="uid://36geufm6piii" path="res://assets/audio/musiques/etienne/Basse Samba.wav" id="7_1gcpr"]
+[ext_resource type="AudioStream" uid="uid://wr4i51ksikon" path="res://assets/audio/musiques/etienne/Bloc Tempo Bad.wav" id="8_noht7"]
+[ext_resource type="AudioStream" uid="uid://b28j2ej6ydwlt" path="res://assets/audio/musiques/etienne/Bloc Tempo Good.wav" id="9_8e4ap"]
+[ext_resource type="AudioStream" uid="uid://c6ymd1katbp0o" path="res://assets/audio/musiques/etienne/Cuica (lol).wav" id="10_05x4r"]
+[ext_resource type="AudioStream" uid="uid://dabgfjejmg8ju" path="res://assets/audio/musiques/etienne/Guitare samba.wav" id="11_2k6fo"]
+[ext_resource type="AudioStream" uid="uid://ct3n2k0wvevd1" path="res://assets/audio/musiques/etienne/Percussions.wav" id="12_eglaj"]
+[ext_resource type="AudioStream" uid="uid://brtnnbop7ub0j" path="res://assets/audio/musiques/etienne/Piano Samba.wav" id="13_cf681"]
+[ext_resource type="AudioStream" uid="uid://bq24noktsaky" path="res://assets/audio/musiques/etienne/Synth #1.wav" id="14_sxpin"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -107,4 +115,39 @@ stream = ExtResource("5_7076j")
 
 [node name="music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_ewmxh")
-autoplay = true
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="Samba" type="Node" parent="Audio"]
+
+[node name="BasseSamba" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("7_1gcpr")
+bus = &"MusiqueEtienne1"
+
+[node name="BlocTempoBad" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("8_noht7")
+bus = &"MusiqueEtienne1"
+
+[node name="BlocTempoGood" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("9_8e4ap")
+bus = &"MusiqueEtienne1"
+
+[node name="Cuica(lol)" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("10_05x4r")
+bus = &"MusiqueEtienne1"
+
+[node name="GuitareSamba" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("11_2k6fo")
+bus = &"MusiqueEtienne1"
+
+[node name="Percussions" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("12_eglaj")
+bus = &"MusiqueEtienne1"
+
+[node name="PianoSamba" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("13_cf681")
+bus = &"MusiqueEtienne1"
+
+[node name="Synth#1" type="AudioStreamPlayer" parent="Audio/Samba"]
+stream = ExtResource("14_sxpin")
+bus = &"MusiqueEtienne1"
