@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://brtnnbop7ub0j"
+path="res://.godot/imported/Piano Samba.wav-ce5d7da5de795f923945240c61a00288.sample"
+
+[deps]
+
+source_file="res://assets/audio/musiques/etienne/Piano Samba.wav"
+dest_files=["res://.godot/imported/Piano Samba.wav-ce5d7da5de795f923945240c61a00288.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=2
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
