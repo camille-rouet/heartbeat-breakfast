@@ -42,6 +42,7 @@ var currentPatternDelta = [null, null, null, null] # chaque entrée definit le t
 var currentPatternDeltaCompleted = false # Si true, currentPatternDelta est complet
 
 # gestion du curseur
+var curseur
 var curseurSpeed = Vector2.ZERO # in pixel / sec
 var curseurAccel = Vector2.ZERO # in pixel / sec / sec
 const BRAKE = 0.99
@@ -167,7 +168,8 @@ func _process(delta):
 				if time >= finFenetre_time:
 					currentPatternDelta = [null, null, null, null]
 					currentPatternDeltaCompleted = false	
-
+	
+	moveCursor(delta)
 	
 	if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
 		camera_column_index -= 1
@@ -203,6 +205,24 @@ func _check_proximity(obj: Node3D):
 
 
 
+func moveCursor(delta):
+	# Move curseur
+	curseur.position = curseur.position + delta * curseurSpeed
+	curseurSpeed = curseurSpeed + delta * curseurAccel
+	
+	if curseur.position.x > DisplayServer.window_get_size().x * 0.95:
+		curseur.position.x = DisplayServer.window_get_size().x * 0.95 - 20
+		curseurSpeed.x = - curseurSpeed.x*0.2
+		curseurAccel.x = 0
+	if curseur.position.x < DisplayServer.window_get_size().x * 0.05:
+		curseur.position.x = DisplayServer.window_get_size().x * 0.05 +20
+		curseurSpeed.x = - curseurSpeed.x*0.2
+		curseurAccel.x = 0
+		
+	curseurSpeed.x = curseurSpeed.x * BRAKE
+	curseurSpeed.x = min(curseurSpeed.x, MAX_SPEED)
+	curseurSpeed.x = max(curseurSpeed.x, -MAX_SPEED)
+
 # # # # # # # # # METHODES RYTHME
 # conversion d'un tableau de delta de DC en tableau de motif input
 func patternDeltaToPatternInput(patternDelta):
@@ -216,6 +236,7 @@ func patternDeltaToPatternInput(patternDelta):
 				motifInput[i] = 1
 	return motifInput
 
+# Executé lorsqu'un motif rythmique a été détecté
 func interpretPattern(patternInput):
 	print(str(currentPatternDelta))
 	print(str(patternInput))
@@ -225,6 +246,7 @@ func interpretPattern(patternInput):
 	
 	match matchedPattern:
 		"A":
+			
 			curseurSpeed.x -= 0.33*MAX_SPEED
 			#curseurAccel.x = -ACCEL
 		"B":
