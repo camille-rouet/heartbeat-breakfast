@@ -169,7 +169,7 @@ func _process(delta):
 					currentPatternDelta = [null, null, null, null]
 					currentPatternDeltaCompleted = false	
 	
-	moveCursor(delta)
+	#moveCursor(delta)
 	
 	if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
 		camera_column_index -= 1
