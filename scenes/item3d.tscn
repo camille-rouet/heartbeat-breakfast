@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://dchss08yq5g8h"]
+
+[ext_resource type="Texture2D" uid="uid://ch43s4vv3sc8n" path="res://packs/kenney-ui-pack/PNG/Blue/Default/arrow_basic_s.png" id="1_1r47l"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96025, 0.279142, 0, -0.279142, 0.96025, -0.0143671, 0, -0.0434585)
+shaded = true
+texture_filter = 0
+texture = ExtResource("1_1r47l")

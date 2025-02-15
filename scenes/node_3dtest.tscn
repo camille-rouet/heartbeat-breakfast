@@ -1,0 +1,110 @@
+[gd_scene load_steps=12 format=3 uid="uid://dla6hghx5nurp"]
+
+[ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
+[ext_resource type="Texture2D" uid="uid://ch43s4vv3sc8n" path="res://packs/kenney-ui-pack/PNG/Blue/Default/arrow_basic_s.png" id="1_uuo4p"]
+[ext_resource type="Script" path="res://scripts/beat.gd" id="3_u8ybg"]
+[ext_resource type="Script" path="res://addons/rhythm_notifier/rhythm_notifier.gd" id="4_6ahyy"]
+[ext_resource type="AudioStream" uid="uid://u4qw55jd38xj" path="res://assets/audio/musiques/Don Omar - Danza Kuduro REMIX.mp3" id="5_7076j"]
+[ext_resource type="AudioStream" uid="uid://c60g07hkagivh" path="res://assets/audio/musiques/electro-tribal-beat-179094.mp3" id="6_ewmxh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
+
+[sub_resource type="Sky" id="Sky_6a2p7"]
+sky_material = SubResource("ProceduralSkyMaterial_11rtn")
+
+[sub_resource type="Environment" id="Environment_mq01q"]
+background_mode = 2
+sky = SubResource("Sky_6a2p7")
+ambient_light_source = 1
+reflected_light_source = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_ceq4n"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_tg8jn"]
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_0sybt")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_mq01q")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.933499, 0.0907503, -0.346906, 0, 0.967445, 0.253083, 0.35858, -0.236252, 0.903109, 0.0678132, 7.21485, 0)
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96025, 0.279142, 0, -0.279142, 0.96025, -0.0143671, 0, -0.0434585)
+shaded = true
+texture_filter = 0
+texture = ExtResource("1_uuo4p")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.794383, -0.607417, 0, 0.607417, 0.794383, 1.18565, -3.85465, 6.76761)
+fov = 85.712
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 7.76112, 0.315297, 0, -6.30595, 0.388056, 1, 0.13, 0)
+mesh = SubResource("BoxMesh_ceq4n")
+
+[node name="Start" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(0.499999, -1.38478e-05, 0.000124609, 0.000692374, 0.00999999, 6.45602e-05, -0.000124698, -1.2964e-06, 0.5, 0, 0.5, 1.63913e-07)
+mesh = SubResource("BoxMesh_tg8jn")
+
+[node name="End" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(0.249999, -7.06254e-06, 0.000124608, 0.000353103, 9.99902e-05, 3.30121e-05, -0.000124699, -6.59376e-07, 0.25, -6.91414e-06, -0.508608, 0.764509)
+mesh = SubResource("BoxMesh_tg8jn")
+skeleton = NodePath("../Start")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 7.76112, 0.315297, 0, -6.30595, 0.388056, 2, 0.13, 0)
+mesh = SubResource("BoxMesh_ceq4n")
+
+[node name="Start" type="MeshInstance3D" parent="MeshInstance3D2"]
+transform = Transform3D(0.499999, -1.38478e-05, 0.000124609, 0.000692374, 0.00999999, 6.45602e-05, -0.000124698, -1.2964e-06, 0.5, 0, 0.5, 1.63913e-07)
+mesh = SubResource("BoxMesh_tg8jn")
+
+[node name="End" type="MeshInstance3D" parent="MeshInstance3D2"]
+transform = Transform3D(0.249999, -7.06254e-06, 0.000124608, 0.000353103, 9.99902e-05, 3.30121e-05, -0.000124699, -6.59376e-07, 0.25, -6.91414e-06, -0.508608, 0.764509)
+mesh = SubResource("BoxMesh_tg8jn")
+skeleton = NodePath("../Start")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 7.76112, 0.315297, 0, -6.30595, 0.388056, 3, 0.13, 0)
+mesh = SubResource("BoxMesh_ceq4n")
+
+[node name="Start" type="MeshInstance3D" parent="MeshInstance3D3"]
+transform = Transform3D(0.499999, -1.38478e-05, 0.000124609, 0.000692374, 0.00999999, 6.45602e-05, -0.000124698, -1.2964e-06, 0.5, 0, 0.5, 1.63913e-07)
+mesh = SubResource("BoxMesh_tg8jn")
+
+[node name="End" type="MeshInstance3D" parent="MeshInstance3D3"]
+transform = Transform3D(0.249999, -7.06254e-06, 0.000124608, 0.000353103, 9.99902e-05, 3.30121e-05, -0.000124699, -6.59376e-07, 0.25, -6.91414e-06, -0.508608, 0.764509)
+mesh = SubResource("BoxMesh_tg8jn")
+skeleton = NodePath("../Start")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 7.76112, 0.315297, 0, -6.30595, 0.388056, 4, 0.13, 0)
+mesh = SubResource("BoxMesh_ceq4n")
+
+[node name="Start" type="MeshInstance3D" parent="MeshInstance3D4"]
+transform = Transform3D(0.499999, -1.38478e-05, 0.000124609, 0.000692374, 0.00999999, 6.45602e-05, -0.000124698, -1.2964e-06, 0.5, 0, 0.5, 1.63913e-07)
+mesh = SubResource("BoxMesh_tg8jn")
+
+[node name="End" type="MeshInstance3D" parent="MeshInstance3D4"]
+transform = Transform3D(0.249999, -7.06254e-06, 0.000124608, 0.000353103, 9.99902e-05, 3.30121e-05, -0.000124699, -6.59376e-07, 0.25, -6.91414e-06, -0.508608, 0.764509)
+mesh = SubResource("BoxMesh_tg8jn")
+skeleton = NodePath("../Start")
+
+[node name="Beatmarker" type="Node" parent="."]
+script = ExtResource("3_u8ybg")
+
+[node name="RhythmNotifier" type="Node" parent="." node_paths=PackedStringArray("audio_stream_player")]
+script = ExtResource("4_6ahyy")
+bpm = 120.0
+beat_length = 0.5
+audio_stream_player = NodePath("../music")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_7076j")
+
+[node name="music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_ewmxh")
+autoplay = true

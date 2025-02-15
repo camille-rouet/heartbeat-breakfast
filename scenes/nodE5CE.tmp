@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://dla6hghx5nurp"]
+
+[ext_resource type="Script" path="res://scenes/node_3_dtest.gd" id="1_0sybt"]
+[ext_resource type="Texture2D" uid="uid://ch43s4vv3sc8n" path="res://packs/kenney-ui-pack/PNG/Blue/Default/arrow_basic_s.png" id="1_uuo4p"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
+
+[sub_resource type="Sky" id="Sky_6a2p7"]
+sky_material = SubResource("ProceduralSkyMaterial_11rtn")
+
+[sub_resource type="Environment" id="Environment_mq01q"]
+background_mode = 2
+sky = SubResource("Sky_6a2p7")
+ambient_light_source = 1
+reflected_light_source = 1
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_0sybt")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_mq01q")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.933499, 0.0907503, -0.346906, 0, 0.967445, 0.253083, 0.35858, -0.236252, 0.903109, 0, 3.37966, 0)
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96025, 0.279142, 0, -0.279142, 0.96025, -0.0143671, 0, -0.0434585)
+shaded = true
+texture_filter = 0
+texture = ExtResource("1_uuo4p")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.913347, 0.407183, 0, -0.407183, 0.913347, 0, 2.26979, 1.78972)
