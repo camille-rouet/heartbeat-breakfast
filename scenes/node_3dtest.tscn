@@ -1,7 +1,7 @@
 [gd_scene load_steps=27 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
-[ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/tx_perso.png" id="2_02hs2"]
+[ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
 [ext_resource type="Script" path="res://scripts/beat.gd" id="3_u8ybg"]
 [ext_resource type="Script" path="res://addons/rhythm_notifier/rhythm_notifier.gd" id="4_6ahyy"]
 [ext_resource type="AudioStream" uid="uid://u4qw55jd38xj" path="res://assets/audio/musiques/Don Omar - Danza Kuduro REMIX.mp3" id="5_7076j"]
@@ -16,11 +16,11 @@
 [ext_resource type="AudioStream" uid="uid://bq24noktsaky" path="res://assets/audio/musiques/etienne/Synth #1.wav" id="14_sxpin"]
 [ext_resource type="AudioStream" uid="uid://bn7860b8scrd4" path="res://assets/audio/bruitage/BlocBad.wav" id="15_jsuxj"]
 [ext_resource type="AudioStream" uid="uid://bmy7ls3lhbcx6" path="res://assets/audio/bruitage/BlocGood.wav" id="16_ko30s"]
-[ext_resource type="Texture2D" uid="uid://cxfg4q843v2yh" path="res://assets/tx_table.png" id="17_bsopk"]
-[ext_resource type="Texture2D" uid="uid://dfiprcefj545r" path="res://assets/tx_cartons.png" id="18_2kplr"]
-[ext_resource type="Texture2D" uid="uid://bp03let0bv16y" path="res://assets/tx_meubletv.png" id="19_q5wht"]
-[ext_resource type="Texture2D" uid="uid://cf1tyd51c5iki" path="res://assets/tx_sacspoubelles.png" id="20_ej1r7"]
-[ext_resource type="Texture2D" uid="uid://burw7e21nr7yl" path="res://assets/tx_bouteilles.png" id="21_5ibvl"]
+[ext_resource type="Texture2D" uid="uid://cxfg4q843v2yh" path="res://assets/images/tx_table.png" id="17_bsopk"]
+[ext_resource type="Texture2D" uid="uid://dfiprcefj545r" path="res://assets/images/tx_cartons.png" id="18_2kplr"]
+[ext_resource type="Texture2D" uid="uid://bp03let0bv16y" path="res://assets/images/tx_meubletv.png" id="19_q5wht"]
+[ext_resource type="Texture2D" uid="uid://cf1tyd51c5iki" path="res://assets/images/tx_sacspoubelles.png" id="20_ej1r7"]
+[ext_resource type="Texture2D" uid="uid://burw7e21nr7yl" path="res://assets/images/tx_bouteilles.png" id="21_5ibvl"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -45,7 +45,7 @@ script = ExtResource("1_0sybt")
 environment = SubResource("Environment_mq01q")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.933499, 0.0907503, -0.346906, 0, 0.967445, 0.253083, 0.35858, -0.236252, 0.903109, 0.0678132, 7.21485, 0)
+transform = Transform3D(0.970007, -0.242828, 0.0109981, 0.242087, 0.960986, -0.133793, 0.0219197, 0.132442, 0.990948, 1.75784, -2.11096, 8.07257)
 
 [node name="Perso" type="Sprite3D" parent="."]
 transform = Transform3D(0.1, 0, 0, 0, 0.0999588, 0.0028707, 0, -0.0028707, 0.0999588, 2.82541, -3.21965, 3.56021)
@@ -168,7 +168,7 @@ stream = ExtResource("15_jsuxj")
 [node name="BlocGood" type="AudioStreamPlayer" parent="Audio/Bruitages"]
 stream = ExtResource("16_ko30s")
 
-[node name="table" type="Sprite3D" parent="."]
+[node name="table_obs" type="Sprite3D" parent="."]
 transform = Transform3D(0.1, 0, 0, 0, 0.0804044, -0.059457, 0, 0.059457, 0.0804044, 2.00588, -2.45502, 2.71101)
 texture = ExtResource("17_bsopk")
 
