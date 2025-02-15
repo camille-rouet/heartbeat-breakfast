@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://cemwymjtw5c3j"]
+
+[ext_resource type="AudioStream" uid="uid://cqcackbhvj7um" path="res://scenes/A nos souvenir (nightcore).mp3" id="1_w2wxp"]
+[ext_resource type="Script" path="res://scenes/beat_detector.gd" id="2_nt2xb"]
+[ext_resource type="Script" path="res://addons/rhythm_notifier/rhythm_notifier.gd" id="3_yotbg"]
+[ext_resource type="AudioStream" uid="uid://u4qw55jd38xj" path="res://scenes/Don Omar - Danza Kuduro REMIX.mp3" id="4_6ooo6"]
+
+[node name="Test2" type="Node2D"]
+
+[node name="Music2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_w2wxp")
+bus = &"Music"
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_6ooo6")
+autoplay = true
+
+[node name="BeatDetector" type="Node" parent="."]
+script = ExtResource("2_nt2xb")
+
+[node name="RhythmNotifier" type="Node" parent="." node_paths=PackedStringArray("audio_stream_player")]
+script = ExtResource("3_yotbg")
+bpm = 120.0
+beat_length = 0.5
+audio_stream_player = NodePath("../Music")
