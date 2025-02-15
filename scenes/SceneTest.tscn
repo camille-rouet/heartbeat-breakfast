@@ -41,4 +41,5 @@ offset_right = 706.0
 offset_bottom = 519.0
 color = Color(0.188235, 0.466667, 1, 0.423529)
 
+[connection signal="finished" from="musique-tribal" to="." method="_on_musiquetribal_finished"]
 [connection signal="pressed" from="PlayButton" to="." method="_on_texture_button_pressed"]

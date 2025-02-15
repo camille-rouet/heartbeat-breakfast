@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/electro-tribal-beat-179094.mp3-332ea3804f8a33
 
 [params]
 
-loop=true
+loop=false
 loop_offset=0.0
 bpm=73.0
 beat_count=0

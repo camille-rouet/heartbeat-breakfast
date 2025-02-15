@@ -41,8 +41,14 @@ const MAX_SPEED = 300
 
 var myNoise:Noise = FastNoiseLite.new()
 
+signal rhythmError
+
+var meanDeltaDC = 0
+var nInput = 0
+
 # Motif rythmiques
 const RHYTHMIC_PATTERN = {
+	"O": [0, 0, 0, 0],
 	"A": [1, 0, 0, 0],
 	"B": [1, 0, 1, 0],
 	"C": [1, 1, 1, 1],
@@ -51,6 +57,8 @@ const RHYTHMIC_PATTERN = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	
+	rhythmError.connect(_on_rhythm_error)
 	
 	beatLength = 1.0 / float(BPM) * 60.0
 	DCLength = beatLength / 4.0
@@ -159,7 +167,7 @@ func interpretPattern(patternInput):
 	print(str(currentPatternDelta))
 	print(str(patternInput))
 	var matchedPattern = findPattern(patternInput)
-	print("Your pattern is " + str(matchedPattern))
+	print("Your pattern is " + str(matchedPattern) + "  ..Mean delta = " + str(round(meanDeltaDC * 1000)) + " ms")
 	print("")
 	
 	match matchedPattern:
@@ -169,6 +177,8 @@ func interpretPattern(patternInput):
 		"B":
 			curseurSpeed.x += 0.33*MAX_SPEED
 			#curseurAccel.x = -ACCEL
+		null:
+			rhythmError.emit()
 
 
 
@@ -217,9 +227,9 @@ func _on_texture_button_pressed() -> void:
 
 
 func _unhandled_input(event):
-	
 	# recoit un input "A"
 	if musicPlaying && event.is_action_pressed("ToucheA"):
+		nInput = nInput + 1
 		var time = musique.get_playback_position() - AudioServer.get_output_latency() - LATENCY * 0.001
 		
 		var deltaToucheBeat = getDeltaBeat(time)
@@ -242,7 +252,10 @@ func _unhandled_input(event):
 			# la DC de référence est la suivante
 			deltaToucheDC = time - (lastDCTime + DCLength)
 			closerDC = lastDC + 1
-			
+		
+		if abs(deltaToucheDC) > ACCEPTABLE_DELTA * 0.001:
+			rhythmError.emit()
+		
 		var currentDCInBeat = (lastDC) % 4 + 1
 		var closerDCInBeat = (closerDC) % 4 + 1
 		
@@ -250,6 +263,8 @@ func _unhandled_input(event):
 		
 		# update the rhytmic pattern delta
 		currentPatternDelta[closerDCInBeat - 1] = round(deltaToucheDC * 1000)
+		
+		meanDeltaDC = (meanDeltaDC * (nInput-1) + deltaToucheDC) / nInput
 		
 		
 
@@ -267,3 +282,14 @@ func getDeltaBeat(time):
 		# le beat de référence est le suivant
 		deltaToucheBeat = time - (lastBeatTime + beatLength)
 	return deltaToucheBeat
+
+
+func _on_musiquetribal_finished() -> void:
+	$PlayButton.button_pressed = false
+
+
+func _on_rhythm_error() -> void:
+	var aTween = $".".create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).set_parallel(false)
+	aTween.tween_property($".", "modulate", Color.TOMATO, 0.25)
+	aTween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	aTween.tween_property($".", "modulate", Color.WHITE, 0.25)
