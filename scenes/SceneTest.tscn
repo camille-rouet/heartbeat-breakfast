@@ -1,12 +1,12 @@
 [gd_scene load_steps=5 format=3 uid="uid://cak3ycfyiucf4"]
 
-[ext_resource type="Script" path="res://scripts/prototype.gd" id="1_xboqv"]
+[ext_resource type="Script" path="res://scripts/prototype.gd" id="1_qexwp"]
 [ext_resource type="AudioStream" uid="uid://c60g07hkagivh" path="res://assets/audio/musiques/electro-tribal-beat-179094.mp3" id="2_o1gfw"]
 [ext_resource type="Texture2D" uid="uid://2eqibi4srbee" path="res://packs/kenney-ui-pack/PNG/Grey/Double/arrow_basic_e.png" id="3_fsp3e"]
 [ext_resource type="Texture2D" uid="uid://bfe501lt458pm" path="res://packs/kenney-ui-pack/PNG/Grey/Double/check_square_color.png" id="4_d1ite"]
 
 [node name="SceneTest" type="Node2D"]
-script = ExtResource("1_xboqv")
+script = ExtResource("1_qexwp")
 
 [node name="musique-tribal" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_o1gfw")
@@ -21,24 +21,24 @@ texture_normal = ExtResource("3_fsp3e")
 texture_pressed = ExtResource("4_d1ite")
 
 [node name="ColorRect1" type="ColorRect" parent="."]
-offset_left = 537.0
-offset_top = 407.0
-offset_right = 577.0
-offset_bottom = 447.0
+offset_left = 540.0
+offset_top = 155.0
+offset_right = 580.0
+offset_bottom = 195.0
 color = Color(1, 0.47451, 1, 1)
 
-[node name="ColorRect2" type="ColorRect" parent="."]
+[node name="CurseurRect" type="ColorRect" parent="."]
 offset_left = 540.0
 offset_top = 479.0
 offset_right = 580.0
 offset_bottom = 519.0
 color = Color(0.0743353, 0.819673, 0.797036, 1)
 
-[node name="ColorRect3" type="ColorRect" parent="."]
+[node name="TargetRect" type="ColorRect" parent="."]
 offset_left = 540.0
 offset_top = 479.0
 offset_right = 580.0
 offset_bottom = 519.0
-color = Color(0.121569, 0.309804, 0.937255, 0.411765)
+color = Color(0.188235, 0.466667, 1, 0.423529)
 
 [connection signal="pressed" from="PlayButton" to="." method="_on_texture_button_pressed"]
