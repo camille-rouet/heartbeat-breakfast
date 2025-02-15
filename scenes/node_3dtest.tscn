@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=33 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -21,6 +21,12 @@
 [ext_resource type="Texture2D" uid="uid://bp03let0bv16y" path="res://assets/images/tx_meubletv.png" id="19_q5wht"]
 [ext_resource type="Texture2D" uid="uid://cf1tyd51c5iki" path="res://assets/images/tx_sacspoubelles.png" id="20_ej1r7"]
 [ext_resource type="Texture2D" uid="uid://burw7e21nr7yl" path="res://assets/images/tx_bouteilles.png" id="21_5ibvl"]
+[ext_resource type="Script" path="res://scripts/canvas_layer.gd" id="22_cpp5j"]
+[ext_resource type="Texture2D" uid="uid://cst4q81ss65a5" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_color.png" id="22_qgwrk"]
+[ext_resource type="Texture2D" uid="uid://csacbx5y3r5s6" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_grey.png" id="23_exmks"]
+[ext_resource type="Texture2D" uid="uid://c2r4sia63jdlc" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_grey_circle.png" id="24_xjfwg"]
+[ext_resource type="Texture2D" uid="uid://gnwkv3r0rns7" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_round_circle.png" id="25_ycnpc"]
+[ext_resource type="Texture2D" uid="uid://b1chn8ucxxnje" path="res://packs/kenney-ui-pack/PNG/Red/Double/check_round_grey_circle.png" id="26_clgbc"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -168,6 +174,9 @@ stream = ExtResource("15_jsuxj")
 [node name="BlocGood" type="AudioStreamPlayer" parent="Audio/Bruitages"]
 stream = ExtResource("16_ko30s")
 
+[node name="Electro-tribal-beat-179094" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("6_ewmxh")
+
 [node name="table_obs" type="Sprite3D" parent="."]
 transform = Transform3D(0.1, 0, 0, 0, 0.0804044, -0.059457, 0, 0.059457, 0.0804044, 2.00588, -2.45502, 2.71101)
 texture = ExtResource("17_bsopk")
@@ -187,3 +196,54 @@ texture = ExtResource("20_ej1r7")
 [node name="bouteilles" type="Sprite3D" parent="."]
 transform = Transform3D(0.15, 0, 0, 0, 0.119828, -0.0902283, 0, 0.0902283, 0.119828, 1.11633, -2.46019, 2.81173)
 texture = ExtResource("21_5ibvl")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource("22_cpp5j")
+textureDCvide = ExtResource("23_exmks")
+textureDCpassage = ExtResource("24_xjfwg")
+textureDCreussite = ExtResource("25_ycnpc")
+textureDCrate = ExtResource("26_clgbc")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -125.0
+offset_top = -100.0
+offset_right = 125.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 30
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4

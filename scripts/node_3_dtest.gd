@@ -42,6 +42,8 @@ var currentDC = 0 # double croche
 var currentPatternDelta = [null, null, null, null] # chaque entrée definit le temps (en ms) entre l'input et la double-croche la plus proche, si pas d'input pour une double croche : null
 var currentPatternDeltaCompleted = false # Si true, currentPatternDelta est complet
 
+var currentPatternInput = [0,0,0,0] #conversion de currentPatternDelta en valeur 0, 1 ou "R"
+
 # gestion du curseur
 var curseur
 var curseurSpeed = 0 # in m / sec
@@ -83,6 +85,9 @@ func _ready():
 	print("DC length (ms): " + str(round(DCLength * 1000)))
 	print("")
 	musiqueCible = $Audio/Samba/Percussions
+	#musiqueCible = $"Audio/Electro-tribal-beat-179094"
+	#musiqueCible.play()
+	#musicPlaying = true
 	
 	# Récupérer la caméra et les colonnes
 	camera = $Camera3D  
@@ -150,26 +155,46 @@ func _process(delta):
 			currentDC = DC
 			#var text = str("DC: ", DCInBeat, "/", "4")
 			#print(text)
-		
+			currentPatternInput = patternDeltaToPatternInput(currentPatternDelta)
+			# update Canvas DC texture
+			var index = 0
+			for textRect:TextureRect in $CanvasLayer/MarginContainer/HBoxContainer.get_children():
+				match currentPatternInput[index]:
+					0:
+						textRect.texture = get_node_and_resource("CanvasLayer:textureDCvide")[1]
+					1:
+						textRect.texture = get_node_and_resource("CanvasLayer:textureDCreussite")[1]
+					"R":
+						textRect.texture = get_node_and_resource("CanvasLayer:textureDCrate")[1]
+				if (index+1) == DCInBeat:
+					textRect.texture = get_node_and_resource("CanvasLayer:textureDCpassage")[1]
+				index = index + 1
+						
 		# définition de la fenetre de tir pour observer le motif donné en input
 		if DCInBeat == 4:
-			#var DC4_time = currentDC * DCLength
-			#var DC5_time = (currentDC+1) * DCLength
-			var debFenetre_time = currentDC * DCLength + ACCEPTABLE_DELTA * 0.001
-			var finFenetre_time = (currentDC+1) * DCLength - ACCEPTABLE_DELTA * 0.001
-					
+			var DC4_time = currentDC * DCLength
+			var DC5_time = (currentDC+1) * DCLength
+			var debFenetre_time = DC4_time + ACCEPTABLE_DELTA * 0.001
+			var finFenetre_time = DC5_time - ACCEPTABLE_DELTA * 0.001
+			
+			
 			# quand on passe la fin de possibilité de input la 4eme DC
 			if !currentPatternDeltaCompleted:
 				if time >= debFenetre_time && time < finFenetre_time:
 					currentPatternDeltaCompleted = true
-					
-					var motifInput = patternDeltaToPatternInput(currentPatternDelta)
-					interpretPattern(motifInput)
+					currentPatternInput = patternDeltaToPatternInput(currentPatternDelta)
+					interpretPattern(currentPatternInput)
 		
 			# quand on arrive à la possibilité de input la 1ere DC 
 			if currentPatternDeltaCompleted:
 				if time >= finFenetre_time:
 					currentPatternDelta = [null, null, null, null]
+					currentPatternInput = patternDeltaToPatternInput(currentPatternDelta)
+				
+					# reset all Canvas DC texture
+					for textRect:TextureRect in $CanvasLayer/MarginContainer/HBoxContainer.get_children():
+						textRect.texture = get_node_and_resource("CanvasLayer:textureDCvide")[1]
+					
 					currentPatternDeltaCompleted = false
 		
 	moveCursor(delta)
@@ -375,6 +400,7 @@ func _unhandled_input(event):
 		
 		# update the rhytmic pattern delta
 		currentPatternDelta[closerDCInBeat - 1] = round(deltaToucheDC * 1000)
+		currentPatternInput = patternDeltaToPatternInput(currentPatternDelta)
 		
 		# update the mean error on DC
 		meanDeltaDC = (meanDeltaDC * (nInput-1) + deltaToucheDC) / nInput
