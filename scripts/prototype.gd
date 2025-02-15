@@ -39,6 +39,8 @@ const BRAKE = 0.99
 const ACCEL = 100
 const MAX_SPEED = 300
 
+var myNoise:Noise = FastNoiseLite.new()
+
 # Motif rythmiques
 const RHYTHMIC_PATTERN = {
 	"A": [1, 0, 0, 0],
@@ -115,7 +117,9 @@ func _process(delta: float) -> void: #delta = frame duration in s
 					currentPatternDelta = [null, null, null, null]
 					currentPatternDeltaCompleted = false
 		
-		moveCursor(delta)
+		
+	$TargetRect.position.x = DisplayServer.window_get_size().x * (0.5 + myNoise.get_noise_1d(0.2 * 10e-6 * Time.get_ticks_usec()))
+	moveCursor(delta)
 
 
 func moveCursor(delta):
@@ -160,9 +164,11 @@ func interpretPattern(patternInput):
 	
 	match matchedPattern:
 		"A":
-			curseurAccel.x = -ACCEL
+			curseurSpeed.x -= 0.33*MAX_SPEED
+			#curseurAccel.x = -ACCEL
 		"B":
-			curseurAccel.x = ACCEL
+			curseurSpeed.x += 0.33*MAX_SPEED
+			#curseurAccel.x = -ACCEL
 
 
 
@@ -200,6 +206,9 @@ func strsec(secs):
 
 func _on_texture_button_pressed() -> void:
 	musicPlaying = !musicPlaying
+	currentPatternDeltaCompleted = false
+	currentBeat = 0
+	currentDC = 0
 	if $PlayButton.button_pressed:
 		musique.play()
 	else:
