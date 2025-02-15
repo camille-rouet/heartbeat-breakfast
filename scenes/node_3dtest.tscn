@@ -48,13 +48,13 @@ environment = SubResource("Environment_mq01q")
 transform = Transform3D(0.970007, -0.242828, 0.0109981, 0.242087, 0.960986, -0.133793, 0.0219197, 0.132442, 0.990948, 1.75784, -2.11096, 8.07257)
 
 [node name="Perso" type="Sprite3D" parent="."]
-transform = Transform3D(0.1, 0, 0, 0, 0.0999588, 0.0028707, 0, -0.0028707, 0.0999588, 2.82541, -3.21965, 3.56021)
+transform = Transform3D(0.1, 0, 0, 0, 0.0944761, -0.0327762, 0, 0.0327762, 0.0944761, 2.82541, -3.21965, 3.56021)
 shaded = true
 texture_filter = 0
 texture = ExtResource("2_02hs2")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.902247, -0.431219, 0, 0.431219, 0.902247, 2.46069, -3.43022, 5.2058)
+transform = Transform3D(1, 0, 0, 0, 0.902247, -0.431219, 0, 0.431219, 0.902247, 2.46069, -3.31651, 6.21069)
 fov = 60.1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

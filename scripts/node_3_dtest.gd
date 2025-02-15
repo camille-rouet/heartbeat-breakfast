@@ -12,6 +12,7 @@ var box_mesh : BoxMesh  # Mesh pour les cubes
 var camera : Camera3D  # Caméra
 var camera_column_index : int = 0  # Index de la colonne actuelle de la caméra
 var target_camera_position : Vector3  # Position cible de la caméra
+var camera_base_position : Vector3 # position de depart de la camera
 
 var detected_cubes = []  # Liste des cubes déjà détectés
 
@@ -43,11 +44,10 @@ var currentPatternDeltaCompleted = false # Si true, currentPatternDelta est comp
 
 # gestion du curseur
 var curseur
-var curseurSpeed = Vector2.ZERO # in pixel / sec
-var curseurAccel = Vector2.ZERO # in pixel / sec / sec
+var curseurSpeed = 0 # in m / sec
+var curseurAccel = 0 # in m / sec / sec
 const BRAKE = 0.99
-const ACCEL = 100
-const MAX_SPEED = 300
+const MAX_SPEED = 1 # in m / sec
 
 # Motif rythmiques jouables
 const RHYTHMIC_PATTERN = {
@@ -90,12 +90,15 @@ func _ready():
 	columns.append($MeshInstance3D2)  
 	columns.append($MeshInstance3D3)  
 	columns.append($MeshInstance3D4)  
+	camera_base_position = camera.position
 
-	# Position initiale de la caméra
-	_align_camera_to_column(true)
+	## Position initiale de la caméra
+	#_align_camera_to_column(true)
 
 	# Création du BoxMesh pour les cubes
 	box_mesh = BoxMesh.new()  
+	
+	curseur = $Perso
 
 	# Connecter le rythme pour générer les cubes sur le beat
 	if rhythm_notifier:
@@ -167,29 +170,29 @@ func _process(delta):
 			if currentPatternDeltaCompleted:
 				if time >= finFenetre_time:
 					currentPatternDelta = [null, null, null, null]
-					currentPatternDeltaCompleted = false	
+					currentPatternDeltaCompleted = false
+		
+	moveCursor(delta)
 	
-	#moveCursor(delta)
-	
-	if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
-		camera_column_index -= 1
-		_align_camera_to_column()
-
-	if Input.is_action_just_pressed("motif2") and camera_column_index < columns.size() - 1:
-		camera_column_index += 1
-		_align_camera_to_column()
+	#if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
+		#camera_column_index -= 1
+		#_align_camera_to_column()
+#
+	#if Input.is_action_just_pressed("motif2") and camera_column_index < columns.size() - 1:
+		#camera_column_index += 1
+		#_align_camera_to_column()
 
 	# Animation fluide vers la position cible
-	camera.position = camera.position.lerp(target_camera_position, camera_speed * delta)
+	#camera.position = camera.position.lerp(target_camera_position, camera_speed * delta)
 
-# Aligner la caméra sur la colonne actuelle
-func _align_camera_to_column(instant := false):
-	target_camera_position = columns[camera_column_index].position
-	target_camera_position.z = 5  # Ajuster la distance de la caméra
-	target_camera_position.y = -2
-
-	if instant:
-		camera.position = target_camera_position  # Déplacer directement lors du premier chargement
+## Aligner la caméra sur la colonne actuelle
+#func _align_camera_to_column(instant := false):
+	#target_camera_position = columns[camera_column_index].position
+	#target_camera_position.z = camera_base_position.z # 5  # Ajuster la distance de la caméra
+	#target_camera_position.y = camera_base_position.y # -2
+#
+	#if instant:
+		#camera.position = target_camera_position  # Déplacer directement lors du premier chargement
 
 # Détecter les cubes uniquement quand ils passent devant la caméra
 func _check_proximity(obj: Node3D):
@@ -206,22 +209,22 @@ func _check_proximity(obj: Node3D):
 
 
 func moveCursor(delta):
-	# Move curseur
-	curseur.position = curseur.position + delta * curseurSpeed
+	#  update cursor horizontal position and speed
+	curseur.position.x = curseur.position.x + delta * curseurSpeed
 	curseurSpeed = curseurSpeed + delta * curseurAccel
 	
-	if curseur.position.x > DisplayServer.window_get_size().x * 0.95:
-		curseur.position.x = DisplayServer.window_get_size().x * 0.95 - 20
-		curseurSpeed.x = - curseurSpeed.x*0.2
-		curseurAccel.x = 0
-	if curseur.position.x < DisplayServer.window_get_size().x * 0.05:
-		curseur.position.x = DisplayServer.window_get_size().x * 0.05 +20
-		curseurSpeed.x = - curseurSpeed.x*0.2
-		curseurAccel.x = 0
-		
-	curseurSpeed.x = curseurSpeed.x * BRAKE
-	curseurSpeed.x = min(curseurSpeed.x, MAX_SPEED)
-	curseurSpeed.x = max(curseurSpeed.x, -MAX_SPEED)
+	if curseur.position.x > 4:
+		curseur.position.x = 3.95
+		curseurSpeed = - curseurSpeed*0.2
+		curseurAccel = 0
+	if curseur.position.x < 1:
+		curseur.position.x = 1.05
+		curseurSpeed = - curseurSpeed*0.2
+		curseurAccel = 0
+	
+	curseurSpeed = curseurSpeed * BRAKE
+	curseurSpeed = min(curseurSpeed, MAX_SPEED)
+	curseurSpeed = max(curseurSpeed, -MAX_SPEED)
 
 # # # # # # # # # METHODES RYTHME
 # conversion d'un tableau de delta de DC en tableau de motif input
@@ -246,12 +249,9 @@ func interpretPattern(patternInput):
 	
 	match matchedPattern:
 		"A":
-			
-			curseurSpeed.x -= 0.33*MAX_SPEED
-			#curseurAccel.x = -ACCEL
+			curseurSpeed -= 0.33*MAX_SPEED
 		"B":
-			curseurSpeed.x += 0.33*MAX_SPEED
-			#curseurAccel.x = -ACCEL
+			curseurSpeed += 0.33*MAX_SPEED
 		null:
 			rhythmError.emit()
 			
@@ -296,7 +296,7 @@ func getDeltaBeat(time):
 
 
 func _on_rhythm_error() -> void:
-	$Audio/Bruitages/BlocBad.play()
+	#$Audio/Bruitages/BlocBad.play()
 	var aTween = mainLight.create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).set_parallel(false)
 	aTween.tween_property(mainLight, "light_color", Color.TOMATO, DCLength * 0.5)
 	aTween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
@@ -338,7 +338,7 @@ func switchMuteMusique():
 		
 # Gestion des inputs
 func _unhandled_input(event):
-	if event.is_action_pressed("ToucheA"):
+	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT"):
 		
 		nInput = nInput + 1
 		var time = musiqueCible.get_playback_position() - AudioServer.get_output_latency() - LATENCY * 0.001
