@@ -129,7 +129,6 @@ var meanDeltaDC = 0 # ecart moyen entre input et DC
 var nInput = 0 #nombre d'input cumulé
 
 var sol:MeshInstance3D
-var solSpeed = 10 # in m/s
 
 func couleurnote ():
 	var  note = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
@@ -499,6 +498,9 @@ func _game_over(gagne:bool):
 		$EndMenu/FinPerdu.show()
 		$EndMenu/FinGagne.hide()
 	
+	$CanvasLayer3.offset = Vector2(-400,0)
+	$CanvasLayer3.layer = 128
+	
 	stopMusique()
 	$EndMenu.show()
 
@@ -812,3 +814,5 @@ func lancementPartie():
 	player_health = BASE_HEALTH
 	updateCoeur()
 	resetBonus()
+	$CanvasLayer3.offset = Vector2(400,-550)
+	$CanvasLayer3.layer = 1
