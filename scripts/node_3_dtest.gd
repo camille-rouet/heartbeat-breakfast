@@ -400,10 +400,10 @@ func _take_damage():
 func _game_over(gagne:bool):
 	if gagne:
 		$EndMenu/FinPerdu.hide()
-		$EndMenu/FinPerdu.show()
+		$EndMenu/FinGagne.show()
 	else:
 		$EndMenu/FinPerdu.show()
-		$EndMenu/FinPerdu.hide()
+		$EndMenu/FinGagne.hide()
 	
 	switchPauseMusique()
 	$EndMenu.show()
