@@ -690,7 +690,7 @@ func switchMuteMusique():
 		
 # Gestion des inputs
 func _unhandled_input(event):
-	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT"):
+	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT") || event.is_action_pressed("inputManette"):
 		nInput = nInput + 1
 		
 		
