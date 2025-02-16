@@ -439,8 +439,8 @@ func moveCursor(delta):
 	curseurSpeed = curseurSpeed + delta * curseurAccel
 	
 	var replacementShift = 0.01 # (0 to 1) proportion of the shift when encountering wall 
-	var maxX = 6
-	var minX = 3
+	var maxX = 6.75
+	var minX = 2.5
 	if curseur.position.x > maxX:
 		curseur.position.x = maxX * (1 - replacementShift)
 		curseurSpeed = - curseurSpeed*0.2
