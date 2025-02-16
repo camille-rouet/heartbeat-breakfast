@@ -2,27 +2,26 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxfg4q843v2yh"
-path.s3tc="res://.godot/imported/tx_table.png-15e2f348255475bf419cab7f2ee621d5.s3tc.ctex"
+uid="uid://ccnw7aquelv54"
+path="res://.godot/imported/tx_jeanslip.png-6e37caef418f683a4949f28f16a570de.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/tx_table.png"
-dest_files=["res://.godot/imported/tx_table.png-15e2f348255475bf419cab7f2ee621d5.s3tc.ctex"]
+source_file="res://assets/images/vêtements/tx_jeanslip.png"
+dest_files=["res://.godot/imported/tx_jeanslip.png-6e37caef418f683a4949f28f16a570de.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -32,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

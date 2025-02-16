@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dfiprcefj545r"
-path.s3tc="res://.godot/imported/tx_cartons.png-eef9ff8de01f86f2b562504e7da4cd8c.s3tc.ctex"
+uid="uid://bp03let0bv16y"
+path.s3tc="res://.godot/imported/tx_meubletv.png-a75e3e8c4701965b35dca61aefec3656.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/images/tx_cartons.png"
-dest_files=["res://.godot/imported/tx_cartons.png-eef9ff8de01f86f2b562504e7da4cd8c.s3tc.ctex"]
+source_file="res://assets/images/meubles/tx_meubletv.png"
+dest_files=["res://.godot/imported/tx_meubletv.png-a75e3e8c4701965b35dca61aefec3656.s3tc.ctex"]
 
 [params]
 
