@@ -96,6 +96,13 @@ const ADDED_SPEED = 0.8 # in m / sec
 
 var tetePerso:Node3D
 
+var audioGainBasse:AudioEffectAmplify
+var audioGainCuica:AudioEffectAmplify
+var audioGainGuitare1:AudioEffectAmplify
+var audioGainGuitare2:AudioEffectAmplify
+var audioGainPiano:AudioEffectAmplify
+var audioGainSynth:AudioEffectAmplify
+
 # Motif rythmiques jouables
 const RHYTHMIC_PATTERN = {
 	"O": [0, 0, 0, 0],
@@ -145,7 +152,13 @@ func _ready():
 	rhythmError.connect(_on_rhythm_error)
 	rhythmOK.connect(_on_rhythm_ok)
 	inputDCDone.connect(_on_inputDCDone)
-	
+		
+	audioGainBasse = AudioServer.get_bus_effect(9, 0)
+	audioGainCuica = AudioServer.get_bus_effect(4, 0)
+	audioGainGuitare1 = AudioServer.get_bus_effect(5, 0)
+	audioGainGuitare2 = AudioServer.get_bus_effect(8, 0)
+	audioGainPiano = AudioServer.get_bus_effect(6, 0)
+	audioGainSynth = AudioServer.get_bus_effect(7, 0)
 	
 	audioServerLatency = AudioServer.get_output_latency()
 	
@@ -369,18 +382,29 @@ func _check_proximity():
 func _bonus():
 	print("vous avez obtenu un bonus")
 	var  notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	var timeFadeIn = 1 # in sec
 	if Notes == 0 :
 		print("bonus 1")
 		notem[Notes].modulate = Color.hex(0x002cd8ff)
+		
+		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(audioGainSynth, "volume_db", 0, timeFadeIn)
+		
 	if Notes == 1 :
 		print("bonus 2")
 		notem[Notes].modulate = Color.hex(0x009e21ff)
+		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(audioGainPiano, "volume_db", 0, timeFadeIn)
 	if Notes == 2 :
 		print("bonus 3")
 		notem[Notes].modulate = Color.hex(0xecbb00ff)
+		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(audioGainGuitare1, "volume_db", 0, timeFadeIn)
 	if Notes == 3 :
-		notem[Notes].modulate = Color.hex(0xff55c8ff)
 		print("bonus 4")
+		notem[Notes].modulate = Color.hex(0xff55c8ff)
+		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(audioGainGuitare2, "volume_db", 0, timeFadeIn)
 	Notes += 1
 	print("nombre de Note obtenue : ",Notes)
 	
@@ -583,6 +607,7 @@ func switchMuteMusique():
 func _unhandled_input(event):
 	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT"):
 		nInput = nInput + 1
+		
 		
 		# petit saut du perso
 		inputDCDone.emit()

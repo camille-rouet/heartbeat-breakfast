@@ -1,4 +1,26 @@
-[gd_resource type="AudioBusLayout" format=3 uid="uid://brmlf6wtwkn22"]
+[gd_resource type="AudioBusLayout" load_steps=7 format=3 uid="uid://brmlf6wtwkn22"]
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_wnllw"]
+resource_name = "Amplify"
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_aax4t"]
+resource_name = "Amplify"
+volume_db = -80.0
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_8wa6b"]
+resource_name = "Amplify"
+volume_db = -80.0
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_71sj1"]
+resource_name = "Amplify"
+volume_db = -80.0
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_xdt75"]
+resource_name = "Amplify"
+volume_db = -80.0
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_52o03"]
+resource_name = "Amplify"
 
 [resource]
 bus/1/name = &"MusiqueEtienne1"
@@ -25,27 +47,51 @@ bus/4/mute = false
 bus/4/bypass_fx = false
 bus/4/volume_db = -4.00569
 bus/4/send = &"MusiqueEtienne1"
+bus/4/effect/0/effect = SubResource("AudioEffectAmplify_wnllw")
+bus/4/effect/0/enabled = true
 bus/5/name = &"GuitareSamba"
 bus/5/solo = false
 bus/5/mute = false
 bus/5/bypass_fx = false
-bus/5/volume_db = -3.76831
+bus/5/volume_db = -9.2092
 bus/5/send = &"MusiqueEtienne1"
+bus/5/effect/0/effect = SubResource("AudioEffectAmplify_aax4t")
+bus/5/effect/0/enabled = true
 bus/6/name = &"PianoSamba"
 bus/6/solo = false
 bus/6/mute = false
 bus/6/bypass_fx = false
-bus/6/volume_db = -4.50411
+bus/6/volume_db = -8.00903
 bus/6/send = &"MusiqueEtienne1"
+bus/6/effect/0/effect = SubResource("AudioEffectAmplify_8wa6b")
+bus/6/effect/0/enabled = true
 bus/7/name = &"Synth"
 bus/7/solo = false
 bus/7/mute = false
 bus/7/bypass_fx = false
-bus/7/volume_db = -7.63485
+bus/7/volume_db = -5.04224
 bus/7/send = &"MusiqueEtienne1"
+bus/7/effect/0/effect = SubResource("AudioEffectAmplify_71sj1")
+bus/7/effect/0/enabled = true
 bus/8/name = &"Guitare2"
 bus/8/solo = false
 bus/8/mute = false
 bus/8/bypass_fx = false
-bus/8/volume_db = -6.57885
+bus/8/volume_db = -0.725993
 bus/8/send = &"MusiqueEtienne1"
+bus/8/effect/0/effect = SubResource("AudioEffectAmplify_xdt75")
+bus/8/effect/0/enabled = true
+bus/9/name = &"Basse"
+bus/9/solo = false
+bus/9/mute = false
+bus/9/bypass_fx = false
+bus/9/volume_db = 0.0
+bus/9/send = &"MusiqueEtienne1"
+bus/9/effect/0/effect = SubResource("AudioEffectAmplify_52o03")
+bus/9/effect/0/enabled = true
+bus/10/name = &"Percu"
+bus/10/solo = false
+bus/10/mute = false
+bus/10/bypass_fx = false
+bus/10/volume_db = 2.44924
+bus/10/send = &"MusiqueEtienne1"
