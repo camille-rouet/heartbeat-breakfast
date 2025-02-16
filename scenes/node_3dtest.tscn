@@ -57,6 +57,8 @@ background_mode = 2
 sky = SubResource("Sky_6a2p7")
 ambient_light_source = 1
 reflected_light_source = 1
+fog_enabled = true
+fog_light_color = Color(0.870205, 0.365007, 0.449773, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_qjbw4"]
 animations = [{
@@ -588,6 +590,6 @@ expand_mode = 2
 stretch_mode = 4
 
 [node name="Sol" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 4.43379e-11, 0, -4.45652e-10, 1, 4.65661e-10, 0, 3.49246e-10, 1, 4.63504, 1.34891, 0.0100348)
+transform = Transform3D(1, 4.41105e-11, 0, -6.7871e-10, 1, 5.82077e-10, 0, 4.65661e-10, 1, 4.76635, 1.43332, -71.9898)
 mesh = SubResource("PlaneMesh_d4ad5")
 surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
