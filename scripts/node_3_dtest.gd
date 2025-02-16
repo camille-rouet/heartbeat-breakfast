@@ -56,7 +56,7 @@ const BPM = 85 # in beat per minute # 73 pour tribal # 85 ou 95 pour la samba de
 const BARS = 4  #beat in one measure
 const BEAT_OFFSET = 0 # number of beat before the first beat of a bar of the music
 
-const ACCEPTABLE_DELTA = 80 # acceptable error in ms
+const ACCEPTABLE_DELTA = 65 # acceptable error in ms
 
 const LATENCY = 0 # in ms
 var audioServerLatency
@@ -450,7 +450,7 @@ func _on_inputDCDone():
 
 func resetRhythm():
 	AudioServer.set_bus_mute(3, true)
-	currentPatternDeltaCompleted = false # by default no BlocTempoBad
+	currentPatternDeltaCompleted = false
 	currentBeat = 0
 	currentDC = 0
 	blocTempoGood = true

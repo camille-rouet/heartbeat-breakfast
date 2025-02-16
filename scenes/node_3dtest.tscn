@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=41 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -49,6 +49,9 @@ reflected_light_source = 1
 [sub_resource type="BoxMesh" id="BoxMesh_ceq4n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_tg8jn"]
+
+[sub_resource type="SystemFont" id="SystemFont_akqv3"]
+font_names = PackedStringArray("Calibri")
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
@@ -303,6 +306,14 @@ grow_vertical = 0
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_bottom = 20
 
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/leftPattern"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 0.654902)
+theme_override_fonts/normal_font = SubResource("SystemFont_akqv3")
+theme_override_font_sizes/normal_font_size = 35
+text = "classic"
+
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/leftPattern"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
@@ -347,6 +358,15 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/rightPattern"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 0.654902)
+theme_override_fonts/normal_font = SubResource("SystemFont_akqv3")
+theme_override_font_sizes/normal_font_size = 35
+text = "samba"
+text_direction = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/rightPattern"]
 custom_minimum_size = Vector2(0, 40)
