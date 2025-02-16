@@ -93,6 +93,8 @@ const BRAKE = 0.996
 const MAX_SPEED = 10 # in m / sec
 const ADDED_SPEED = 0.8 # in m / sec
 
+var tetePerso:Node3D
+
 # Motif rythmiques jouables
 const RHYTHMIC_PATTERN = {
 	"O": [0, 0, 0, 0],
@@ -162,7 +164,8 @@ func _ready():
 	
 	curseur = $Perso	
 	curseurBasePosition = curseur.position
-
+	tetePerso = $Perso/AnimatedSpritePersoTete
+	
 	# Récupérer la caméra et les colonnes
 	camera = $Camera3D  
 	columns.append($MeshInstance3D)  
@@ -465,18 +468,33 @@ func _on_rhythm_ok(lastDCInput):
 	
 	var aControl:Control
 	var aControlShouldFlash = false
+	var controlToRight = true
 	match lastDCInput:
 		0:
 			aControl = leftPattern
 			aControlShouldFlash = true
+			controlToRight = false
 		1:
 			aControl = rightPattern
 			aControlShouldFlash = true
-	if aControlShouldFlash == true:
+			controlToRight = true
+			
+	if aControlShouldFlash:
 		var aTween2 = aControl.create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).set_parallel(false)
 		aTween2.tween_property(aControl, "modulate", Color.FOREST_GREEN, DCLength * 0.5)
 		aTween2.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
 		aTween2.tween_property(aControl, "modulate", Color.WHITE, DCLength * 0.5)
+		
+		var turnHeadAngle = 25
+		if controlToRight:
+			turnHeadAngle = -turnHeadAngle
+		else:
+			turnHeadAngle = turnHeadAngle
+		var aTween3 = tetePerso.create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).set_parallel(false)
+		aTween3.tween_property(tetePerso, "rotation_degrees:z", turnHeadAngle, DCLength * 0.5)
+		aTween3.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+		aTween3.tween_property(tetePerso, "rotation_degrees:z", 0, DCLength * 0.5)
+		
 
 
 func _on_inputDCDone():
