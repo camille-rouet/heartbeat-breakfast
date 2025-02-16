@@ -130,7 +130,6 @@ corner_radius_bottom_left = 5
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
-visible = false
 script = ExtResource("1_0sybt")
 table_obs = ExtResource("17_bsopk")
 cartons = ExtResource("18_2kplr")
@@ -601,7 +600,6 @@ stretch_mode = 4
 
 [node name="Sol" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 4.41105e-11, 0, -6.7871e-10, 1, 5.82077e-10, 0, 4.65661e-10, 1, 4.76635, 1.43332, -71.9898)
-visible = false
 mesh = SubResource("PlaneMesh_d4ad5")
 surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
 

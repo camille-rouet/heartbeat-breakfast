@@ -5,12 +5,13 @@ var camera: Camera3D
 @export var max_speed : float = 10.0
 @export var camera_speed : float = 5.0
 @export var spawn_interval : float = 2.0
-@export var detection_range : float = 25 #4.5
+@export var detection_range : float = 4.5 #4.5
 @export var Notes : float = 0 # ne pas modifier
 var dificult = 0
 var time_counter = 0.0
 # Points de vie
-var player_health := 99999
+var player_health := 4
+const BASE_HEALTH = 4
 var phase = 0
 # Premier set de textures
 @export var table_obs : Texture
@@ -731,8 +732,8 @@ func _unhandled_input(event):
 	if event.is_action_pressed("mute_switch"):
 		switchMuteMusique()
 		
-	if event.is_action_pressed("pause_switch"):
-		switchPauseMusique()
+	#if event.is_action_pressed("pause_switch"):
+		#switchPauseMusique()
 		
 	if event.is_action_pressed("bloc_tempo_switch"):
 		switchBlocTempo()
@@ -767,3 +768,4 @@ func lancementPartie():
 	musicPlaying = false
 	musicMuted = false
 	switchPauseMusique()
+	player_health = BASE_HEALTH
