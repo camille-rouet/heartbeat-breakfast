@@ -118,6 +118,8 @@ signal inputDCDone
 var meanDeltaDC = 0 # ecart moyen entre input et DC
 var nInput = 0 #nombre d'input cumulé
 
+var sol:MeshInstance3D
+var solSpeed = 10 # in m/s
 
 func couleurnote ():
 	var  note = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
@@ -138,6 +140,7 @@ func _ready():
 	rightPattern = $CanvasLayer/rightPattern/HBoxContainer
 	mainLight = $DirectionalLight3D
 	theWorld = $WorldEnvironment
+	sol = $Sol
 	rhythmError.connect(_on_rhythm_error)
 	rhythmOK.connect(_on_rhythm_ok)
 	inputDCDone.connect(_on_inputDCDone)
@@ -286,7 +289,8 @@ func _process(delta):
 					currentPatternDeltaCompleted = false
 		
 	moveCursor(delta)
-	
+	var material:StandardMaterial3D = sol.get_surface_override_material(0)
+	material.uv1_offset.y = material.uv1_offset.y - delta * solSpeed
 	#if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
 		#camera_column_index -= 1
 		#_align_camera_to_column()

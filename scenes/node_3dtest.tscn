@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=56 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -45,6 +45,7 @@
 [ext_resource type="Texture2D" uid="uid://c5gh43md6jb6q" path="res://assets/images/coeur1.png" id="28_qws37"]
 [ext_resource type="Script" path="res://scripts/button.gd" id="28_rwsut"]
 [ext_resource type="Texture2D" uid="uid://d3ogkffvu85af" path="res://assets/images/R-white.png" id="30_om6co"]
+[ext_resource type="Texture2D" uid="uid://bygp7aocmlbkv" path="res://assets/images/sol/texture sol.png" id="46_j025h"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -100,6 +101,13 @@ animations = [{
 
 [sub_resource type="SystemFont" id="SystemFont_akqv3"]
 font_names = PackedStringArray("Calibri")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_d4ad5"]
+size = Vector2(12, 200)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6sdfs"]
+albedo_texture = ExtResource("46_j025h")
+uv1_scale = Vector3(25, 500, 1)
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
@@ -578,3 +586,8 @@ layout_mode = 2
 texture = ExtResource("30_om6co")
 expand_mode = 2
 stretch_mode = 4
+
+[node name="Sol" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 4.43379e-11, 0, -4.45652e-10, 1, 4.65661e-10, 0, 3.49246e-10, 1, 4.63504, 1.34891, 0.0100348)
+mesh = SubResource("PlaneMesh_d4ad5")
+surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
