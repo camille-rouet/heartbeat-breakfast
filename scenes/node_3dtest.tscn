@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=56 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -7,12 +7,20 @@
 [ext_resource type="AudioStream" uid="uid://u4qw55jd38xj" path="res://assets/audio/musiques/Don Omar - Danza Kuduro REMIX.mp3" id="5_7076j"]
 [ext_resource type="AudioStream" uid="uid://c60g07hkagivh" path="res://assets/audio/musiques/electro-tribal-beat-179094.mp3" id="6_ewmxh"]
 [ext_resource type="AudioStream" uid="uid://36geufm6piii" path="res://assets/audio/musiques/samba95bpm/Basse Samba.wav" id="7_1gcpr"]
+[ext_resource type="Texture2D" uid="uid://u0dm7rx57khu" path="res://assets/images/anim_perso_corps/anim_perso_corps_00000.png" id="7_hrkkf"]
+[ext_resource type="Texture2D" uid="uid://bc7i2kwbc4w0k" path="res://assets/images/anim_perso_corps/anim_perso_corps_00001.png" id="8_fqpqg"]
 [ext_resource type="AudioStream" uid="uid://wr4i51ksikon" path="res://assets/audio/musiques/samba95bpm/Bloc Tempo Bad.wav" id="8_noht7"]
 [ext_resource type="AudioStream" uid="uid://b28j2ej6ydwlt" path="res://assets/audio/musiques/samba95bpm/Bloc Tempo Good.wav" id="9_8e4ap"]
+[ext_resource type="Texture2D" uid="uid://dvj0x8tfd386g" path="res://assets/images/anim_perso_corps/anim_perso_corps_00002.png" id="9_gdp67"]
 [ext_resource type="AudioStream" uid="uid://c6ymd1katbp0o" path="res://assets/audio/musiques/samba95bpm/Cuica (lol).wav" id="10_05x4r"]
+[ext_resource type="Texture2D" uid="uid://d4nuexnm85ucn" path="res://assets/images/anim_perso_corps/anim_perso_corps_00003.png" id="10_h4dtp"]
 [ext_resource type="AudioStream" uid="uid://dabgfjejmg8ju" path="res://assets/audio/musiques/samba95bpm/Guitare samba.wav" id="11_2k6fo"]
+[ext_resource type="Texture2D" uid="uid://dptvxru5h4kj2" path="res://assets/images/anim_perso_tete/anim_perso_tete_00000.png" id="11_vfkl8"]
 [ext_resource type="AudioStream" uid="uid://ct3n2k0wvevd1" path="res://assets/audio/musiques/samba95bpm/Percussions.wav" id="12_eglaj"]
+[ext_resource type="Texture2D" uid="uid://dwvlt8seqg6hn" path="res://assets/images/anim_perso_tete/anim_perso_tete_00001.png" id="12_mdqg8"]
 [ext_resource type="AudioStream" uid="uid://brtnnbop7ub0j" path="res://assets/audio/musiques/samba95bpm/Piano Samba.wav" id="13_cf681"]
+[ext_resource type="Texture2D" uid="uid://rt8gb5lmpels" path="res://assets/images/anim_perso_tete/anim_perso_tete_00002.png" id="13_tnbyc"]
+[ext_resource type="Texture2D" uid="uid://imb5tvoqsv7c" path="res://assets/images/anim_perso_tete/anim_perso_tete_00003.png" id="14_nc3w5"]
 [ext_resource type="AudioStream" uid="uid://bq24noktsaky" path="res://assets/audio/musiques/samba95bpm/Synth #1.wav" id="14_sxpin"]
 [ext_resource type="AudioStream" uid="uid://bn7860b8scrd4" path="res://assets/audio/bruitage/BlocBad.wav" id="15_jsuxj"]
 [ext_resource type="AudioStream" uid="uid://bmy7ls3lhbcx6" path="res://assets/audio/bruitage/BlocGood.wav" id="16_ko30s"]
@@ -37,6 +45,7 @@
 [ext_resource type="Texture2D" uid="uid://c5gh43md6jb6q" path="res://assets/images/coeur1.png" id="28_qws37"]
 [ext_resource type="Script" path="res://scripts/button.gd" id="28_rwsut"]
 [ext_resource type="Texture2D" uid="uid://d3ogkffvu85af" path="res://assets/images/R-white.png" id="30_om6co"]
+[ext_resource type="Texture2D" uid="uid://bygp7aocmlbkv" path="res://assets/images/sol/texture sol.png" id="46_j025h"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -48,6 +57,45 @@ background_mode = 2
 sky = SubResource("Sky_6a2p7")
 ambient_light_source = 1
 reflected_light_source = 1
+fog_enabled = true
+fog_light_color = Color(0.870205, 0.365007, 0.449773, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qjbw4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_hrkkf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_fqpqg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_gdp67")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_h4dtp")
+}],
+"loop": true,
+"name": &"corps",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_vfkl8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mdqg8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_tnbyc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_nc3w5")
+}],
+"loop": true,
+"name": &"tete",
+"speed": 6.0
+}]
 
 [sub_resource type="BoxMesh" id="BoxMesh_ceq4n"]
 
@@ -55,6 +103,13 @@ reflected_light_source = 1
 
 [sub_resource type="SystemFont" id="SystemFont_akqv3"]
 font_names = PackedStringArray("Calibri")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_d4ad5"]
+size = Vector2(12, 200)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6sdfs"]
+albedo_texture = ExtResource("46_j025h")
+uv1_scale = Vector3(25, 500, 1)
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
@@ -71,15 +126,39 @@ environment = SubResource("Environment_mq01q")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.984873, -0.0723344, -0.157455, 0.173275, 0.412533, 0.894311, 0.000265883, -0.908066, 0.418827, 1.75784, 3.26712, 8.08508)
 
-[node name="Perso" type="Sprite3D" parent="."]
-transform = Transform3D(0.0999997, 5.48604e-05, 0.000225025, -0.00019368, 0.0730867, 0.0682517, -0.00012702, -0.0682519, 0.0730866, 5.04994, 4.61594, 22.1448)
-shaded = true
-texture_filter = 0
-texture = ExtResource("2_02hs2")
-
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.999999, 0.000465283, 0.000984854, -0.000772298, 0.940478, 0.339852, -0.000768112, -0.339853, 0.940478, 4.60853, 5.78254, 23.6689)
 fov = 60.1
+
+[node name="Perso" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.727773, 0.685818, 0, -0.685818, 0.727773, 4, 4, 22)
+
+[node name="AnimatedSpritePersoCorps" type="AnimatedSprite3D" parent="Perso"]
+transform = Transform3D(0.1, 0, 0, 0, 0.0999999, 0, 0, 0, 0.1, 0, 0, 0)
+shaded = true
+alpha_cut = 1
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_qjbw4")
+animation = &"corps"
+autoplay = "corps"
+
+[node name="AnimatedSpritePersoTete" type="AnimatedSprite3D" parent="Perso"]
+transform = Transform3D(0.1, 0, 0, 0, 0.0999999, 0, 0, 0, 0.1, 3.0756e-05, 0.00483322, 0.0354233)
+shaded = true
+alpha_cut = 1
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_qjbw4")
+animation = &"tete"
+autoplay = "tete"
+frame = 2
+frame_progress = 0.115252
+
+[node name="SpritePerso" type="Sprite3D" parent="Perso"]
+transform = Transform3D(0.1, 0, 0, 0, 0.0999999, 0, 0, 0, 0.1, 0, 0, 0)
+visible = false
+shaded = true
+texture_filter = 0
+texture = ExtResource("2_02hs2")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(2, 0, -8.74228e-08, 8.74228e-08, 7.64274e-14, 2, 0, -40, 3.82137e-15, 8.99652, -0.0931386, -0.0147989)
@@ -509,3 +588,8 @@ layout_mode = 2
 texture = ExtResource("30_om6co")
 expand_mode = 2
 stretch_mode = 4
+
+[node name="Sol" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 4.41105e-11, 0, -6.7871e-10, 1, 5.82077e-10, 0, 4.65661e-10, 1, 4.76635, 1.43332, -71.9898)
+mesh = SubResource("PlaneMesh_d4ad5")
+surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
