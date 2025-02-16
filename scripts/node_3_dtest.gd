@@ -10,7 +10,12 @@ var camera: Camera3D
 var dificult = 0
 var time_counter = 0.0
 # Points de vie
+<<<<<<< HEAD
 var player_health := 90
+=======
+var player_health := 4
+const BASE_HEALTH = 4
+>>>>>>> 2fddd31377aa3106b4f2efcfc17c939774007ee2
 var phase = 0
 # Premier set de textures
 @export var table_obs : Texture
@@ -25,6 +30,7 @@ var phase = 0
 @export var canapé : Texture
 @export var valise : Texture
 @export var boite : Texture
+const SPRITE_HEIGHT = 3.4
 
 # Premier set de sprites
 var sprite_textures := {
@@ -259,6 +265,11 @@ func _generate_sprite():
 	var column = columns[rand_column]  
 	var start_pos = column.get_node("Start").global_position
 	var end_pos = column.get_node("End").global_position
+	
+	
+	start_pos.y += SPRITE_HEIGHT
+	end_pos.y += SPRITE_HEIGHT
+	
 	var new_sprite = Sprite3D.new()
 	
 	# Initialisation de sprite_list
@@ -287,12 +298,15 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
+<<<<<<< HEAD
 	new_sprite.position.y += 3
 	new_sprite.scale.x = .6
 	new_sprite.scale.y = .6
 	new_sprite.scale.z = .6
 	
 	
+=======
+>>>>>>> 2fddd31377aa3106b4f2efcfc17c939774007ee2
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -390,7 +404,7 @@ func _process(delta):
 		
 	moveCursor(delta)
 	var material:StandardMaterial3D = sol.get_surface_override_material(0)
-	material.uv1_offset.y = material.uv1_offset.y - delta * solSpeed
+	material.uv1_offset.y = material.uv1_offset.y - delta * object_speed
 	#if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
 		#camera_column_index -= 1
 		#_align_camera_to_column()
@@ -491,8 +505,8 @@ func moveCursor(delta):
 	curseurSpeed = curseurSpeed + delta * curseurAccel
 	
 	var replacementShift = 0.01 # (0 to 1) proportion of the shift when encountering wall 
-	var maxX = 6
-	var minX = 3
+	var maxX = 6.75
+	var minX = 2.5
 	if curseur.position.x > maxX:
 		curseur.position.x = maxX * (1 - replacementShift)
 		curseurSpeed = - curseurSpeed*0.2
@@ -742,8 +756,8 @@ func _unhandled_input(event):
 	if event.is_action_pressed("mute_switch"):
 		switchMuteMusique()
 		
-	if event.is_action_pressed("pause_switch"):
-		switchPauseMusique()
+	#if event.is_action_pressed("pause_switch"):
+		#switchPauseMusique()
 		
 	if event.is_action_pressed("bloc_tempo_switch"):
 		switchBlocTempo()
@@ -778,3 +792,4 @@ func lancementPartie():
 	musicPlaying = false
 	musicMuted = false
 	switchPauseMusique()
+	player_health = BASE_HEALTH
