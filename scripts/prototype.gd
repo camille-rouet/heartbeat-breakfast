@@ -16,10 +16,9 @@ var DCLength # beatLength / 4, in sec
 
 var musicPlaying:bool = false
 
-var musique:AudioStreamPlayer
+var musiqueCible:AudioStreamPlayer
 var beatRect:ColorRect
 
-var tempsVu = false
 var currentBeat = 0
 var currentDC = 0 # double croche
 
@@ -27,7 +26,6 @@ var currentDC = 0 # double croche
 var currentPatternDelta = [null, null, null, null] # chaque entrée definit le temps (en ms) entre l'input et la double-croche la plus proche, si pas d'input pour une double croche : null
 var currentPatternDeltaCompleted = false # Si true, currentPatternDelta est complet
 
-var initTimeCode # in sec
 
 
 var curseur:ColorRect #bouge en fonction des inputs rythmiques
@@ -64,10 +62,8 @@ func _ready() -> void:
 	DCLength = beatLength / 4.0
 	beatRect = $ColorRect1
 	curseur = $CurseurRect
-	musique = $"musique-tribal"
+	musiqueCible = $"musique-tribal"
 	
-	initTimeCode = Time.get_ticks_usec() / 1000000.0 # in sec
-
 	print("beat length (ms): " + str(round(beatLength * 1000)))
 	print("DC length (ms): " + str(round(DCLength * 1000)))
 
@@ -75,7 +71,7 @@ func _ready() -> void:
 func _process(delta: float) -> void: #delta = frame duration in s
 	
 	if musicPlaying:
-		var time = musique.get_playback_position()  - AudioServer.get_output_latency() - LATENCY * 0.001
+		var time = musiqueCible.get_playback_position()  - AudioServer.get_output_latency() - LATENCY * 0.001
 		
 		@warning_ignore("integer_division")
 		
@@ -92,7 +88,7 @@ func _process(delta: float) -> void: #delta = frame duration in s
 			
 			# afficher les beats
 			var seconds = int(time)
-			var seconds_total = int(musique.stream.get_length())
+			var seconds_total = int(musiqueCible.stream.get_length())
 			var text = str("BEAT: ", currentBeatInMeasure, "/", BARS, " TIME: ", seconds / 60, ":", strsec(seconds % 60), " / ", seconds_total / 60, ":", strsec(seconds_total % 60))
 			#print("\n" + text)
 		
@@ -124,8 +120,8 @@ func _process(delta: float) -> void: #delta = frame duration in s
 				if time >= finFenetre_time:
 					currentPatternDelta = [null, null, null, null]
 					currentPatternDeltaCompleted = false
-		
-		
+	
+	
 	$TargetRect.position.x = DisplayServer.window_get_size().x * (0.5 + myNoise.get_noise_1d(0.2 * 10e-6 * Time.get_ticks_usec()))
 	moveCursor(delta)
 
@@ -220,9 +216,9 @@ func _on_texture_button_pressed() -> void:
 	currentBeat = 0
 	currentDC = 0
 	if $PlayButton.button_pressed:
-		musique.play()
+		musiqueCible.play()
 	else:
-		musique.stop()
+		musiqueCible.stop()
 
 
 
@@ -230,7 +226,7 @@ func _unhandled_input(event):
 	# recoit un input "A"
 	if musicPlaying && event.is_action_pressed("ToucheA"):
 		nInput = nInput + 1
-		var time = musique.get_playback_position() - AudioServer.get_output_latency() - LATENCY * 0.001
+		var time = musiqueCible.get_playback_position() - AudioServer.get_output_latency() - LATENCY * 0.001
 		
 		var deltaToucheBeat = getDeltaBeat(time)
 		#print("Ecart au beat (ms) " + str(round(deltaToucheBeat * 1000) ))
@@ -240,10 +236,11 @@ func _unhandled_input(event):
 		var lastDC = int(time / DCLength)
 		var lastDCTime = lastDC * DCLength
 		
-		var closerDC
 		
+		# evalue le delta entre input et DC
 		var retardToucheDC = time - lastDCTime
-		var deltaToucheDC = 0
+		var deltaToucheDC
+		var closerDC
 		if retardToucheDC < DCLength * 0.5:
 			# la DC de référence est la précédente
 			deltaToucheDC = retardToucheDC
@@ -253,17 +250,20 @@ func _unhandled_input(event):
 			deltaToucheDC = time - (lastDCTime + DCLength)
 			closerDC = lastDC + 1
 		
+		var currentDCInBeat = (lastDC) % 4 + 1
+		var closerDCInBeat = (closerDC) % 4 + 1
+		#print("Ecart à la DC " + str(closerDCInBeat) + " (ms) " + str(round(deltaToucheDC * 1000)) )
+		
+		#envoie une erreur en cas de defaillance rhytmique
 		if abs(deltaToucheDC) > ACCEPTABLE_DELTA * 0.001:
 			rhythmError.emit()
 		
-		var currentDCInBeat = (lastDC) % 4 + 1
-		var closerDCInBeat = (closerDC) % 4 + 1
 		
-		#print("Ecart à la DC " + str(closerDCInBeat) + " (ms) " + str(round(deltaToucheDC * 1000)) )
 		
 		# update the rhytmic pattern delta
 		currentPatternDelta[closerDCInBeat - 1] = round(deltaToucheDC * 1000)
 		
+		# update the mean error on DC
 		meanDeltaDC = (meanDeltaDC * (nInput-1) + deltaToucheDC) / nInput
 		
 		
