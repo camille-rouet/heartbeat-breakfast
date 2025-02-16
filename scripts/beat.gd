@@ -6,7 +6,7 @@ var button_pressed_1 = false
 var button_pressed_2 = false  
 
 func _ready():
-	$"../RhythmNotifier".beats(1).connect(_on_beat_detected)
+	$"../RhythmNotifier".beats(14).connect(_on_beat_detected)
 
 func _on_beat_detected(_count):
 	last_beat_time = Time.get_ticks_msec()

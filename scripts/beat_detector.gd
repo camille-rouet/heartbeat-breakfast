@@ -6,7 +6,7 @@ var button_pressed_1 = false  # Flag pour vérifier si "motif1" a été activé
 var button_pressed_2 = false  # Flag pour vérifier si "motif2" a été activé
 
 func _ready():
-	$"../RhythmNotifier".beats(1).connect(func(_count):
+	$"../RhythmNotifier".beats(14).connect(func(_count):
 		last_beat_time = Time.get_ticks_msec()
 	)
 

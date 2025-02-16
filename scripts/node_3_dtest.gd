@@ -1,24 +1,56 @@
 extends Node3D
 
-@export var object_speed : float = 5.0  # Vitesse des objets
-@export var max_speed : float = 10.0  # Vitesse maximale des objets
-@export var camera_speed : float = 5.0  # Vitesse de déplacement de la caméra
-@export var spawn_interval : float = 1  # Intervalle entre chaque cube (remplacé par le rythme)
-@onready var rhythm_notifier = get_node("RhythmNotifier")  # Adapte le chemin selon ta scène
-  # Référence au RhythmNotifier
+@export var object_speed : float = 5.0
+@export var max_speed : float = 10.0
+@export var camera_speed : float = 5.0
+@export var spawn_interval : float = 2.0
+@export var detection_range : float = 3.0
 
-var columns = []  # Liste des colonnes
-var box_mesh : BoxMesh  # Mesh pour les cubes
-var camera : Camera3D  # Caméra
-var camera_column_index : int = 0  # Index de la colonne actuelle de la caméra
-var target_camera_position : Vector3  # Position cible de la caméra
+# Points de vie
+var player_health := 3
 
-var detected_cubes = []  # Liste des cubes déjà détectés
+# Premier set de textures
+@export var table_obs : Texture
+@export var cartons : Texture
+@export var meubletv : Texture
+@export var sac_poubelle : Texture
+@export var bouteilles : Texture
 
-var musicPlaying = false
-var musicMuted = false
-var musicPositionMemo = 0
-var blocTempoGood = true
+# Deuxième set de textures (après 60 secondes)
+@export var chaise : Texture
+@export var palette : Texture
+@export var canapé : Texture
+@export var valise : Texture
+@export var boite : Texture
+
+var columns = []  
+var camera : Camera3D  
+var camera_column_index : int = 0  
+var target_camera_position : Vector3  
+var detected_sprites = []  
+var use_alternate_sprites = false  
+
+# Sprites dangereux
+var dangerous_sprites = ["Table", "MeubleTV", "Sac"]
+
+# Premier set de sprites
+var sprite_textures := {
+	"Table": preload("res://assets/images/tx_table.png"),
+	"Cartons": preload("res://assets/images/tx_cartons.png"),
+	"MeubleTV": preload("res://assets/images/tx_meubletv.png"),
+	"Sac": preload("res://assets/images/tx_sacspoubelles.png"),
+	"Bouteilles": preload("res://assets/images/tx_bouteilles.png")
+}
+
+
+# Deuxième set de sprites
+var alternate_sprite_textures := {
+	"Chaise": chaise,
+	"Palette": palette,
+	"Canapé": canapé,
+	"Valise": valise,
+	"Boîte": boite
+}
 
 func _ready():
 	# Récupérer la caméra et les colonnes
@@ -28,42 +60,62 @@ func _ready():
 	columns.append($MeshInstance3D3)  
 	columns.append($MeshInstance3D4)  
 
-	# Position initiale de la caméra
 	_align_camera_to_column(true)
 
-	# Création du BoxMesh pour les cubes
-	box_mesh = BoxMesh.new()  
+	# Timer pour la génération des sprites (toutes les 2s)
+	var spawn_timer = Timer.new()
+	spawn_timer.wait_time = spawn_interval
+	spawn_timer.autostart = true
+	spawn_timer.timeout.connect(_generate_sprite)
+	add_child(spawn_timer)
 
-	# Connecter le rythme pour générer les cubes sur le beat
-	if rhythm_notifier:
-		rhythm_notifier.beats(1).connect(_on_beat_detected)
+	# Timer pour changer les sprites après 60s
+	var switch_timer = Timer.new()
+	switch_timer.wait_time = 60.0
+	switch_timer.one_shot = true
+	switch_timer.autostart = true
+	switch_timer.timeout.connect(_switch_sprites)
+	add_child(switch_timer)
 
-# Quand un beat est détecté
-func _on_beat_detected(_count):
-	_generate_cube()
+# Changer la liste des sprites après 60 secondes
+func _switch_sprites():
+	use_alternate_sprites = true
 
-# Générer un cube sur une colonne aléatoire
-func _generate_cube():
+# Générer un sprite
+func _generate_sprite():
 	var rand_column = randi() % columns.size()
 	var column = columns[rand_column]  
-	
 	var start_pos = column.get_node("Start").global_position
 	var end_pos = column.get_node("End").global_position
 	
-	var new_object = MeshInstance3D.new()
-	new_object.mesh = box_mesh  
-	new_object.rotation_degrees.x = -39.1  
-	new_object.position = start_pos
-	add_child(new_object)  
+	var new_sprite = Sprite3D.new()
+	var sprite_list = alternate_sprite_textures if use_alternate_sprites else sprite_textures
+	var keys = sprite_list.keys()
+	var rand_key = keys[randi() % keys.size()]
+	var rand_texture = sprite_list[rand_key]
 
-	# Ajouter à la liste des cubes détectables
-	detected_cubes.append(new_object)
+	# Vérifier si la texture est bien chargée
+	if rand_texture == null:
+		print("⚠️ Erreur: la texture de ", rand_key, " est NULL !")
+		return
+	
+	print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
 
-	# Animation de déplacement avec un tween
+	# Appliquer la texture
+	new_sprite.texture = rand_texture  # ✅ Correction ici !
+	new_sprite.position = start_pos
+	new_sprite.set_meta("name", rand_key)  # Stocke le nom du sprite
+	new_sprite.position.y += 3
+	add_child(new_sprite)  
+	detected_sprites.append(new_sprite)
+
+	# Animation de déplacement
 	var tween = get_tree().create_tween()
-	tween.tween_property(new_object, "position", end_pos, 1.0).set_trans(Tween.TRANS_LINEAR)
-	tween.tween_callback(new_object.queue_free)
-	tween.tween_callback(func(): detected_cubes.erase(new_object))  # Supprime de la liste une fois disparu
+	tween.tween_property(new_sprite, "position", end_pos, 2.0).set_trans(Tween.TRANS_LINEAR)
+	tween.tween_callback(new_sprite.queue_free)
+	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
+
+
 
 # Déplacement fluide de la caméra
 func _process(delta):
@@ -75,65 +127,44 @@ func _process(delta):
 		camera_column_index += 1
 		_align_camera_to_column()
 
-	# Animation fluide vers la position cible
 	camera.position = camera.position.lerp(target_camera_position, camera_speed * delta)
+
+	# Vérifier la proximité des sprites avec le joueur
+	_check_proximity()
 
 # Aligner la caméra sur la colonne actuelle
 func _align_camera_to_column(instant := false):
 	target_camera_position = columns[camera_column_index].position
-	target_camera_position.z = 5  # Ajuster la distance de la caméra
-	target_camera_position.y = -2
-
+	target_camera_position.z = 30
+	target_camera_position.y = 4
+	target_camera_position.x = -3
 	if instant:
-		camera.position = target_camera_position  # Déplacer directement lors du premier chargement
+		camera.position = target_camera_position
 
-# Détecter les cubes uniquement quand ils passent devant la caméra
-func _check_proximity(obj: Node3D):
-	if obj in detected_cubes:
-		var distance_to_camera = camera.position.distance_to(obj.position)
+# Vérifier la proximité des sprites avec le joueur
+func _check_proximity():
+	for sprite in detected_sprites:
+		var distance = camera.position.distance_to(sprite.position)
+		if distance < detection_range:
+			var sprite_name = sprite.get_meta("name")
+			print(sprite_name, " touché !")
 
-		if distance_to_camera < 15.0:
-			var column = columns[camera_column_index]
-			var column_position = column.position
-			if abs(obj.position.x - column_position.x) < 1.0:
-				print("Cube colonne ", camera_column_index + 1, " touché !")
-				detected_cubes.erase(obj)  # Supprimer de la liste après détection unique
+			# Vérifier si l'objet est dangereux
+			if sprite_name in dangerous_sprites:
+				_take_damage()
+			
+			# Supprimer après détection
+			detected_sprites.erase(sprite)
 
+# Gestion des points de vie
+func _take_damage():
+	player_health -= 1
+	print("PV restants : ", player_health)
 
-func switchPauseMusique():
-	if musicPlaying:
-		for i:AudioStreamPlayer in $Audio/Samba.get_children():
-			musicPositionMemo = i.get_playback_position()
-			i.stop()
-	else:
-		for i:AudioStreamPlayer in $Audio/Samba.get_children():
-			i.play(musicPositionMemo)
-			AudioServer.set_bus_mute(3, true) # by default no BlocTempoBad
-	musicPlaying = !musicPlaying
-	
-		
-func switchMuteMusique():
-	musicMuted = !musicMuted
-	AudioServer.set_bus_mute(1, musicMuted)
-		
-func _unhandled_input(event):
-	if event.is_action_pressed("ToucheA"):
-		if blocTempoGood:
-			$Audio/Bruitages/BlocGood.play()
-		else:
-			$Audio/Bruitages/BlocBad.play()
-	
-	if event.is_action_pressed("mute_switch"):
-		switchMuteMusique()
-		
-	if event.is_action_pressed("pause_switch"):
-		switchPauseMusique()
-		
-	if event.is_action_pressed("bloc_tempo_switch"):
-		switchBlocTempo()
+	if player_health <= 0:
+		_game_over()
 
-func switchBlocTempo():
-	blocTempoGood = !blocTempoGood
-	AudioServer.set_bus_mute(2, !blocTempoGood)
-	AudioServer.set_bus_mute(3, blocTempoGood)
-	
+# Fin de partie
+func _game_over():
+	print("GAME OVER !")
+	get_tree().paused = true  # Met en pause le jeu
