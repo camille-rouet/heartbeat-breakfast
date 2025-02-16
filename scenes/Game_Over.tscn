@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://dnco4r60wfpdk"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer"]
+offset_left = 7.0
+offset_top = 4.0
+offset_right = 1151.0
+offset_bottom = 642.0
+
+[node name="Label" type="Label" parent="CanvasLayer/TextEdit"]
+layout_mode = 0
+offset_left = 628.0
+offset_top = 406.0
+offset_right = 668.0
+offset_bottom = 429.0
+text = "fff"
+
+[node name="Label2" type="Label" parent="CanvasLayer/TextEdit"]
+offset_left = 11.0
+offset_top = 12.0
+offset_right = 1127.0
+offset_bottom = 118.0
+text = "Game Over"
+horizontal_alignment = 1
+uppercase = true

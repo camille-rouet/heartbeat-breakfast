@@ -1,14 +1,14 @@
 extends Node3D
 
 var camera: Camera3D
-@export var object_speed : float = 5.0
+@export var object_speed : float = 5.0 # plus la valeur est haute plus les objets seronts lents
 @export var max_speed : float = 10.0
 @export var camera_speed : float = 5.0
 @export var spawn_interval : float = 2.0
-@export var detection_range : float = 3.0
-
+@export var detection_range : float = 25 #4.5
+@export var Notes : float = 0 # ne pas modifier
 # Points de vie
-var player_health := 3
+var player_health := 4
 
 # Premier set de textures
 @export var table_obs : Texture
@@ -24,13 +24,14 @@ var player_health := 3
 @export var valise : Texture
 @export var boite : Texture
 
-# Premier set de sprites
+# Premier set de spritesf
 var sprite_textures := {
-	"Table": preload("res://assets/images/tx_table.png"),
-	"Cartons": preload("res://assets/images/tx_cartons.png"),
-	"MeubleTV": preload("res://assets/images/tx_meubletv.png"),
-	"Sac": preload("res://assets/images/tx_sacspoubelles.png"),
-	"Bouteilles": preload("res://assets/images/tx_bouteilles.png")
+	#"Table": preload("res://assets/images/tx_table.png"),
+	#"Cartons": preload("res://assets/images/tx_cartons.png"),
+	#"MeubleTV": preload("res://assets/images/tx_meubletv.png"),
+	#"Sac": preload("res://assets/images/tx_sacspoubelles.png"),
+	#"Bouteilles": preload("res://assets/images/tx_bouteilles.png"),
+	"Note": preload("res://assets/images/R.png")
 }
 
 # Deuxième set de sprites
@@ -41,13 +42,18 @@ var alternate_sprite_textures := {
 	"Valise": valise,
 	"Boîte": boite
 }
+
+var bonus_sprite_textures := {
+	
+}
+
 var columns = []
 var detected_sprites = []  
 var use_alternate_sprites = false  
 
 # Sprites dangereux
-var dangerous_sprites = ["Table", "MeubleTV", "Sac"]
-
+var dangerous_sprites = ["Table", "MeubleTV", "Sac","Bouteilles","Cartons"]
+var bonus_sprites = ["Note"]
 var mainLight
 var theWorld
 
@@ -107,7 +113,12 @@ var blocTempoGood = true
 signal rhythmError
 var meanDeltaDC = 0 # ecart moyen entre input et DC
 var nInput = 0 #nombre d'input cumulé
-
+func couleurnote ():
+	var  note = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	note[0].modulate = Color(255,255,255,1)
+	note[1].modulate = Color(255,255,255,1)
+	note[2].modulate = Color(255,255,255,1)
+	note[3].modulate = Color(255,255,255,1)
 func _ready():
 	mainLight = $DirectionalLight3D
 	theWorld = $WorldEnvironment
@@ -124,7 +135,7 @@ func _ready():
 	#musiqueCible = $"Audio/Electro-tribal-beat-179094"
 	#musiqueCible.play()
 	#musicPlaying = true
-
+	couleurnote()
 	curseur = $Perso	
 
 	# Récupérer la caméra et les colonnes
@@ -280,7 +291,8 @@ func _process(delta):
 # Vérifier la proximité des sprites avec le joueur
 func _check_proximity():
 	for sprite in detected_sprites:
-		var distance = camera.position.distance_to(sprite.position)
+		var distance = curseur.position.distance_to(sprite.position)
+		#print("Distance entre", sprite.get_meta("name"), "et le curseur:", distance)
 		if distance < detection_range:
 			var sprite_name = sprite.get_meta("name")
 			print(sprite_name, " touché !")
@@ -288,19 +300,42 @@ func _check_proximity():
 			# Vérifier si l'objet est dangereux
 			if sprite_name in dangerous_sprites:
 				_take_damage()
+			if sprite_name in bonus_sprites:
+				_bonus()
 			
 			# Supprimer après détection
 			detected_sprites.erase(sprite)
-
+func _bonus():
+	print("vous avez obtenu un bonus")
+	var  notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	print(notem)
+	if Notes == 0 :
+		print("bonus 1")
+		notem[Notes].modulate = Color.hex(0x002cd8ff)
+	if Notes == 1 :
+		print("bonus 2")
+		notem[Notes].modulate = Color.hex(0x009e21ff)
+	if Notes == 2 :
+		print("bonus 3")
+		notem[Notes].modulate = Color.hex(0xecbb00ff)
+	if Notes == 3 :
+		notem[Notes].modulate = Color.hex(0xff55c8ff)
+		print("bonus 4")
+	Notes += 1
+	print("nombre de Note obtenue : ",Notes)
+	
 # Gestion des points de vie
 func _take_damage():
 	player_health -= 1
 	print("PV restants : ", player_health)
-
+	
+	var coeurs = $CanvasLayer2/MarginContainer/HBoxContainer.get_children()
+	
+	if coeurs.size() > 0:
+		coeurs[-1].queue_free()  # Supprime le dernier cœur de la liste
 	if player_health <= 0:
 		_game_over()
 
-# Fin de partie
 func _game_over():
 	print("GAME OVER !")
 	get_tree().paused = true  # Met en pause le jeu
