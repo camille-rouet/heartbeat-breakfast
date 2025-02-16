@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://k6aejxg2qidv"
+path="res://.godot/imported/cling bad #1.wav-9dd02cca43feb83a68a68d46ab3addac.sample"
+
+[deps]
+
+source_file="res://assets/audio/bruitage/cling bad #1.wav"
+dest_files=["res://.godot/imported/cling bad #1.wav-9dd02cca43feb83a68a68d46ab3addac.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
