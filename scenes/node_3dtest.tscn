@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=60 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -43,10 +43,11 @@
 [ext_resource type="Texture2D" uid="uid://gnwkv3r0rns7" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_round_circle.png" id="25_ycnpc"]
 [ext_resource type="Texture2D" uid="uid://b1chn8ucxxnje" path="res://packs/kenney-ui-pack/PNG/Red/Double/check_round_grey_circle.png" id="26_clgbc"]
 [ext_resource type="Texture2D" uid="uid://c5gh43md6jb6q" path="res://assets/images/coeur1.png" id="28_qws37"]
-[ext_resource type="Script" path="res://scripts/button.gd" id="28_rwsut"]
 [ext_resource type="Texture2D" uid="uid://d3ogkffvu85af" path="res://assets/images/R-white.png" id="30_om6co"]
 [ext_resource type="Texture2D" uid="uid://bygp7aocmlbkv" path="res://assets/images/sol/texture sol.png" id="46_j025h"]
 [ext_resource type="Texture2D" uid="uid://c2x1hhr5wtigp" path="res://assets/images/ecrans/titre.jpg" id="47_miydh"]
+[ext_resource type="Texture2D" uid="uid://bg3bocsgddh7r" path="res://assets/images/ecrans/fin_perdu.jpg" id="48_i24iv"]
+[ext_resource type="Texture2D" uid="uid://bxh47r0b0oh5b" path="res://assets/images/ecrans/fin_super.jpg" id="49_hjw07"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -116,7 +117,7 @@ uv1_scale = Vector3(25, 500, 1)
 font_names = PackedStringArray("Comic Sans MS")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fo35j"]
-bg_color = Color(0, 0, 0, 0.65098)
+bg_color = Color(0.701961, 0.298039, 0.537255, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -393,14 +394,6 @@ texture = ExtResource("22_qgwrk")
 expand_mode = 2
 stretch_mode = 4
 
-[node name="Game_Over" type="Button" parent="CanvasLayer"]
-offset_left = 865.0
-offset_top = 576.0
-offset_right = 1151.0
-offset_bottom = 651.0
-text = "Game Over"
-script = ExtResource("28_rwsut")
-
 [node name="leftPattern" type="MarginContainer" parent="CanvasLayer"]
 modulate = Color(1, 1, 1, 0.729412)
 anchors_preset = 2
@@ -632,4 +625,34 @@ theme_override_font_sizes/font_size = 60
 theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
 text = "Commencer"
 
+[node name="EndMenu" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="FinPerdu" type="Sprite2D" parent="EndMenu"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("48_i24iv")
+centered = false
+
+[node name="FinGagne" type="Sprite2D" parent="EndMenu"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("49_hjw07")
+centered = false
+
+[node name="Button" type="Button" parent="EndMenu"]
+offset_left = 371.0
+offset_top = 519.0
+offset_right = 765.0
+offset_bottom = 614.0
+theme_override_colors/font_hover_color = Color(1, 0.552941, 0.815686, 1)
+theme_override_colors/font_pressed_color = Color(1, 0, 0.764706, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 20
+theme_override_fonts/font = SubResource("SystemFont_nwvc2")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
+text = "Rejouer
+"
+
 [connection signal="pressed" from="StartMenu/Button" to="." method="lancementPartie"]
+[connection signal="pressed" from="EndMenu/Button" to="." method="lancementPartie"]

@@ -394,12 +394,19 @@ func _take_damage():
 	if coeurs.size() > 0:
 		coeurs[-1].queue_free()  # Supprime le dernier cœur de la liste
 	if player_health <= 0:
-		_game_over()
+		_game_over(false)
 
 # Fin de partie
-func _game_over():
-	print("GAME OVER !")
-	get_tree().paused = true  # Met en pause le jeu
+func _game_over(gagne:bool):
+	if gagne:
+		$EndMenu/FinPerdu.hide()
+		$EndMenu/FinPerdu.show()
+	else:
+		$EndMenu/FinPerdu.show()
+		$EndMenu/FinPerdu.hide()
+	
+	switchPauseMusique()
+	$EndMenu.show()
 
 
 func moveCursor(delta):
@@ -575,7 +582,6 @@ func switchMuteMusique():
 # Gestion des inputs
 func _unhandled_input(event):
 	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT"):
-		
 		nInput = nInput + 1
 		
 		# petit saut du perso
@@ -690,3 +696,8 @@ func updateMotif(canvaPattern, patternInput, DCInBeat = -1):
 
 func lancementPartie():
 	$StartMenu.hide()
+	$EndMenu.hide()
+	resetRhythm()
+	musicPlaying = false
+	musicMuted = false
+	switchPauseMusique()
