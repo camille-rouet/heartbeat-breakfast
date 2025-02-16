@@ -26,7 +26,7 @@ var phase = 0
 @export var canapé : Texture
 @export var valise : Texture
 @export var boite : Texture
-const SPRITE_HEIGHT = 3.4
+const SPRITE_HEIGHT = 2.6
 
 # Premier set de sprites
 var sprite_textures := {
@@ -146,7 +146,7 @@ var rightPattern:Control
 func _ready():
 	   # Timer de 60 secondes
 	switch_timer = Timer.new()
-	switch_timer.wait_time = 10
+	switch_timer.wait_time = 60
 	switch_timer.one_shot = true
 	switch_timer.autostart = true
 	switch_timer.timeout.connect(_switch_sprites)
@@ -154,11 +154,20 @@ func _ready():
 
 	# Timer de 85 secondes
 	phase_timer = Timer.new()
-	phase_timer.wait_time = 15
+	phase_timer.wait_time = 85
 	phase_timer.one_shot = true
 	phase_timer.autostart = true
 	phase_timer.timeout.connect(_set_phase_to_1)
 	add_child(phase_timer)
+	
+	phase_timer2 = Timer.new()
+	phase_timer2.wait_time = 90
+	phase_timer2.one_shot = true
+	phase_timer2.autostart = true
+	phase_timer2.timeout.connect(_set_phase_to_2)
+	add_child(phase_timer2)
+	
+	
 	
 	couleurnote()
 	leftPattern = $CanvasLayer/leftPattern/HBoxContainer
@@ -222,7 +231,7 @@ func _ready():
 
 var switch_timer: Timer
 var phase_timer: Timer
-
+var phase_timer2: Timer
  
 
 func _switch_sprites():
@@ -234,7 +243,9 @@ func _switch_sprites():
 func _set_phase_to_1():
 	phase = 1
 	print("Phase is now: ", phase)
-
+func _set_phase_to_2():
+	phase = 2
+	print("Phase is now: ", phase)
 	
 	# Affichage du motif de gauche
 	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
@@ -283,6 +294,10 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
+	
+	new_sprite.scale.x = .6
+	new_sprite.scale.y = .6
+	new_sprite.scale.z = .6
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
