@@ -603,28 +603,6 @@ transform = Transform3D(1, 4.41105e-11, 0, -6.7871e-10, 1, 5.82077e-10, 0, 4.656
 mesh = SubResource("PlaneMesh_d4ad5")
 surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
 
-[node name="StartMenu" type="CanvasLayer" parent="."]
-
-[node name="Sprite2D" type="Sprite2D" parent="StartMenu"]
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("46_cvlv3")
-centered = false
-
-[node name="Button" type="Button" parent="StartMenu"]
-offset_left = 143.0
-offset_top = 450.0
-offset_right = 537.0
-offset_bottom = 545.0
-theme_override_colors/font_hover_color = Color(1, 0.552941, 0.815686, 1)
-theme_override_colors/font_pressed_color = Color(1, 0, 0.764706, 1)
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 20
-theme_override_fonts/font = SubResource("SystemFont_nwvc2")
-theme_override_font_sizes/font_size = 60
-theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
-text = "Commencer"
-
 [node name="EndMenu" type="CanvasLayer" parent="."]
 visible = false
 
@@ -654,5 +632,38 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
 text = "Rejouer
 "
 
-[connection signal="pressed" from="StartMenu/Button" to="." method="lancementPartie"]
+[node name="Marker2D" type="Marker2D" parent="EndMenu"]
+position = Vector2(32, 559)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="EndMenu"]
+offset_left = 126.0
+offset_top = 524.0
+offset_right = 298.0
+offset_bottom = 594.0
+theme_override_font_sizes/normal_font_size = 30
+text = "Score"
+
+[node name="StartMenu" type="CanvasLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="StartMenu"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("46_cvlv3")
+centered = false
+
+[node name="Button" type="Button" parent="StartMenu"]
+offset_left = 143.0
+offset_top = 450.0
+offset_right = 537.0
+offset_bottom = 545.0
+theme_override_colors/font_hover_color = Color(1, 0.552941, 0.815686, 1)
+theme_override_colors/font_pressed_color = Color(1, 0, 0.764706, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 20
+theme_override_fonts/font = SubResource("SystemFont_nwvc2")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
+text = "Commencer"
+
 [connection signal="pressed" from="EndMenu/Button" to="." method="lancementPartie"]
+[connection signal="pressed" from="StartMenu/Button" to="." method="lancementPartie"]

@@ -9,7 +9,11 @@ var camera: Camera3D
 @export var Notes : float = 0 # ne pas modifier
 var dificult = 0
 var time_counter = 0.0
+<<<<<<< HEAD
 
+=======
+# Points de vie
+>>>>>>> 7eb866a163d324dde4380859c25484a123ca0116
 var player_health := 4
 const BASE_HEALTH = 4
 var phase = 0
@@ -26,7 +30,7 @@ var phase = 0
 @export var canapé : Texture
 @export var valise : Texture
 @export var boite : Texture
-const SPRITE_HEIGHT = 3.4
+const SPRITE_HEIGHT = 2.6
 
 # Premier set de sprites
 var sprite_textures := {
@@ -129,7 +133,6 @@ var meanDeltaDC = 0 # ecart moyen entre input et DC
 var nInput = 0 #nombre d'input cumulé
 
 var sol:MeshInstance3D
-var solSpeed = 10 # in m/s
 
 func couleurnote ():
 	var  note = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
@@ -309,12 +312,19 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
+<<<<<<< HEAD
 
 	new_sprite.position.y += 0
 
 	# 🔹 Redimensionner le sprite 🔹
 	new_sprite.scale = Vector3(0.5, 0.5, 0.5)  # Ajuste la taille à 50%
 
+=======
+	
+	new_sprite.scale.x = .6
+	new_sprite.scale.y = .6
+	new_sprite.scale.z = .6
+>>>>>>> 7eb866a163d324dde4380859c25484a123ca0116
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -453,6 +463,12 @@ func _check_proximity():
 			# Supprimer après détection
 			detected_sprites.erase(sprite)
 
+func resetBonus():
+	Notes = 0
+	var notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	for note:TextureRect in notem:
+		note.modulate = Color.WHITE
+
 func _bonus():
 	print("vous avez obtenu un bonus")
 	var  notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
@@ -487,12 +503,19 @@ func _take_damage():
 	player_health -= 1
 	print("PV restants : ", player_health)
 	
-	var coeurs = $CanvasLayer2/MarginContainer/HBoxContainer.get_children()
+	updateCoeur()
 	
-	if coeurs.size() > 0:
-		coeurs[-1].queue_free()  # Supprime le dernier cœur de la liste
 	if player_health <= 0:
 		_game_over(false)
+
+func updateCoeur():
+	var coeurs = $CanvasLayer2/MarginContainer/HBoxContainer.get_children()
+	
+	for i in range(BASE_HEALTH):
+		if (i+1) <= player_health:
+			coeurs[i].show()
+		else:
+			coeurs[i].hide()
 
 # Fin de partie
 func _game_over(gagne:bool):
@@ -503,7 +526,10 @@ func _game_over(gagne:bool):
 		$EndMenu/FinPerdu.show()
 		$EndMenu/FinGagne.hide()
 	
-	switchPauseMusique()
+	$CanvasLayer3.offset = Vector2(-400,0)
+	$CanvasLayer3.layer = 128
+	
+	stopMusique()
 	$EndMenu.show()
 
 
@@ -659,17 +685,30 @@ func resetRhythm():
 	
 # # # # # # METHODES AUDIO
 
-func switchPauseMusique():
+func stopMusique():
 	if musicPlaying:
 		for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
 			musicPositionMemo = i.get_playback_position()
 			i.stop()
-	else:
-		for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
-			i.play(musicPositionMemo)
-			
-		resetRhythm()
-	musicPlaying = !musicPlaying
+	musicPlaying = false
+
+func launchMusique():
+	#if musicPlaying:
+		#for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
+			#musicPositionMemo = i.get_playback_position()
+			#i.stop()
+	for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
+		i.play()
+	
+	audioGainCuica.volume_db = -80
+	audioGainGuitare1.volume_db = -80
+	audioGainGuitare2.volume_db = -80
+	audioGainPiano.volume_db = -80
+	audioGainSynth.volume_db = -80
+	
+	resetRhythm()
+	musicPlaying = true
+
 
 
 func switchMuteMusique():
@@ -799,5 +838,9 @@ func lancementPartie():
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
-	switchPauseMusique()
+	launchMusique()
 	player_health = BASE_HEALTH
+	updateCoeur()
+	resetBonus()
+	$CanvasLayer3.offset = Vector2(400,-550)
+	$CanvasLayer3.layer = 1
