@@ -19,6 +19,7 @@ offset_bottom = 429.0
 text = "fff"
 
 [node name="Label2" type="Label" parent="CanvasLayer/TextEdit"]
+layout_mode = 0
 offset_left = 11.0
 offset_top = 12.0
 offset_right = 1127.0

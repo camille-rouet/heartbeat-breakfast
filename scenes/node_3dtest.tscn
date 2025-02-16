@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=44 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -6,25 +6,32 @@
 [ext_resource type="Script" path="res://addons/rhythm_notifier/rhythm_notifier.gd" id="4_6ahyy"]
 [ext_resource type="AudioStream" uid="uid://u4qw55jd38xj" path="res://assets/audio/musiques/Don Omar - Danza Kuduro REMIX.mp3" id="5_7076j"]
 [ext_resource type="AudioStream" uid="uid://c60g07hkagivh" path="res://assets/audio/musiques/electro-tribal-beat-179094.mp3" id="6_ewmxh"]
-[ext_resource type="AudioStream" uid="uid://36geufm6piii" path="res://assets/audio/musiques/etienne/Basse Samba.wav" id="7_1gcpr"]
-[ext_resource type="AudioStream" uid="uid://wr4i51ksikon" path="res://assets/audio/musiques/etienne/Bloc Tempo Bad.wav" id="8_noht7"]
-[ext_resource type="AudioStream" uid="uid://b28j2ej6ydwlt" path="res://assets/audio/musiques/etienne/Bloc Tempo Good.wav" id="9_8e4ap"]
-[ext_resource type="AudioStream" uid="uid://c6ymd1katbp0o" path="res://assets/audio/musiques/etienne/Cuica (lol).wav" id="10_05x4r"]
-[ext_resource type="AudioStream" uid="uid://dabgfjejmg8ju" path="res://assets/audio/musiques/etienne/Guitare samba.wav" id="11_2k6fo"]
-[ext_resource type="AudioStream" uid="uid://ct3n2k0wvevd1" path="res://assets/audio/musiques/etienne/Percussions.wav" id="12_eglaj"]
-[ext_resource type="AudioStream" uid="uid://brtnnbop7ub0j" path="res://assets/audio/musiques/etienne/Piano Samba.wav" id="13_cf681"]
-[ext_resource type="AudioStream" uid="uid://bq24noktsaky" path="res://assets/audio/musiques/etienne/Synth #1.wav" id="14_sxpin"]
+[ext_resource type="AudioStream" uid="uid://36geufm6piii" path="res://assets/audio/musiques/samba95bpm/Basse Samba.wav" id="7_1gcpr"]
+[ext_resource type="AudioStream" uid="uid://wr4i51ksikon" path="res://assets/audio/musiques/samba95bpm/Bloc Tempo Bad.wav" id="8_noht7"]
+[ext_resource type="AudioStream" uid="uid://b28j2ej6ydwlt" path="res://assets/audio/musiques/samba95bpm/Bloc Tempo Good.wav" id="9_8e4ap"]
+[ext_resource type="AudioStream" uid="uid://c6ymd1katbp0o" path="res://assets/audio/musiques/samba95bpm/Cuica (lol).wav" id="10_05x4r"]
+[ext_resource type="AudioStream" uid="uid://dabgfjejmg8ju" path="res://assets/audio/musiques/samba95bpm/Guitare samba.wav" id="11_2k6fo"]
+[ext_resource type="AudioStream" uid="uid://ct3n2k0wvevd1" path="res://assets/audio/musiques/samba95bpm/Percussions.wav" id="12_eglaj"]
+[ext_resource type="AudioStream" uid="uid://brtnnbop7ub0j" path="res://assets/audio/musiques/samba95bpm/Piano Samba.wav" id="13_cf681"]
+[ext_resource type="AudioStream" uid="uid://bq24noktsaky" path="res://assets/audio/musiques/samba95bpm/Synth #1.wav" id="14_sxpin"]
 [ext_resource type="AudioStream" uid="uid://bn7860b8scrd4" path="res://assets/audio/bruitage/BlocBad.wav" id="15_jsuxj"]
 [ext_resource type="AudioStream" uid="uid://bmy7ls3lhbcx6" path="res://assets/audio/bruitage/BlocGood.wav" id="16_ko30s"]
 [ext_resource type="Texture2D" uid="uid://cxfg4q843v2yh" path="res://assets/images/tx_table.png" id="17_bsopk"]
 [ext_resource type="Texture2D" uid="uid://dfiprcefj545r" path="res://assets/images/tx_cartons.png" id="18_2kplr"]
+[ext_resource type="AudioStream" uid="uid://cm416c82n5mte" path="res://assets/audio/musiques/samba85bpm/Basse Samba.wav" id="19_fmlc5"]
 [ext_resource type="Texture2D" uid="uid://bp03let0bv16y" path="res://assets/images/tx_meubletv.png" id="19_q5wht"]
 [ext_resource type="Texture2D" uid="uid://cf1tyd51c5iki" path="res://assets/images/tx_sacspoubelles.png" id="20_ej1r7"]
+[ext_resource type="AudioStream" uid="uid://b517iav585qr4" path="res://assets/audio/musiques/samba85bpm/Cuica (lol).wav" id="20_hui5p"]
 [ext_resource type="Texture2D" uid="uid://burw7e21nr7yl" path="res://assets/images/tx_bouteilles.png" id="21_5ibvl"]
+[ext_resource type="AudioStream" uid="uid://btdhhl5u481wc" path="res://assets/audio/musiques/samba85bpm/Guitare #2.wav" id="21_becn2"]
 [ext_resource type="Script" path="res://scripts/canvas_layer.gd" id="22_cpp5j"]
+[ext_resource type="AudioStream" uid="uid://2blpuudl7u7p" path="res://assets/audio/musiques/samba85bpm/Guitare samba.wav" id="22_cyqwg"]
 [ext_resource type="Texture2D" uid="uid://cst4q81ss65a5" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_color.png" id="22_qgwrk"]
 [ext_resource type="Texture2D" uid="uid://csacbx5y3r5s6" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_grey.png" id="23_exmks"]
+[ext_resource type="AudioStream" uid="uid://odnow7btmmc0" path="res://assets/audio/musiques/samba85bpm/Percussions.wav" id="23_rgik8"]
+[ext_resource type="AudioStream" uid="uid://c0xu76yx06rfb" path="res://assets/audio/musiques/samba85bpm/Piano Samba.wav" id="24_si7w5"]
 [ext_resource type="Texture2D" uid="uid://c2r4sia63jdlc" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_grey_circle.png" id="24_xjfwg"]
+[ext_resource type="AudioStream" uid="uid://crwcjp5tvk0aq" path="res://assets/audio/musiques/samba85bpm/Synth #1.wav" id="25_lacsd"]
 [ext_resource type="Texture2D" uid="uid://gnwkv3r0rns7" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_round_circle.png" id="25_ycnpc"]
 [ext_resource type="Texture2D" uid="uid://b1chn8ucxxnje" path="res://packs/kenney-ui-pack/PNG/Red/Double/check_round_grey_circle.png" id="26_clgbc"]
 [ext_resource type="Texture2D" uid="uid://c5gh43md6jb6q" path="res://assets/images/coeur1.png" id="28_qws37"]
@@ -45,6 +52,9 @@ reflected_light_source = 1
 [sub_resource type="BoxMesh" id="BoxMesh_ceq4n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_tg8jn"]
+
+[sub_resource type="SystemFont" id="SystemFont_akqv3"]
+font_names = PackedStringArray("Calibri")
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
@@ -140,38 +150,69 @@ stream = ExtResource("9_8e4ap")
 
 [node name="Audio" type="Node" parent="."]
 
-[node name="Samba" type="Node" parent="Audio"]
+[node name="Samba95" type="Node" parent="Audio"]
 
-[node name="BasseSamba" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="BasseSamba" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("7_1gcpr")
 bus = &"MusiqueEtienne1"
 
-[node name="BlocTempoBad" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="BlocTempoBad" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("8_noht7")
 bus = &"BlocTempoBad"
 
-[node name="BlocTempoGood" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="BlocTempoGood" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("9_8e4ap")
 bus = &"BlocTempoGood"
 
-[node name="Cuica(lol)" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="Cuica(lol)" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("10_05x4r")
 bus = &"Cuica"
 
-[node name="GuitareSamba" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="GuitareSamba" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("11_2k6fo")
 bus = &"GuitareSamba"
 
-[node name="Percussions" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="Percussions" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("12_eglaj")
 bus = &"MusiqueEtienne1"
 
-[node name="PianoSamba" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="PianoSamba" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("13_cf681")
 bus = &"PianoSamba"
 
-[node name="Synth#1" type="AudioStreamPlayer" parent="Audio/Samba"]
+[node name="Synth#1" type="AudioStreamPlayer" parent="Audio/Samba95"]
 stream = ExtResource("14_sxpin")
+bus = &"Synth"
+
+[node name="Samba85" type="Node" parent="Audio"]
+
+[node name="BasseSamba" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("19_fmlc5")
+bus = &"MusiqueEtienne1"
+
+[node name="Cuica(lol)" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("20_hui5p")
+bus = &"Cuica"
+
+[node name="Guitare#2" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("21_becn2")
+bus = &"Guitare2"
+
+[node name="GuitareSamba" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("22_cyqwg")
+bus = &"GuitareSamba"
+
+[node name="Percussions" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("23_rgik8")
+volume_db = 6.0
+bus = &"MusiqueEtienne1"
+
+[node name="PianoSamba" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("24_si7w5")
+bus = &"PianoSamba"
+
+[node name="Synth#1" type="AudioStreamPlayer" parent="Audio/Samba85"]
+stream = ExtResource("25_lacsd")
 bus = &"Synth"
 
 [node name="Bruitages" type="Node" parent="Audio"]
@@ -212,7 +253,8 @@ textureDCpassage = ExtResource("24_xjfwg")
 textureDCreussite = ExtResource("25_ycnpc")
 textureDCrate = ExtResource("26_clgbc")
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+[node name="currentPattern" type="MarginContainer" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.72549)
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -226,31 +268,31 @@ grow_vertical = 0
 theme_override_constants/margin_top = 30
 theme_override_constants/margin_bottom = 30
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/currentPattern"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 30
 
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/currentPattern/HBoxContainer"]
 layout_mode = 2
 texture = ExtResource("22_qgwrk")
 expand_mode = 2
 stretch_mode = 4
 
-[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/currentPattern/HBoxContainer"]
 layout_mode = 2
 texture = ExtResource("22_qgwrk")
 expand_mode = 2
 stretch_mode = 4
 
-[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/currentPattern/HBoxContainer"]
 layout_mode = 2
 texture = ExtResource("22_qgwrk")
 expand_mode = 2
 stretch_mode = 4
 
-[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/MarginContainer/HBoxContainer"]
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/currentPattern/HBoxContainer"]
 layout_mode = 2
 texture = ExtResource("22_qgwrk")
 expand_mode = 2
@@ -263,6 +305,110 @@ offset_right = 1151.0
 offset_bottom = 651.0
 text = "Game Over"
 script = ExtResource("28_rwsut")
+
+[node name="leftPattern" type="MarginContainer" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.729412)
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+offset_right = 280.0
+grow_vertical = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/leftPattern"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 0.654902)
+theme_override_fonts/normal_font = SubResource("SystemFont_akqv3")
+theme_override_font_sizes/normal_font_size = 35
+text = "classic"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/leftPattern"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_constants/separation = 15
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/leftPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/leftPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/leftPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/leftPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="rightPattern" type="MarginContainer" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.729412)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -100.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/rightPattern"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 0.654902)
+theme_override_fonts/normal_font = SubResource("SystemFont_akqv3")
+theme_override_font_sizes/normal_font_size = 35
+text = "samba"
+text_direction = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/rightPattern"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_constants/separation = 30
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/rightPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/rightPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/rightPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/rightPattern/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("22_qgwrk")
+expand_mode = 2
+stretch_mode = 4
 
 [node name="CanvasLayer2" type="CanvasLayer" parent="."]
 offset = Vector2(-400, -550)
