@@ -9,13 +9,9 @@ var camera: Camera3D
 @export var Notes : float = 0 # ne pas modifier
 var dificult = 0
 var time_counter = 0.0
-# Points de vie
-<<<<<<< HEAD
-var player_health := 90
-=======
+
 var player_health := 4
 const BASE_HEALTH = 4
->>>>>>> 2fddd31377aa3106b4f2efcfc17c939774007ee2
 var phase = 0
 # Premier set de textures
 @export var table_obs : Texture
@@ -150,7 +146,7 @@ var rightPattern:Control
 func _ready():
 	   # Timer de 60 secondes
 	switch_timer = Timer.new()
-	switch_timer.wait_time = 60
+	switch_timer.wait_time = 30
 	switch_timer.one_shot = true
 	switch_timer.autostart = true
 	switch_timer.timeout.connect(_switch_sprites)
@@ -158,18 +154,25 @@ func _ready():
 
 	# Timer de 85 secondes
 	phase_timer = Timer.new()
-	phase_timer.wait_time = 85
+	phase_timer.wait_time = 45
 	phase_timer.one_shot = true
 	phase_timer.autostart = true
 	phase_timer.timeout.connect(_set_phase_to_1)
 	add_child(phase_timer)
 	
 	phase_timer2 = Timer.new()
-	phase_timer2.wait_time = 90
+	phase_timer2.wait_time = 60
 	phase_timer2.one_shot = true
 	phase_timer2.autostart = true
 	phase_timer2.timeout.connect(_set_phase_to_2)
 	add_child(phase_timer2)
+	
+	win_timer = Timer.new()
+	win_timer.wait_time = 70
+	win_timer.one_shot = true
+	win_timer.autostart = true
+	win_timer.timeout.connect(_set_win)
+	add_child(win_timer)
 	
 	
 	
@@ -236,7 +239,7 @@ func _ready():
 var switch_timer: Timer
 var phase_timer: Timer
 var phase_timer2: Timer
- 
+var win_timer : Timer
 
 func _switch_sprites():
 	# Code pour changer les sprites
@@ -247,10 +250,15 @@ func _switch_sprites():
 func _set_phase_to_1():
 	phase = 1
 	print("Phase is now: ", phase)
+func _set_win():
+	if player_health >0 :
+		print("bravo vous êtes arrivée a la fin ")
+		_game_over(true)
+		
 func _set_phase_to_2():
 	phase = 2
 	print("Phase is now: ", phase)
-	
+
 	# Affichage du motif de gauche
 	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
 	# Affichage du motif de droite
@@ -261,11 +269,14 @@ func _set_phase_to_2():
 
 # Générer un sprite
 func _generate_sprite():
+	if columns.size() == 0:
+		print("⚠️ Erreur: 'columns' est vide, impossible de générer un sprite.")
+		return
+
 	var rand_column = randi() % columns.size()
 	var column = columns[rand_column]  
 	var start_pos = column.get_node("Start").global_position
 	var end_pos = column.get_node("End").global_position
-	
 	
 	start_pos.y += SPRITE_HEIGHT
 	end_pos.y += SPRITE_HEIGHT
@@ -273,13 +284,13 @@ func _generate_sprite():
 	var new_sprite = Sprite3D.new()
 	
 	# Initialisation de sprite_list
-	var sprite_list = {}  # Crée un dictionnaire vide
+	var sprite_list = {} 
 	
 	if phase == 0:
 		sprite_list = sprite_textures
 	elif phase == 1:
-		sprite_list = sprite_textures.duplicate(true)  # Crée une copie de sprite_textures
-		sprite_list.merge(alternate_sprite_textures)  # Fusionne avec alternate_sprite_textures
+		sprite_list = sprite_textures.duplicate(true)
+		sprite_list.merge(alternate_sprite_textures)
 	elif phase == 2:
 		sprite_list = alternate_sprite_textures
 
@@ -298,15 +309,12 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
-<<<<<<< HEAD
-	new_sprite.position.y += 3
-	new_sprite.scale.x = .6
-	new_sprite.scale.y = .6
-	new_sprite.scale.z = .6
-	
-	
-=======
->>>>>>> 2fddd31377aa3106b4f2efcfc17c939774007ee2
+
+	new_sprite.position.y += 0
+
+	# 🔹 Redimensionner le sprite 🔹
+	new_sprite.scale = Vector3(0.5, 0.5, 0.5)  # Ajuste la taille à 50%
+
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -314,7 +322,6 @@ func _generate_sprite():
 	var distance = start_pos.distance_to(end_pos)
 
 	# Définir la vitesse (en unités par seconde)
-	# Par exemple, une vitesse arbitraire de 10 unités par seconde
 	var object_speed = 10.0
 
 	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
@@ -325,6 +332,7 @@ func _generate_sprite():
 	tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
 	tween.tween_callback(new_sprite.queue_free)
 	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
+
 
 
 
