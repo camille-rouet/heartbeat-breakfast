@@ -11,7 +11,7 @@ var dificult = 0
 var time_counter = 0.0
 # Points de vie
 var player_health := 99999
-
+var phase = 0
 # Premier set de textures
 @export var table_obs : Texture
 @export var cartons : Texture
@@ -25,6 +25,7 @@ var player_health := 99999
 @export var canapé : Texture
 @export var valise : Texture
 @export var boite : Texture
+const SPRITE_HEIGHT = 3.4
 
 # Premier set de sprites
 var sprite_textures := {
@@ -142,6 +143,22 @@ var centralCurrentPattern:Control
 var rightPattern:Control
 
 func _ready():
+	   # Timer de 60 secondes
+	switch_timer = Timer.new()
+	switch_timer.wait_time = 10
+	switch_timer.one_shot = true
+	switch_timer.autostart = true
+	switch_timer.timeout.connect(_switch_sprites)
+	add_child(switch_timer)
+
+	# Timer de 85 secondes
+	phase_timer = Timer.new()
+	phase_timer.wait_time = 15
+	phase_timer.one_shot = true
+	phase_timer.autostart = true
+	phase_timer.timeout.connect(_set_phase_to_1)
+	add_child(phase_timer)
+	
 	couleurnote()
 	leftPattern = $CanvasLayer/leftPattern/HBoxContainer
 	centralCurrentPattern = $CanvasLayer/currentPattern/HBoxContainer
@@ -201,12 +218,22 @@ func _ready():
 	add_child(spawn_timer)
 
 	# Timer pour changer les sprites après 60s
-	var switch_timer = Timer.new()
-	switch_timer.wait_time = 60.0
-	switch_timer.one_shot = true
-	switch_timer.autostart = true
-	switch_timer.timeout.connect(_switch_sprites)
-	add_child(switch_timer)
+
+var switch_timer: Timer
+var phase_timer: Timer
+
+ 
+
+func _switch_sprites():
+	# Code pour changer les sprites
+	if phase == 1 :
+		print("entrée dans la phase 1")
+	pass
+
+func _set_phase_to_1():
+	phase = 1
+	print("Phase is now: ", phase)
+
 	
 	# Affichage du motif de gauche
 	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
@@ -215,8 +242,6 @@ func _ready():
 		
 
 # Changer la liste des sprites après 60 secondes
-func _switch_sprites():
-	use_alternate_sprites = true
 
 # Générer un sprite
 func _generate_sprite():
@@ -225,8 +250,23 @@ func _generate_sprite():
 	var start_pos = column.get_node("Start").global_position
 	var end_pos = column.get_node("End").global_position
 	
+	
+	start_pos.y += SPRITE_HEIGHT
+	end_pos.y += SPRITE_HEIGHT
+	
 	var new_sprite = Sprite3D.new()
-	var sprite_list = alternate_sprite_textures if use_alternate_sprites else sprite_textures
+	
+	# Initialisation de sprite_list
+	var sprite_list = {}  # Crée un dictionnaire vide
+	
+	if phase == 0:
+		sprite_list = sprite_textures
+	elif phase == 1:
+		sprite_list = sprite_textures.duplicate(true)  # Crée une copie de sprite_textures
+		sprite_list.merge(alternate_sprite_textures)  # Fusionne avec alternate_sprite_textures
+	elif phase == 2:
+		sprite_list = alternate_sprite_textures
+
 	var keys = sprite_list.keys()
 	var rand_key = keys[randi() % keys.size()]
 	var rand_texture = sprite_list[rand_key]
@@ -242,7 +282,6 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
-	new_sprite.position.y += 3
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -250,7 +289,8 @@ func _generate_sprite():
 	var distance = start_pos.distance_to(end_pos)
 
 	# Définir la vitesse (en unités par seconde)
-	 
+	# Par exemple, une vitesse arbitraire de 10 unités par seconde
+	var object_speed = 10.0
 
 	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
 	var duration = distance / object_speed
@@ -260,6 +300,7 @@ func _generate_sprite():
 	tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
 	tween.tween_callback(new_sprite.queue_free)
 	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
+
 
 
 
@@ -338,7 +379,7 @@ func _process(delta):
 		
 	moveCursor(delta)
 	var material:StandardMaterial3D = sol.get_surface_override_material(0)
-	material.uv1_offset.y = material.uv1_offset.y - delta * solSpeed
+	material.uv1_offset.y = material.uv1_offset.y - delta * object_speed
 	#if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
 		#camera_column_index -= 1
 		#_align_camera_to_column()
