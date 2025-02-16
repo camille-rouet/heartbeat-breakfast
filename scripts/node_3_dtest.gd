@@ -5,7 +5,7 @@ var camera: Camera3D
 @export var max_speed : float = 10.0
 @export var camera_speed : float = 5.0
 @export var spawn_interval : float = 2.0
-@export var detection_range : float = 4.5 #4.5
+@export var detection_range : float = 4 #4.5
 @export var Notes : float = 0 # ne pas modifier
 var dificult = 0
 var time_counter = 0.0
@@ -145,27 +145,39 @@ var rightPattern:Control
 func _ready():
 	   # Timer de 60 secondes
 	switch_timer = Timer.new()
-	switch_timer.wait_time = 60
+	switch_timer.wait_time = 30
 	switch_timer.one_shot = true
-	switch_timer.autostart = true
+	switch_timer.autostart = false
 	switch_timer.timeout.connect(_switch_sprites)
 	add_child(switch_timer)
 
 	# Timer de 85 secondes
 	phase_timer = Timer.new()
-	phase_timer.wait_time = 85
+	phase_timer.wait_time = 45
 	phase_timer.one_shot = true
-	phase_timer.autostart = true
+	phase_timer.autostart = false
 	phase_timer.timeout.connect(_set_phase_to_1)
 	add_child(phase_timer)
 	
 	phase_timer2 = Timer.new()
-	phase_timer2.wait_time = 90
+	phase_timer2.wait_time = 60
 	phase_timer2.one_shot = true
-	phase_timer2.autostart = true
+	phase_timer2.autostart = false
 	phase_timer2.timeout.connect(_set_phase_to_2)
 	add_child(phase_timer2)
 	
+	win_timer = Timer.new()
+	win_timer.wait_time = 70
+	win_timer.one_shot = true
+	win_timer.autostart = false
+	win_timer.timeout.connect(_set_win)
+	add_child(win_timer)
+	# Timer pour la génération des sprites (toutes les 2s)
+	spawn_timer = Timer.new()
+	spawn_timer.wait_time = spawn_interval
+	spawn_timer.autostart = false
+	spawn_timer.timeout.connect(_generate_sprite)
+	add_child(spawn_timer)
 	
 	
 	couleurnote()
@@ -219,20 +231,15 @@ func _ready():
 	## Position initiale de la caméra
 	#_align_camera_to_column(true)
 
-	# Timer pour la génération des sprites (toutes les 2s)
-	var spawn_timer = Timer.new()
-	spawn_timer.wait_time = spawn_interval
-	spawn_timer.autostart = true
-	spawn_timer.timeout.connect(_generate_sprite)
-	add_child(spawn_timer)
+	
 
 	# Timer pour changer les sprites après 60s
 
 var switch_timer: Timer
 var phase_timer: Timer
 var phase_timer2: Timer
- 
-
+var win_timer : Timer
+var spawn_timer :Timer
 func _switch_sprites():
 	# Code pour changer les sprites
 	if phase == 1 :
@@ -242,10 +249,15 @@ func _switch_sprites():
 func _set_phase_to_1():
 	phase = 1
 	print("Phase is now: ", phase)
+func _set_win():
+	if player_health >0 :
+		print("bravo vous êtes arrivée a la fin ")
+		_game_over(true)
+		
 func _set_phase_to_2():
 	phase = 2
 	print("Phase is now: ", phase)
-	
+
 	# Affichage du motif de gauche
 	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
 	# Affichage du motif de droite
@@ -256,11 +268,14 @@ func _set_phase_to_2():
 
 # Générer un sprite
 func _generate_sprite():
+	if columns.size() == 0:
+		print("⚠️ Erreur: 'columns' est vide, impossible de générer un sprite.")
+		return
+
 	var rand_column = randi() % columns.size()
 	var column = columns[rand_column]  
 	var start_pos = column.get_node("Start").global_position
 	var end_pos = column.get_node("End").global_position
-	
 	
 	start_pos.y += SPRITE_HEIGHT
 	end_pos.y += SPRITE_HEIGHT
@@ -268,13 +283,13 @@ func _generate_sprite():
 	var new_sprite = Sprite3D.new()
 	
 	# Initialisation de sprite_list
-	var sprite_list = {}  # Crée un dictionnaire vide
+	var sprite_list = {} 
 	
 	if phase == 0:
 		sprite_list = sprite_textures
 	elif phase == 1:
-		sprite_list = sprite_textures.duplicate(true)  # Crée une copie de sprite_textures
-		sprite_list.merge(alternate_sprite_textures)  # Fusionne avec alternate_sprite_textures
+		sprite_list = sprite_textures.duplicate(true)
+		sprite_list.merge(alternate_sprite_textures)
 	elif phase == 2:
 		sprite_list = alternate_sprite_textures
 
@@ -293,10 +308,7 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
-	
-	new_sprite.scale.x = .6
-	new_sprite.scale.y = .6
-	new_sprite.scale.z = .6
+	new_sprite.scale = Vector3(0.5, 0.5, 0.5)  # Ajuste la taille à 50%
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -304,7 +316,6 @@ func _generate_sprite():
 	var distance = start_pos.distance_to(end_pos)
 
 	# Définir la vitesse (en unités par seconde)
-	# Par exemple, une vitesse arbitraire de 10 unités par seconde
 	var object_speed = 10.0
 
 	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
@@ -315,6 +326,7 @@ func _generate_sprite():
 	tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
 	tween.tween_callback(new_sprite.queue_free)
 	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
+
 
 
 
@@ -420,6 +432,7 @@ func _process(delta):
 # Vérifier la proximité des sprites avec le joueur
 func _check_proximity():
 	for sprite in detected_sprites:
+		
 		var distance = curseur.position.distance_to(sprite.position)
 		#print("Distance entre", sprite.get_meta("name"), "et le curseur:", distance)
 		if distance < detection_range:
@@ -472,6 +485,7 @@ func _bonus():
 	
 # Gestion des points de vie
 func _take_damage():
+	$"ExplRealExplosion1(id1807)Ls".play()
 	player_health -= 1
 	print("PV restants : ", player_health)
 	
@@ -500,6 +514,11 @@ func _game_over(gagne:bool):
 	
 	$CanvasLayer3.offset = Vector2(-400,0)
 	$CanvasLayer3.layer = 128
+	spawn_timer.stop()
+	switch_timer.stop()
+	phase_timer.stop()
+	phase_timer2.stop()
+	win_timer.stop()
 	
 	stopMusique()
 	$EndMenu.show()
@@ -802,14 +821,26 @@ func updateMotif(canvaPattern, patternInput, DCInBeat = -1):
 				textRect.texture = get_node_and_resource("CanvasLayer:textureDCrate")[1]
 		index = index + 1
 
-
+func menuIntro():
+	$StartMenu.hide()
+	$IntroMenu.show()
 
 func lancementPartie():
 	$StartMenu.hide()
+	$IntroMenu.hide()
 	$EndMenu.hide()
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
+	spawn_timer.start()
+	switch_timer.start()
+	phase_timer.start()
+	phase_timer2.start()
+	win_timer.start()
+	dificult = 0
+	object_speed = 5.0
+	spawn_interval = 2.0
+	
 	launchMusique()
 	player_health = BASE_HEALTH
 	updateCoeur()

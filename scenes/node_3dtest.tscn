@@ -1,4 +1,4 @@
-[gd_scene load_steps=60 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=62 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -45,8 +45,10 @@
 [ext_resource type="Texture2D" uid="uid://c5gh43md6jb6q" path="res://assets/images/coeur1.png" id="28_qws37"]
 [ext_resource type="Texture2D" uid="uid://d3ogkffvu85af" path="res://assets/images/R-white.png" id="30_om6co"]
 [ext_resource type="Texture2D" uid="uid://jg3axe8odmiw" path="res://assets/images/ecrans/ecrans_titre.png" id="46_cvlv3"]
+[ext_resource type="AudioStream" uid="uid://bq2y8tc75rchj" path="res://assets/audio/bruitage/EXPLReal_Explosion 1 (ID 1807)_LS.wav" id="46_eb6qm"]
 [ext_resource type="Texture2D" uid="uid://bygp7aocmlbkv" path="res://assets/images/sol/texture sol.png" id="46_j025h"]
 [ext_resource type="Texture2D" uid="uid://bg3bocsgddh7r" path="res://assets/images/ecrans/fin_perdu.jpg" id="48_i24iv"]
+[ext_resource type="Texture2D" uid="uid://du120c32sb5j" path="res://assets/images/ecrans/ecrans_intro.png" id="49_8ajrv"]
 [ext_resource type="Texture2D" uid="uid://bxh47r0b0oh5b" path="res://assets/images/ecrans/fin_super.jpg" id="49_hjw07"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
@@ -603,6 +605,11 @@ transform = Transform3D(1, 4.41105e-11, 0, -6.7871e-10, 1, 5.82077e-10, 0, 4.656
 mesh = SubResource("PlaneMesh_d4ad5")
 surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
 
+[node name="ExplRealExplosion1(id1807)Ls" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("46_eb6qm")
+volume_db = 16.0
+pitch_scale = 0.75
+
 [node name="EndMenu" type="CanvasLayer" parent="."]
 visible = false
 
@@ -643,6 +650,28 @@ offset_bottom = 594.0
 theme_override_font_sizes/normal_font_size = 30
 text = "Score"
 
+[node name="IntroMenu" type="CanvasLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="IntroMenu"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("49_8ajrv")
+centered = false
+
+[node name="Button" type="Button" parent="IntroMenu"]
+offset_left = 647.0
+offset_top = 40.0
+offset_right = 1031.0
+offset_bottom = 125.0
+theme_override_colors/font_hover_color = Color(1, 0.552941, 0.815686, 1)
+theme_override_colors/font_pressed_color = Color(1, 0, 0.764706, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 20
+theme_override_fonts/font = SubResource("SystemFont_nwvc2")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
+text = "c'est parti ^^"
+
 [node name="StartMenu" type="CanvasLayer" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="StartMenu"]
@@ -666,4 +695,5 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
 text = "Commencer"
 
 [connection signal="pressed" from="EndMenu/Button" to="." method="lancementPartie"]
-[connection signal="pressed" from="StartMenu/Button" to="." method="lancementPartie"]
+[connection signal="pressed" from="IntroMenu/Button" to="." method="lancementPartie"]
+[connection signal="pressed" from="StartMenu/Button" to="." method="menuIntro"]
