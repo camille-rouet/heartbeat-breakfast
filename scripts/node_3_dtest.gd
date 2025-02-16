@@ -421,6 +421,12 @@ func _check_proximity():
 			# Supprimer après détection
 			detected_sprites.erase(sprite)
 
+func resetBonus():
+	Notes = 0
+	var notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	for note:TextureRect in notem:
+		note.modulate = Color.WHITE
+
 func _bonus():
 	print("vous avez obtenu un bonus")
 	var  notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
@@ -455,12 +461,19 @@ func _take_damage():
 	player_health -= 1
 	print("PV restants : ", player_health)
 	
-	var coeurs = $CanvasLayer2/MarginContainer/HBoxContainer.get_children()
+	updateCoeur()
 	
-	if coeurs.size() > 0:
-		coeurs[-1].queue_free()  # Supprime le dernier cœur de la liste
 	if player_health <= 0:
 		_game_over(false)
+
+func updateCoeur():
+	var coeurs = $CanvasLayer2/MarginContainer/HBoxContainer.get_children()
+	
+	for i in range(BASE_HEALTH):
+		if (i+1) <= player_health:
+			coeurs[i].show()
+		else:
+			coeurs[i].hide()
 
 # Fin de partie
 func _game_over(gagne:bool):
@@ -471,7 +484,7 @@ func _game_over(gagne:bool):
 		$EndMenu/FinPerdu.show()
 		$EndMenu/FinGagne.hide()
 	
-	switchPauseMusique()
+	stopMusique()
 	$EndMenu.show()
 
 
@@ -627,17 +640,30 @@ func resetRhythm():
 	
 # # # # # # METHODES AUDIO
 
-func switchPauseMusique():
+func stopMusique():
 	if musicPlaying:
 		for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
 			musicPositionMemo = i.get_playback_position()
 			i.stop()
-	else:
-		for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
-			i.play(musicPositionMemo)
-			
-		resetRhythm()
-	musicPlaying = !musicPlaying
+	musicPlaying = false
+
+func launchMusique():
+	#if musicPlaying:
+		#for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
+			#musicPositionMemo = i.get_playback_position()
+			#i.stop()
+	for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
+		i.play()
+	
+	audioGainCuica.volume_db = -80
+	audioGainGuitare1.volume_db = -80
+	audioGainGuitare2.volume_db = -80
+	audioGainPiano.volume_db = -80
+	audioGainSynth.volume_db = -80
+	
+	resetRhythm()
+	musicPlaying = true
+
 
 
 func switchMuteMusique():
@@ -767,5 +793,7 @@ func lancementPartie():
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
-	switchPauseMusique()
+	launchMusique()
 	player_health = BASE_HEALTH
+	updateCoeur()
+	resetBonus()
