@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=59 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/node_3_dtest.gd" id="1_0sybt"]
 [ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="2_02hs2"]
@@ -46,6 +46,7 @@
 [ext_resource type="Script" path="res://scripts/button.gd" id="28_rwsut"]
 [ext_resource type="Texture2D" uid="uid://d3ogkffvu85af" path="res://assets/images/R-white.png" id="30_om6co"]
 [ext_resource type="Texture2D" uid="uid://bygp7aocmlbkv" path="res://assets/images/sol/texture sol.png" id="46_j025h"]
+[ext_resource type="Texture2D" uid="uid://c2x1hhr5wtigp" path="res://assets/images/ecrans/titre.jpg" id="47_miydh"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_11rtn"]
 
@@ -110,6 +111,21 @@ size = Vector2(12, 200)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6sdfs"]
 albedo_texture = ExtResource("46_j025h")
 uv1_scale = Vector3(25, 500, 1)
+
+[sub_resource type="SystemFont" id="SystemFont_nwvc2"]
+font_names = PackedStringArray("Comic Sans MS")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fo35j"]
+bg_color = Color(0, 0, 0, 0.65098)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
@@ -593,3 +609,27 @@ stretch_mode = 4
 transform = Transform3D(1, 4.41105e-11, 0, -6.7871e-10, 1, 5.82077e-10, 0, 4.65661e-10, 1, 4.76635, 1.43332, -71.9898)
 mesh = SubResource("PlaneMesh_d4ad5")
 surface_material_override/0 = SubResource("StandardMaterial3D_6sdfs")
+
+[node name="StartMenu" type="CanvasLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="StartMenu"]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("47_miydh")
+centered = false
+
+[node name="Button" type="Button" parent="StartMenu"]
+offset_left = 541.0
+offset_top = 365.0
+offset_right = 935.0
+offset_bottom = 458.0
+theme_override_colors/font_hover_color = Color(1, 0.552941, 0.815686, 1)
+theme_override_colors/font_pressed_color = Color(1, 0, 0.764706, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 20
+theme_override_fonts/font = SubResource("SystemFont_nwvc2")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
+text = "Commencer"
+
+[connection signal="pressed" from="StartMenu/Button" to="." method="lancementPartie"]

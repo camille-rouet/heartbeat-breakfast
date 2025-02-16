@@ -651,3 +651,8 @@ func updateMotif(canvaPattern, patternInput, DCInBeat = -1):
 			"R":
 				textRect.texture = get_node_and_resource("CanvasLayer:textureDCrate")[1]
 		index = index + 1
+
+
+
+func lancementPartie():
+	$StartMenu.hide()
