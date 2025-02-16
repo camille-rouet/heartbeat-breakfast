@@ -7,8 +7,10 @@ var camera: Camera3D
 @export var spawn_interval : float = 2.0
 @export var detection_range : float = 25 #4.5
 @export var Notes : float = 0 # ne pas modifier
+var dificult = 0
+var time_counter = 0.0
 # Points de vie
-var player_health := 4
+var player_health := 99999
 
 # Premier set de textures
 @export var table_obs : Texture
@@ -26,21 +28,20 @@ var player_health := 4
 
 # Premier set de sprites
 var sprite_textures := {
-	#"Table": preload("res://assets/images/tx_table.png"),
-	#"Cartons": preload("res://assets/images/tx_cartons.png"),
-	#"MeubleTV": preload("res://assets/images/tx_meubletv.png"),
-	#"Sac": preload("res://assets/images/tx_sacspoubelles.png"),
-	#"Bouteilles": preload("res://assets/images/tx_bouteilles.png"),
-	"Note": preload("res://assets/images/R.png")
+	"Table": preload("res://assets/images/meubles/tx_table.png"),
+	"Cartons": preload("res://assets/images/meubles/tx_cartons.png"),
+	"MeubleTV": preload("res://assets/images/meubles/tx_meubletv.png"),
+	"Sac": preload("res://assets/images/meubles/tx_sacspoubelles.png"),
+	"Bouteilles": preload("res://assets/images/meubles/tx_bouteilles.png"),
+	"Note": preload("res://assets/images/note.png")
 }
 
 # Deuxième set de sprites
 var alternate_sprite_textures := {
-	"Chaise": chaise,
-	"Palette": palette,
-	"Canapé": canapé,
-	"Valise": valise,
-	"Boîte": boite
+	"T-shirt": preload("res://assets/images/vêtements/tx_tshirt.png"),
+	"Jeanslip": preload("res://assets/images/vêtements/tx_jeanslip.png"),
+	"string_chaussettes": preload("res://assets/images/vêtements/tx_string_chaussettes.png"),
+	"T-shirt_soutif": preload("res://assets/images/vêtements/tx_tshirt_soutif.png"),
 }
 
 var bonus_sprite_textures := {
@@ -219,24 +220,58 @@ func _generate_sprite():
 	print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
 
 	# Appliquer la texture
-	new_sprite.texture = rand_texture  # ✅ Correction ici !
+	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
-	new_sprite.set_meta("name", rand_key)  # Stocke le nom du sprite
+	new_sprite.set_meta("name", rand_key)
 	new_sprite.position.y += 3
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
+	# Calculer la distance entre start_pos et end_pos
+	var distance = start_pos.distance_to(end_pos)
+
+	# Définir la vitesse (en unités par seconde)
+	 
+
+	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
+	var duration = distance / object_speed
+
 	# Animation de déplacement
 	var tween = get_tree().create_tween()
-	tween.tween_property(new_sprite, "position", end_pos, 2.0).set_trans(Tween.TRANS_LINEAR)
+	tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
 	tween.tween_callback(new_sprite.queue_free)
 	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
 
 
 
+
+
 # Déplacement fluide de la caméra
 func _process(delta):
-	
+	time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
+	if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
+		print("augmentation de la difficulté")
+		time_counter = 0.0
+		if dificult <= 10 :
+			
+			object_speed *= 1.1 # augment la vitesse des sprites de 10%
+			spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
+			print("Difficulté augmenté de : 10%")
+			print("nouvelle vitesse des sprites :",object_speed)
+			print("nouveau taux d'apparition est de ",spawn_interval)
+			print ("le niveau de difficulté passe de ",dificult-1," a:",dificult)
+		
+		dificult +=1
+		if dificult >= 10 :
+			print("phase finale en cours la difficulté va fortement augmenter")
+			if dificult >= 15 :
+				print("dificulté max atteinte")
+			object_speed *= 1.4 # augment la vitesse des sprites de 10%
+			spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
+			print("Difficulté augmenté de : 40%")
+			print("nouvelle vitesse des sprites :",object_speed)
+			print("nouveau taux d'apparition est de ",spawn_interval)
+	  # Réinitialise le compteur de temps
 	if musicPlaying:
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
 		
@@ -327,7 +362,6 @@ func _check_proximity():
 func _bonus():
 	print("vous avez obtenu un bonus")
 	var  notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
-	print(notem)
 	if Notes == 0 :
 		print("bonus 1")
 		notem[Notes].modulate = Color.hex(0x002cd8ff)
