@@ -9,11 +9,7 @@ var camera: Camera3D
 @export var Notes : float = 0 # ne pas modifier
 var dificult = 0
 var time_counter = 0.0
-<<<<<<< HEAD
-
-=======
 # Points de vie
->>>>>>> 7eb866a163d324dde4380859c25484a123ca0116
 var player_health := 4
 const BASE_HEALTH = 4
 var phase = 0
@@ -151,7 +147,7 @@ func _ready():
 	switch_timer = Timer.new()
 	switch_timer.wait_time = 30
 	switch_timer.one_shot = true
-	switch_timer.autostart = true
+	switch_timer.autostart = false
 	switch_timer.timeout.connect(_switch_sprites)
 	add_child(switch_timer)
 
@@ -159,24 +155,29 @@ func _ready():
 	phase_timer = Timer.new()
 	phase_timer.wait_time = 45
 	phase_timer.one_shot = true
-	phase_timer.autostart = true
+	phase_timer.autostart = false
 	phase_timer.timeout.connect(_set_phase_to_1)
 	add_child(phase_timer)
 	
 	phase_timer2 = Timer.new()
 	phase_timer2.wait_time = 60
 	phase_timer2.one_shot = true
-	phase_timer2.autostart = true
+	phase_timer2.autostart = false
 	phase_timer2.timeout.connect(_set_phase_to_2)
 	add_child(phase_timer2)
 	
 	win_timer = Timer.new()
 	win_timer.wait_time = 70
 	win_timer.one_shot = true
-	win_timer.autostart = true
+	win_timer.autostart = false
 	win_timer.timeout.connect(_set_win)
 	add_child(win_timer)
-	
+	# Timer pour la génération des sprites (toutes les 2s)
+	spawn_timer = Timer.new()
+	spawn_timer.wait_time = spawn_interval
+	spawn_timer.autostart = false
+	spawn_timer.timeout.connect(_generate_sprite)
+	add_child(spawn_timer)
 	
 	
 	couleurnote()
@@ -230,12 +231,7 @@ func _ready():
 	## Position initiale de la caméra
 	#_align_camera_to_column(true)
 
-	# Timer pour la génération des sprites (toutes les 2s)
-	var spawn_timer = Timer.new()
-	spawn_timer.wait_time = spawn_interval
-	spawn_timer.autostart = true
-	spawn_timer.timeout.connect(_generate_sprite)
-	add_child(spawn_timer)
+	
 
 	# Timer pour changer les sprites après 60s
 
@@ -243,7 +239,7 @@ var switch_timer: Timer
 var phase_timer: Timer
 var phase_timer2: Timer
 var win_timer : Timer
-
+var spawn_timer :Timer
 func _switch_sprites():
 	# Code pour changer les sprites
 	if phase == 1 :
@@ -312,19 +308,7 @@ func _generate_sprite():
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
-<<<<<<< HEAD
-
-	new_sprite.position.y += 0
-
-	# 🔹 Redimensionner le sprite 🔹
 	new_sprite.scale = Vector3(0.5, 0.5, 0.5)  # Ajuste la taille à 50%
-
-=======
-	
-	new_sprite.scale.x = .6
-	new_sprite.scale.y = .6
-	new_sprite.scale.z = .6
->>>>>>> 7eb866a163d324dde4380859c25484a123ca0116
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -528,6 +512,11 @@ func _game_over(gagne:bool):
 	
 	$CanvasLayer3.offset = Vector2(-400,0)
 	$CanvasLayer3.layer = 128
+	spawn_timer.stop()
+	switch_timer.stop()
+	phase_timer.stop()
+	phase_timer2.stop()
+	win_timer.stop()
 	
 	stopMusique()
 	$EndMenu.show()
@@ -838,6 +827,15 @@ func lancementPartie():
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
+	spawn_timer.start()
+	switch_timer.start()
+	phase_timer.start()
+	phase_timer2.start()
+	win_timer.start()
+	dificult = 0
+	object_speed = 5.0
+	spawn_interval = 2.0
+	
 	launchMusique()
 	player_health = BASE_HEALTH
 	updateCoeur()
