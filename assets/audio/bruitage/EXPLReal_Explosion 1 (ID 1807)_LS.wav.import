@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bq2y8tc75rchj"
+path="res://.godot/imported/EXPLReal_Explosion 1 (ID 1807)_LS.wav-fc87b8db38dd092417b92199f1b8d456.sample"
+
+[deps]
+
+source_file="res://assets/audio/bruitage/EXPLReal_Explosion 1 (ID 1807)_LS.wav"
+dest_files=["res://.godot/imported/EXPLReal_Explosion 1 (ID 1807)_LS.wav-fc87b8db38dd092417b92199f1b8d456.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

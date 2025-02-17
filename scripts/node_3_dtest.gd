@@ -5,7 +5,7 @@ var camera: Camera3D
 @export var max_speed : float = 10.0
 @export var camera_speed : float = 5.0
 @export var spawn_interval : float = 2.0
-@export var detection_range : float = 4 #4.5
+@export var detection_range : float = 3.5 #4.5
 @export var Notes : float = 0 # ne pas modifier
 var dificult = 0
 var time_counter = 0.0
@@ -157,7 +157,9 @@ func _ready():
 	phase_timer.one_shot = true
 	phase_timer.autostart = false
 	phase_timer.timeout.connect(_set_phase_to_1)
+
 	add_child(phase_timer)
+	
 	
 	phase_timer2 = Timer.new()
 	phase_timer2.wait_time = 60
@@ -199,6 +201,12 @@ func _ready():
 	audioGainSynth = AudioServer.get_bus_effect(7, 0)
 	
 	audioServerLatency = AudioServer.get_output_latency()
+	
+	
+	# Affichage du motif de gauche
+	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
+	# Affichage du motif de droite
+	updateMotif(rightPattern, RHYTHMIC_PATTERN.B)
 	
 	# calcul de la durée du beat et de la DC
 	beatLength = 1.0 / float(BPM) * 60.0
@@ -257,11 +265,6 @@ func _set_win():
 func _set_phase_to_2():
 	phase = 2
 	print("Phase is now: ", phase)
-
-	# Affichage du motif de gauche
-	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
-	# Affichage du motif de droite
-	updateMotif(rightPattern, RHYTHMIC_PATTERN.B)
 		
 
 # Changer la liste des sprites après 60 secondes
@@ -847,3 +850,4 @@ func lancementPartie():
 	resetBonus()
 	$CanvasLayer3.offset = Vector2(400,-550)
 	$CanvasLayer3.layer = 1
+	phase = 0
