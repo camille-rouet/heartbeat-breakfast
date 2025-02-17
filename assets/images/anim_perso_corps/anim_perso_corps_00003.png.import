@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://d4nuexnm85ucn"
 path.s3tc="res://.godot/imported/anim_perso_corps_00003.png-73b9f126224b7f9ffa620cd14fe4ad4f.s3tc.ctex"
+path.etc2="res://.godot/imported/anim_perso_corps_00003.png-73b9f126224b7f9ffa620cd14fe4ad4f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/images/anim_perso_corps/anim_perso_corps_00003.png"
-dest_files=["res://.godot/imported/anim_perso_corps_00003.png-73b9f126224b7f9ffa620cd14fe4ad4f.s3tc.ctex"]
+dest_files=["res://.godot/imported/anim_perso_corps_00003.png-73b9f126224b7f9ffa620cd14fe4ad4f.s3tc.ctex", "res://.godot/imported/anim_perso_corps_00003.png-73b9f126224b7f9ffa620cd14fe4ad4f.etc2.ctex"]
 
 [params]
 

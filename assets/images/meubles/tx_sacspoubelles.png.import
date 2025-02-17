@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cf1tyd51c5iki"
 path.s3tc="res://.godot/imported/tx_sacspoubelles.png-55dd89ab4e475ab68b83a89b42420c3e.s3tc.ctex"
+path.etc2="res://.godot/imported/tx_sacspoubelles.png-55dd89ab4e475ab68b83a89b42420c3e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/images/meubles/tx_sacspoubelles.png"
-dest_files=["res://.godot/imported/tx_sacspoubelles.png-55dd89ab4e475ab68b83a89b42420c3e.s3tc.ctex"]
+dest_files=["res://.godot/imported/tx_sacspoubelles.png-55dd89ab4e475ab68b83a89b42420c3e.s3tc.ctex", "res://.godot/imported/tx_sacspoubelles.png-55dd89ab4e475ab68b83a89b42420c3e.etc2.ctex"]
 
 [params]
 

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://burw7e21nr7yl"
 path.s3tc="res://.godot/imported/tx_bouteilles.png-7bc4e8eb470b1c1feab2ab37e018442c.s3tc.ctex"
+path.etc2="res://.godot/imported/tx_bouteilles.png-7bc4e8eb470b1c1feab2ab37e018442c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/images/meubles/tx_bouteilles.png"
-dest_files=["res://.godot/imported/tx_bouteilles.png-7bc4e8eb470b1c1feab2ab37e018442c.s3tc.ctex"]
+dest_files=["res://.godot/imported/tx_bouteilles.png-7bc4e8eb470b1c1feab2ab37e018442c.s3tc.ctex", "res://.godot/imported/tx_bouteilles.png-7bc4e8eb470b1c1feab2ab37e018442c.etc2.ctex"]
 
 [params]
 

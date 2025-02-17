@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://rt8gb5lmpels"
 path.s3tc="res://.godot/imported/anim_perso_tete_00002.png-b21385c296bcfa81b438a42be4a5d8d6.s3tc.ctex"
+path.etc2="res://.godot/imported/anim_perso_tete_00002.png-b21385c296bcfa81b438a42be4a5d8d6.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/images/anim_perso_tete/anim_perso_tete_00002.png"
-dest_files=["res://.godot/imported/anim_perso_tete_00002.png-b21385c296bcfa81b438a42be4a5d8d6.s3tc.ctex"]
+dest_files=["res://.godot/imported/anim_perso_tete_00002.png-b21385c296bcfa81b438a42be4a5d8d6.s3tc.ctex", "res://.godot/imported/anim_perso_tete_00002.png-b21385c296bcfa81b438a42be4a5d8d6.etc2.ctex"]
 
 [params]
 
