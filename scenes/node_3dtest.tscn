@@ -146,14 +146,14 @@ environment = SubResource("Environment_mq01q")
 transform = Transform3D(0.984873, -0.0723344, -0.157455, 0.173275, 0.412533, 0.894311, 0.000265883, -0.908066, 0.418827, 1.75784, 3.26712, 8.08508)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.999999, 0.000465283, 0.000984854, -0.000772298, 0.940478, 0.339852, -0.000768112, -0.339853, 0.940478, 4.60853, 5.78254, 23.6689)
+transform = Transform3D(1, 2.21189e-09, -7.567e-09, -2.12367e-10, 0.939693, 0.34202, 0, -0.34202, 0.939692, 4.67413, 7.46216, 24.9457)
 fov = 60.1
 
 [node name="Perso" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.727773, 0.685818, 0, -0.685818, 0.727773, 4, 4, 22)
+transform = Transform3D(3, 8.63613e-05, -0.00171077, 0.000857335, 2.5182, 1.63054, 0.00148297, -1.63054, 2.5182, 2.003, 3.275, 20)
 
 [node name="AnimatedSpritePersoCorps" type="AnimatedSprite3D" parent="Perso"]
-transform = Transform3D(0.1, 0, 0, 0, 0.0999999, 0, 0, 0, 0.1, 0, 0, 0)
+transform = Transform3D(0.1, -1.45519e-11, 0, -1.45519e-11, 0.0999999, -3.72529e-09, 0, 0, 0.1, 0.0089798, -0.0108957, 0.0115032)
 shaded = true
 alpha_cut = 1
 texture_filter = 0
@@ -184,7 +184,7 @@ transform = Transform3D(2, 0, -8.74228e-08, 8.74228e-08, 7.64274e-14, 2, 0, -40,
 mesh = SubResource("BoxMesh_ceq4n")
 
 [node name="Start" type="MeshInstance3D" parent="MeshInstance3D"]
-transform = Transform3D(0.499999, 0, 0, 0, 0.01, 0, 0, 0, 0.5, 0, 0.5, 1.63913e-07)
+transform = Transform3D(0.499999, 2.91038e-10, -3.26395e-10, 3.63798e-11, 0.01, -1.63709e-11, 1.98736e-09, 1.45519e-10, 0.500001, 0.0377183, 1.53407, 0.0242488)
 mesh = SubResource("BoxMesh_tg8jn")
 
 [node name="End" type="MeshInstance3D" parent="MeshInstance3D"]
@@ -197,7 +197,7 @@ transform = Transform3D(2, 0, -8.74228e-08, 8.74228e-08, 7.64274e-14, 2, 0, -40,
 mesh = SubResource("BoxMesh_ceq4n")
 
 [node name="Start" type="MeshInstance3D" parent="MeshInstance3D2"]
-transform = Transform3D(0.499999, 0, 0, 0, 0.01, 0, 0, 0, 0.5, 0, 0.5, 1.63913e-07)
+transform = Transform3D(0.499999, 2.91038e-10, -3.26395e-10, 3.63798e-11, 0.01, -1.63709e-11, 1.98736e-09, 1.45519e-10, 0.500001, 0.0377159, 1.53408, 0.0242489)
 mesh = SubResource("BoxMesh_tg8jn")
 
 [node name="End" type="MeshInstance3D" parent="MeshInstance3D2"]
@@ -210,7 +210,7 @@ transform = Transform3D(2, 0, -8.74228e-08, 8.74228e-08, 7.64274e-14, 2, 0, -40,
 mesh = SubResource("BoxMesh_ceq4n")
 
 [node name="Start" type="MeshInstance3D" parent="MeshInstance3D3"]
-transform = Transform3D(0.499999, 0, 0, 0, 0.01, 0, 0, 0, 0.5, 0, 0.5, 1.63913e-07)
+transform = Transform3D(0.499999, 2.91038e-10, -3.26395e-10, 3.63798e-11, 0.01, -1.63709e-11, 1.98736e-09, 1.45519e-10, 0.500001, 0.0377176, 1.53407, 0.0242489)
 mesh = SubResource("BoxMesh_tg8jn")
 
 [node name="End" type="MeshInstance3D" parent="MeshInstance3D3"]
@@ -223,7 +223,7 @@ transform = Transform3D(2, 0, -8.74228e-08, 8.74228e-08, 7.64274e-14, 2, 0, -40,
 mesh = SubResource("BoxMesh_ceq4n")
 
 [node name="Start" type="MeshInstance3D" parent="MeshInstance3D4"]
-transform = Transform3D(0.499999, 0, 0, 0, 0.01, 0, 0, 0, 0.5, 0, 0.5, 1.63913e-07)
+transform = Transform3D(0.499999, 2.91038e-10, -3.26395e-10, 3.63798e-11, 0.01, -1.63709e-11, 1.98736e-09, 1.45519e-10, 0.500001, 0.0377185, 1.53407, 0.024249)
 mesh = SubResource("BoxMesh_tg8jn")
 
 [node name="End" type="MeshInstance3D" parent="MeshInstance3D4"]

@@ -5,8 +5,19 @@ var camera: Camera3D
 @export var max_speed : float = 10.0
 @export var camera_speed : float = 5.0
 @export var spawn_interval : float = 2.0
+
+const SPRITE_SCALE = 0.5
+
+# hitbox
+var lineZ # Z position at which the objet can collide curseur
+const LINEZ_SHIFT = 0.6 # extra distance between curseur and the line of collision
+const CURSEUR_WIDTH = 1.63 # width of curseur
 @export var detection_range : float = 3.5 #4.5
+
+
 @export var Notes : float = 0 # ne pas modifier
+
+
 var dificult = 0
 var time_counter = 0.0
 # Points de vie
@@ -92,9 +103,9 @@ var curseur
 var curseurBasePosition
 var curseurSpeed = 0 # in m / sec
 var curseurAccel = 0 # in m / sec / sec
-const BRAKE = 0.996
+const BRAKE = 0.995
 const MAX_SPEED = 10 # in m / sec
-const ADDED_SPEED = 0.8 # in m / sec
+const ADDED_SPEED = 2 # in m / sec
 
 var tetePerso:Node3D
 
@@ -227,6 +238,7 @@ func _ready():
 	
 	curseur = $Perso	
 	curseurBasePosition = curseur.position
+	lineZ = curseur.position.z - LINEZ_SHIFT
 	tetePerso = $Perso/AnimatedSpritePersoTete
 	
 	# Récupérer la caméra et les colonnes
@@ -283,7 +295,6 @@ func _generate_sprite():
 	start_pos.y += SPRITE_HEIGHT
 	end_pos.y += SPRITE_HEIGHT
 	
-	var new_sprite = Sprite3D.new()
 	
 	# Initialisation de sprite_list
 	var sprite_list = {} 
@@ -308,10 +319,11 @@ func _generate_sprite():
 	print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
 
 	# Appliquer la texture
+	var new_sprite:Sprite3D = Sprite3D.new()
 	new_sprite.texture = rand_texture
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
-	new_sprite.scale = Vector3(0.5, 0.5, 0.5)  # Ajuste la taille à 50%
+	new_sprite.scale = Vector3.ONE * SPRITE_SCALE  # Ajuste la taille à 50%
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 
@@ -323,13 +335,17 @@ func _generate_sprite():
 
 	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
 	var duration = distance / object_speed
+	
+	# Animation de transparence
+	new_sprite.modulate = Color.TRANSPARENT
+	var tween2 = get_tree().create_tween()
+	tween2.tween_property(new_sprite, "modulate", Color.WHITE, 1).set_trans(Tween.TRANS_LINEAR)
 
 	# Animation de déplacement
 	var tween = get_tree().create_tween()
 	tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
 	tween.tween_callback(new_sprite.queue_free)
 	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
-
 
 
 
@@ -434,22 +450,33 @@ func _process(delta):
 
 # Vérifier la proximité des sprites avec le joueur
 func _check_proximity():
-	for sprite in detected_sprites:
+	for sprite:Sprite3D in detected_sprites:
 		
-		var distance = curseur.position.distance_to(sprite.position)
-		#print("Distance entre", sprite.get_meta("name"), "et le curseur:", distance)
-		if distance < detection_range:
-			var sprite_name = sprite.get_meta("name")
-			print(sprite_name, " touché !")
+		#var distance = curseur.position.distance_to(sprite.position)
+		##print("Distance entre", sprite.get_meta("name"), "et le curseur:", distance)
+		#if distance < detection_range:
+		
+		if sprite.position.z > lineZ :
+			var objSizeX = sprite.get_item_rect().size.x * SPRITE_SCALE * sprite.pixel_size
+			var objMinX = sprite.position.x - 0.5 * objSizeX
+			var objMaxX = sprite.position.x + 0.5 * objSizeX
+			var curseurMinxX = curseur.position.x - 0.5 * CURSEUR_WIDTH
+			var curseurMaxX = curseur.position.x + 0.5 * CURSEUR_WIDTH
+			if objMinX < curseurMinxX && curseurMinxX < objMaxX || objMinX < curseurMaxX && curseurMaxX < objMaxX :
+				# collision !
+				var sprite_name = sprite.get_meta("name")
+				print(sprite_name, " touché !")
 
-			# Vérifier si l'objet est dangereux
-			if sprite_name in dangerous_sprites:
-				_take_damage()
-			if sprite_name in bonus_sprites:
-				_bonus()
-			
-			# Supprimer après détection
-			detected_sprites.erase(sprite)
+				# Vérifier si l'objet est dangereux
+				if sprite_name in dangerous_sprites:
+					_take_damage()
+				if sprite_name in bonus_sprites:
+					_bonus()
+				
+				# Supprimer après détection
+				sprite.modulate = Color.TRANSPARENT
+				detected_sprites.erase(sprite)
+				
 
 func resetBonus():
 	Notes = 0
@@ -458,8 +485,8 @@ func resetBonus():
 		note.modulate = Color.WHITE
 
 func _bonus():
-	print("vous avez obtenu un bonus")
-	var  notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	#print("vous avez obtenu un bonus")
+	var notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
 	var timeFadeIn = 1 # in sec
 	if Notes == 0 :
 		print("bonus 1")
@@ -490,7 +517,7 @@ func _bonus():
 func _take_damage():
 	$"ExplRealExplosion1(id1807)Ls".play()
 	player_health -= 1
-	print("PV restants : ", player_health)
+	#print("PV restants : ", player_health)
 	
 	updateCoeur()
 	
@@ -533,8 +560,8 @@ func moveCursor(delta):
 	curseurSpeed = curseurSpeed + delta * curseurAccel
 	
 	var replacementShift = 0.01 # (0 to 1) proportion of the shift when encountering wall 
-	var maxX = 6.75
-	var minX = 2.5
+	var maxX = 9.5
+	var minX = 0
 	if curseur.position.x > maxX:
 		curseur.position.x = maxX * (1 - replacementShift)
 		curseurSpeed = - curseurSpeed*0.2
