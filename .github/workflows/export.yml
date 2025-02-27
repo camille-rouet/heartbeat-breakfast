@@ -29,16 +29,16 @@ jobs:
         run: |
           mkdir -v -p build/windows
           cd $PROJECT_PATH
-          godot --headless --verbose --export-release "Windows Desktop" ./build/windows/$EXPORT_NAME-latest.exe
+          godot --headless --verbose --export-release "Windows Desktop" ./build/windows/$EXPORT_NAME-$GITHUB_REF_NAME.exe
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/windows/${{ env.EXPORT_NAME }}-latest.exe
+            build/windows/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.exe
       - name: Publish
         run: |
-          butler push build/windows/${{ env.EXPORT_NAME }}-latest.exe ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:windows --userversion ${{github.ref_name}}
+          butler push build/windows/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.exe ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:windows --userversion ${{github.ref_name}}
       # - name: Publish
       #   uses: manleydev/butler-publish-itchio-action@master
       #   env:
@@ -47,7 +47,7 @@ jobs:
       #     ITCH_GAME: na
       #     ITCH_USER: na
       #     VERSION: ${{github.ref_name}}
-      #     PACKAGE: build/windows/${{ env.EXPORT_NAME }}-latest.exe
+      #     PACKAGE: build/windows/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.exe
 
   export-linux:
     name: Linux Export
@@ -67,16 +67,16 @@ jobs:
         run: |
           mkdir -v -p build/linux
           cd $PROJECT_PATH
-          godot --headless --verbose --export-release "Linux/X11" ./build/linux/$EXPORT_NAME-latest.linux.bin
+          godot --headless --verbose --export-release "Linux/X11" ./build/linux/$EXPORT_NAME-$GITHUB_REF_NAME.linux.bin
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/linux/${{ env.EXPORT_NAME }}-latest.linux.bin
+            build/linux/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.linux.bin
       - name: Publish
         run: |
-          butler push ./build/linux/$EXPORT_NAME-latest.linux.bin ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:linux --userversion ${{github.ref_name}}
+          butler push ./build/linux/$EXPORT_NAME-$GITHUB_REF_NAME.linux.bin ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:linux --userversion ${{github.ref_name}}
       # - name: Publish
       #   uses: manleydev/butler-publish-itchio-action@master
       #   env:
@@ -85,7 +85,7 @@ jobs:
       #     ITCH_GAME: na
       #     ITCH_USER: na
       #     VERSION: ${{github.ref_name}}
-      #     PACKAGE: build/linux/${{ env.EXPORT_NAME }}-latest.linux.bin
+      #     PACKAGE: build/linux/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.linux.bin
 
 
   export-web:
@@ -107,16 +107,16 @@ jobs:
           mkdir -v -p build/web
           cd $PROJECT_PATH
           godot --headless --verbose --export-release "HTML5" ./build/web/index.html
-          cd build/web/ && zip ../$EXPORT_NAME-latest.zip ./* && cd $PROJECT_PATH
+          cd build/web/ && zip ../$EXPORT_NAME-$GITHUB_REF_NAME.zip ./* && cd $PROJECT_PATH
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/${{ env.EXPORT_NAME }}-latest.zip
+            build/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.zip
       - name: Publish
         run: |
-          butler push build/${{ env.EXPORT_NAME }}-latest.zip ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:web --userversion ${{github.ref_name}}
+          butler push build/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.zip ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:web --userversion ${{github.ref_name}}
       # - name: Publish
       #   uses: manleydev/butler-publish-itchio-action@master
       #   env:
@@ -125,7 +125,7 @@ jobs:
       #     ITCH_GAME: na
       #     ITCH_USER: na
       #     VERSION: ${{github.ref_name}}
-      #     PACKAGE: build/${{ env.EXPORT_NAME }}-latest.zip
+      #     PACKAGE: build/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.zip
         
 
   export-mac:
@@ -146,16 +146,16 @@ jobs:
         run: |
           mkdir -v -p build/mac
           cd $PROJECT_PATH
-          godot --headless --verbose --export-release "macOS" ./build/mac/${EXPORT_NAME}-latest.macos.zip
+          godot --headless --verbose --export-release "macOS" ./build/mac/${EXPORT_NAME}-$GITHUB_REF_NAME.macos.zip
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/mac/${{ env.EXPORT_NAME }}-latest.macos.zip
+            build/mac/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.macos.zip
       - name: Publish
         run: |
-          butler push build/mac/${{ env.EXPORT_NAME }}-latest.macos.zip ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:osx --userversion ${{github.ref_name}}
+          butler push build/mac/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.macos.zip ${{secrets.ITCHIO_USERNAME}}/${{secrets.ITCHIO_GAME}}:osx --userversion ${{github.ref_name}}
       # - name: Publish
       #   uses: manleydev/butler-publish-itchio-action@master
       #   env:
@@ -164,4 +164,4 @@ jobs:
       #     ITCH_GAME: na
       #     ITCH_USER: na
       #     VERSION: ${{github.ref_name}}
-      #     PACKAGE: build/mac/${{ env.EXPORT_NAME }}-latest.macos.zip
+      #     PACKAGE: build/mac/${{ env.EXPORT_NAME }}-$GITHUB_REF_NAME.macos.zip
