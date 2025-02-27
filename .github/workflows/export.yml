@@ -6,7 +6,7 @@ on:
 
 env:
   GODOT_VERSION: 4.3
-  EXPORT_NAME: Heartbeat Breakfast
+  EXPORT_NAME: HeartbeatBreakfast
   PROJECT_PATH: "."
   BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
 
