@@ -77,7 +77,7 @@ const BEAT_OFFSET = 0 # number of beat before the first beat of a bar of the mus
 
 const ACCEPTABLE_DELTA = 65 # acceptable error in ms
 
-const LATENCY = 0 # in ms
+var LATENCY = 0 # in ms
 var audioServerLatency
 
 #const COMPENSATE_FRAMES = 2
@@ -114,6 +114,10 @@ var audioGainGuitare1:AudioEffectAmplify
 var audioGainGuitare2:AudioEffectAmplify
 var audioGainPiano:AudioEffectAmplify
 var audioGainSynth:AudioEffectAmplify
+
+
+var debugMsg:String
+var showDebugMenu:bool = false
 
 # Motif rythmiques jouables
 const RHYTHMIC_PATTERN = {
@@ -350,6 +354,16 @@ func _generate_sprite():
 
 # Déplacement fluide de la caméra
 func _process(delta):
+	if showDebugMenu :
+		$DebugMenu.show()
+		
+		debugMsg = "musiqueCible playback pos: " + str(roundf(musiqueCible.get_playback_position()*1000)*0.001) +\
+		"\nmeanDeltaDC: " + str(round(meanDeltaDC*1000)) + " ms (on " + str(nInput) + " inputs)"
+		$DebugMenu/MarginContainer/Label.text = debugMsg
+		print("\n"+debugMsg)
+	else:
+		$DebugMenu.hide()
+	
 	time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
 	if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
 		print("\nAugmentation de la difficulté")
@@ -737,6 +751,17 @@ func switchMuteMusique():
 		
 # Gestion des inputs
 func _unhandled_input(event):
+	
+	if event.is_action_released("latency_update"):
+		print("\nLatency update")
+		LATENCY = LATENCY + meanDeltaDC
+		meanDeltaDC = 0
+		nInput = 0
+		
+		
+	if event.is_action_pressed("ToucheH"):
+		showDebugMenu = !showDebugMenu
+	
 	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT") || event.is_action_pressed("inputManette"):
 		nInput = nInput + 1
 		
