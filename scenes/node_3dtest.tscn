@@ -113,7 +113,7 @@ size = Vector2(12, 200)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6sdfs"]
 albedo_texture = ExtResource("46_j025h")
-uv1_scale = Vector3(5, 100, 1)
+uv1_scale = Vector3(6, 100, 1)
 
 [sub_resource type="SystemFont" id="SystemFont_nwvc2"]
 font_names = PackedStringArray("Comic Sans MS")

@@ -1,9 +1,8 @@
 extends Node3D
 
 var camera: Camera3D
-@export var object_speed : float = 5.0 # plus la valeur est haute plus les objets seronts lents
-@export var max_speed : float = 10.0
-@export var camera_speed : float = 5.0
+var object_speed = 0
+@export var INITIAL_OBJECT_SPEED : float = 10.0 #en m/s
 @export var spawn_interval : float = 2.0
 
 const SPRITE_SCALE = 0.5
@@ -316,7 +315,7 @@ func _generate_sprite():
 		print("⚠️ Erreur: la texture de ", rand_key, " est NULL !")
 		return
 	
-	print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
+	#print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
 
 	# Appliquer la texture
 	var new_sprite:Sprite3D = Sprite3D.new()
@@ -329,9 +328,6 @@ func _generate_sprite():
 
 	# Calculer la distance entre start_pos et end_pos
 	var distance = start_pos.distance_to(end_pos)
-
-	# Définir la vitesse (en unités par seconde)
-	var object_speed = 10.0
 
 	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
 	var duration = distance / object_speed
@@ -356,16 +352,13 @@ func _generate_sprite():
 func _process(delta):
 	time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
 	if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
-		print("augmentation de la difficulté")
+		print("\nAugmentation de la difficulté")
 		time_counter = 0.0
 		if dificult <= 10 :
 			
 			object_speed *= 1.1 # augment la vitesse des sprites de 10%
 			spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
 			print("Difficulté augmenté de : 10%")
-			print("nouvelle vitesse des sprites :",object_speed)
-			print("nouveau taux d'apparition est de ",spawn_interval)
-			print ("le niveau de difficulté passe de ",dificult-1," a:",dificult)
 		
 		dificult +=1
 		if dificult >= 10 :
@@ -375,8 +368,10 @@ func _process(delta):
 			object_speed *= 1.4 # augment la vitesse des sprites de 10%
 			spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
 			print("Difficulté augmenté de : 40%")
-			print("nouvelle vitesse des sprites :",object_speed)
-			print("nouveau taux d'apparition est de ",spawn_interval)
+		
+		print("nouvelle vitesse des sprites : ",object_speed)
+		print("nouveau taux d'apparition est de ",spawn_interval)
+		print ("le niveau de difficulté passe de ", dificult ," à ", dificult+1)
 	  # Réinitialise le compteur de temps
 	if musicPlaying:
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
@@ -424,8 +419,14 @@ func _process(delta):
 					currentPatternDeltaCompleted = false
 		
 	moveCursor(delta)
+	
+	# defilement du sol
 	var material:StandardMaterial3D = sol.get_surface_override_material(0)
-	material.uv1_offset.y = material.uv1_offset.y - delta * object_speed
+	# un offset de 1 fait bouger le motif d'une fois
+	var planeMesh:PlaneMesh = sol.mesh
+	var tailleMotifBase = planeMesh.size.y / material.uv1_scale.y
+	var decalageFrame = delta * object_speed
+	material.uv1_offset.y = material.uv1_offset.y - decalageFrame / tailleMotifBase
 	#if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
 		#camera_column_index -= 1
 		#_align_camera_to_column()
@@ -488,25 +489,22 @@ func _bonus():
 	#print("vous avez obtenu un bonus")
 	var notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
 	var timeFadeIn = 1 # in sec
+	#print("bonus " + str(Notes))
 	if Notes == 0 :
-		print("bonus 1")
 		notem[Notes].modulate = Color.hex(0x002cd8ff)
 		
 		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(audioGainSynth, "volume_db", 0, timeFadeIn)
 		
 	if Notes == 1 :
-		print("bonus 2")
 		notem[Notes].modulate = Color.hex(0x009e21ff)
 		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(audioGainPiano, "volume_db", 0, timeFadeIn)
 	if Notes == 2 :
-		print("bonus 3")
 		notem[Notes].modulate = Color.hex(0xecbb00ff)
 		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(audioGainGuitare1, "volume_db", 0, timeFadeIn)
 	if Notes == 3 :
-		print("bonus 4")
 		notem[Notes].modulate = Color.hex(0xff55c8ff)
 		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(audioGainGuitare2, "volume_db", 0, timeFadeIn)
@@ -590,11 +588,11 @@ func patternDeltaToPatternInput(patternDelta):
 
 # Executé lorsqu'un motif rythmique a été détecté
 func interpretPattern(patternInput):
-	print(str(currentPatternDelta))
-	print(str(patternInput))
+	#print(str(currentPatternDelta))
+	#print(str(patternInput))
 	var matchedPattern = findPattern(patternInput)
 	print("Your pattern is " + str(matchedPattern) + "  ..Mean delta = " + str(round(meanDeltaDC * 1000)) + " ms")
-	print("")
+	#print("")
 	
 	#match matchedPattern:
 		#"A":
@@ -868,7 +866,7 @@ func lancementPartie():
 	phase_timer2.start()
 	win_timer.start()
 	dificult = 0
-	object_speed = 5.0
+	object_speed = INITIAL_OBJECT_SPEED
 	spawn_interval = 2.0
 	
 	launchMusique()
