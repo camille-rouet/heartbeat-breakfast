@@ -150,7 +150,7 @@ transform = Transform3D(1, 2.21189e-09, -7.567e-09, -2.12367e-10, 0.939693, 0.34
 fov = 60.1
 
 [node name="Perso" type="Node3D" parent="."]
-transform = Transform3D(3, 8.63613e-05, -0.00171077, 0.000857335, 2.5182, 1.63054, 0.00148297, -1.63054, 2.5182, 2.003, 3.275, 20)
+transform = Transform3D(3, 8.63611e-05, -0.00171077, 0.000857335, 2.5182, 1.63054, 0.00148297, -1.63054, 2.5182, 2.74191, 3.27309, 20.0013)
 
 [node name="AnimatedSpritePersoCorps" type="AnimatedSprite3D" parent="Perso"]
 transform = Transform3D(0.1, -1.45519e-11, 0, -1.45519e-11, 0.0999999, -3.72529e-09, 0, 0, 0.1, 0.0089798, -0.0108957, 0.0115032)
