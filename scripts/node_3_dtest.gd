@@ -88,6 +88,8 @@ var DCLength # beatLength / 4, in sec
 
 
 var musiqueCible:AudioStreamPlayer
+var musiqueTimeStart = -1
+var useEngineTimeInsteadOfPlaybackPosition:bool = false
 var currentBeat = 0
 var currentDC = 0 # double croche
 
@@ -144,6 +146,8 @@ var nInput = 0 #nombre d'input cumulé
 
 var sol:MeshInstance3D
 
+var isRunningOnWeb:bool = false
+
 func couleurnote ():
 	var  note = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
 	note[0].modulate = Color(255,255,255,1)
@@ -157,7 +161,15 @@ var centralCurrentPattern:Control
 var rightPattern:Control
 
 func _ready():
-	   # Timer de 60 secondes
+	isRunningOnWeb = OS.has_feature("web")
+	
+	if isRunningOnWeb:
+		print("Running on web")
+		useEngineTimeInsteadOfPlaybackPosition = true
+	else:
+		print("Running on " + OS.get_name())
+	
+	# Timer de 60 secondes
 	switch_timer = Timer.new()
 	switch_timer.wait_time = 30
 	switch_timer.one_shot = true
@@ -207,12 +219,12 @@ func _ready():
 	rhythmOK.connect(_on_rhythm_ok)
 	inputDCDone.connect(_on_inputDCDone)
 		
-	audioGainBasse = AudioServer.get_bus_effect(9, 0)
 	audioGainCuica = AudioServer.get_bus_effect(4, 0)
 	audioGainGuitare1 = AudioServer.get_bus_effect(5, 0)
-	audioGainGuitare2 = AudioServer.get_bus_effect(8, 0)
 	audioGainPiano = AudioServer.get_bus_effect(6, 0)
 	audioGainSynth = AudioServer.get_bus_effect(7, 0)
+	audioGainGuitare2 = AudioServer.get_bus_effect(8, 0)
+	audioGainBasse = AudioServer.get_bus_effect(9, 0)
 	
 	audioServerLatency = AudioServer.get_output_latency()
 	
@@ -226,13 +238,14 @@ func _ready():
 	beatLength = 1.0 / float(BPM) * 60.0
 	DCLength = beatLength / 4.0
 	
-	print("beat length (ms): " + str(round(beatLength * 1000)))
-	print("DC length (ms): " + str(round(DCLength * 1000)))
+	print("beat length (ms): " + str(roundi(beatLength * 1000)))
+	print("DC length (ms): " + str(roundi(DCLength * 1000)))
 	print("")
 	match BPM:
 		73:
 			musiqueCible = $"Audio/Electro-tribal-beat-179094"
 			musiqueCible.play()
+			musiqueTimeStart = Time.get_ticks_msec() * 0.001
 			musicPlaying = true
 		85:
 			musiqueCible = $Audio/Samba85/Percussions
@@ -357,10 +370,14 @@ func _process(delta):
 	if showDebugMenu :
 		$DebugMenu.show()
 		
-		debugMsg = "musiqueCible playback pos: " + str(roundf(musiqueCible.get_playback_position()*1000)*0.001) +\
-		"\nmeanDeltaDC: " + str(round(meanDeltaDC*1000)) + " ms (on " + str(nInput) + " inputs)"
-		$DebugMenu/MarginContainer/Label.text = debugMsg
-		print("\n"+debugMsg)
+		debugMsg = "Time :" +  str((Time.get_ticks_msec())) + " FPS: " + str(Engine.get_frames_per_second()) + " delta: " + str(roundi(delta*1e3))  +\
+		"\nPlayback pos: " + str(roundi(musiqueCible.get_playback_position()*1000)) +\
+		"\ncurrentBeat and currentDC: " + str(currentBeat) + " - " + str(currentDC) +\
+		" (" + str((currentBeat) % BARS + 1) + "/" + str(BARS) + " - " + str((currentDC) % 4 + 1) + "/4)" +\
+		"\nmeanDeltaDC: " + str(roundi(meanDeltaDC*1000)) + " ms (on " + str(nInput) + " inputs)" +\
+		"\ncurrentPatternDelta: " + str(currentPatternDelta) +\
+		"\ncurrentPatternInput: " + str(currentPatternInput) +\
+		"\ncurrentPatternDeltaCompleted: " + str(currentPatternDeltaCompleted)
 	else:
 		$DebugMenu.hide()
 	
@@ -386,9 +403,12 @@ func _process(delta):
 		print("nouvelle vitesse des sprites : ",object_speed)
 		print("nouveau taux d'apparition est de ",spawn_interval)
 		print ("le niveau de difficulté passe de ", dificult ," à ", dificult+1)
-	  # Réinitialise le compteur de temps
+	
+	
 	if musicPlaying:
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
+		if useEngineTimeInsteadOfPlaybackPosition:
+			time = ((Time.get_ticks_msec()*0.001) - audioServerLatency - LATENCY * 0.001)  - musiqueTimeStart
 		
 		if time < DCLength:
 			resetRhythm()
@@ -414,6 +434,7 @@ func _process(delta):
 			var DC5_time = (currentDC+1) * DCLength
 			var debFenetre_time = DC4_time + ACCEPTABLE_DELTA * 0.001
 			var finFenetre_time = DC5_time - ACCEPTABLE_DELTA * 0.001
+			
 			
 			
 			# quand on passe la fin de possibilité de input la 4eme DC
@@ -453,6 +474,9 @@ func _process(delta):
 	#camera.position = camera.position.lerp(target_camera_position, camera_speed * delta)
 	# Vérifier la proximité des sprites avec le joueur
 	_check_proximity()
+	
+	
+	$DebugMenu/MarginContainer/Label.text = debugMsg
 
 ## Aligner la caméra sur la colonne actuelle
 #func _align_camera_to_column(instant := false):
@@ -605,7 +629,7 @@ func interpretPattern(patternInput):
 	#print(str(currentPatternDelta))
 	#print(str(patternInput))
 	var matchedPattern = findPattern(patternInput)
-	print("Your pattern is " + str(matchedPattern) + "  ..Mean delta = " + str(round(meanDeltaDC * 1000)) + " ms")
+	print("Your pattern is " + str(matchedPattern) + "  ..Mean delta = " + str(roundi(meanDeltaDC * 1000)) + " ms")
 	#print("")
 	
 	#match matchedPattern:
@@ -710,7 +734,6 @@ func _on_inputDCDone():
 
 
 func resetRhythm():
-	AudioServer.set_bus_mute(3, true)
 	currentPatternDeltaCompleted = false
 	currentBeat = 0
 	currentDC = 0
@@ -730,6 +753,7 @@ func launchMusique():
 		#for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
 			#musicPositionMemo = i.get_playback_position()
 			#i.stop()
+	musiqueTimeStart = Time.get_ticks_msec() * 0.001
 	for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
 		i.play()
 	
@@ -771,8 +795,11 @@ func _unhandled_input(event):
 		
 		var time = musiqueCible.get_playback_position() - audioServerLatency - LATENCY * 0.001
 		
+		if useEngineTimeInsteadOfPlaybackPosition:
+			time = ((Time.get_ticks_msec()*0.001) - audioServerLatency - LATENCY * 0.001)  - musiqueTimeStart
+			
 		var deltaToucheBeat = getDeltaBeat(time)
-		#print("Ecart au beat (ms) " + str(round(deltaToucheBeat * 1000) ))
+		#print("Ecart au beat (ms) " + str(roundi(deltaToucheBeat * 1000) ))
 		
 		# reconnaitre la double croche en cours
 		var lastDC = int(time / DCLength)
@@ -794,7 +821,7 @@ func _unhandled_input(event):
 			
 		var currentDCInBeat = (lastDC) % 4 + 1
 		var closerDCInBeat = (closerDC) % 4 + 1
-		#print("Ecart à la DC " + str(closerDCInBeat) + " (ms) " + str(round(deltaToucheDC * 1000)) )
+		#print("Ecart à la DC " + str(closerDCInBeat) + " (ms) " + str(roundi(deltaToucheDC * 1000)) )
 		
 		#envoie une erreur en cas de defaillance rhytmique
 		if abs(deltaToucheDC) > ACCEPTABLE_DELTA * 0.001:
@@ -802,7 +829,7 @@ func _unhandled_input(event):
 			blocTempoGood = false
 		
 		# update the rhytmic pattern delta
-		currentPatternDelta[closerDCInBeat - 1] = round(deltaToucheDC * 1000)
+		currentPatternDelta[closerDCInBeat - 1] = roundi(deltaToucheDC * 1000)
 		currentPatternInput = patternDeltaToPatternInput(currentPatternDelta)
 		
 		# update the mean error on DC
@@ -849,14 +876,7 @@ func _unhandled_input(event):
 		
 	#if event.is_action_pressed("pause_switch"):
 		#switchPauseMusique()
-		
-	if event.is_action_pressed("bloc_tempo_switch"):
-		switchBlocTempo()
 
-func switchBlocTempo():
-	blocTempoGood = !blocTempoGood
-	AudioServer.set_bus_mute(2, !blocTempoGood)
-	AudioServer.set_bus_mute(3, blocTempoGood)
 	
 
 #update a canvasPattern, given a pattern input and a DCinBeat
@@ -894,6 +914,9 @@ func lancementPartie():
 	object_speed = INITIAL_OBJECT_SPEED
 	spawn_interval = 2.0
 	
+	for obj in detected_sprites:
+		obj.queue_free
+	detected_sprites = []
 	launchMusique()
 	player_health = BASE_HEALTH
 	updateCoeur()
