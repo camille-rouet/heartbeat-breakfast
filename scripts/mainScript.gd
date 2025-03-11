@@ -45,7 +45,7 @@ var sprite_textures := {
 	"MeubleTV": preload("res://assets/images/meubles/tx_meubletv.png"),
 	"Sac": preload("res://assets/images/meubles/tx_sacspoubelles.png"),
 	"Bouteilles": preload("res://assets/images/meubles/tx_bouteilles.png"),
-	"Note": preload("res://assets/images/note.png")
+	"Note": preload("res://assets/images/note_vide.png")
 }
 
 # Deuxième set de sprites
@@ -56,9 +56,14 @@ var alternate_sprite_textures := {
 	"T-shirt_soutif": preload("res://assets/images/vêtements/tx_tshirt_soutif.png"),
 }
 
-var bonus_sprite_textures := {
-	
-}
+var note_color := [Color.hex(0x002cd8ff),
+					Color.hex(0x009e21ff),
+					Color.hex(0xecbb00ff),
+					Color.hex(0xff55c8ff)]
+
+var note_collected = [false, false, false, false]
+var allNotesCollected = false
+
 
 var columns = []
 var detected_sprites = []  
@@ -168,38 +173,30 @@ func _ready():
 		useEngineTimeInsteadOfPlaybackPosition = true
 	else:
 		print("Running on " + OS.get_name())
-	
-	# Timer de 60 secondes
-	switch_timer = Timer.new()
-	switch_timer.wait_time = 30
-	switch_timer.one_shot = true
-	switch_timer.autostart = false
-	switch_timer.timeout.connect(_switch_sprites)
-	add_child(switch_timer)
 
-	# Timer de 85 secondes
-	phase_timer = Timer.new()
-	phase_timer.wait_time = 45
-	phase_timer.one_shot = true
-	phase_timer.autostart = false
-	phase_timer.timeout.connect(_set_phase_to_1)
-
-	add_child(phase_timer)
+	# Timers
+	phase_timer_0 = Timer.new()
+	phase_timer_0.wait_time = 30
+	phase_timer_0.one_shot = true
+	phase_timer_0.autostart = false
+	phase_timer_0.timeout.connect(increment_phase)
+	add_child(phase_timer_0)
 	
+	phase_timer_1 = Timer.new()
+	phase_timer_1.wait_time = 60
+	phase_timer_1.one_shot = true
+	phase_timer_1.autostart = false
+	phase_timer_1.timeout.connect(increment_phase)
+	add_child(phase_timer_1)
 	
-	phase_timer2 = Timer.new()
-	phase_timer2.wait_time = 60
-	phase_timer2.one_shot = true
-	phase_timer2.autostart = false
-	phase_timer2.timeout.connect(_set_phase_to_2)
-	add_child(phase_timer2)
+	# 
+	last_phase_timer = Timer.new()
+	last_phase_timer.wait_time = 90
+	last_phase_timer.one_shot = true
+	last_phase_timer.autostart = false
+	last_phase_timer.timeout.connect(increment_phase)
+	add_child(last_phase_timer)
 	
-	win_timer = Timer.new()
-	win_timer.wait_time = 70
-	win_timer.one_shot = true
-	win_timer.autostart = false
-	win_timer.timeout.connect(_set_win)
-	add_child(win_timer)
 	# Timer pour la génération des sprites (toutes les 2s)
 	spawn_timer = Timer.new()
 	spawn_timer.wait_time = spawn_interval
@@ -270,30 +267,33 @@ func _ready():
 	
 
 	# Timer pour changer les sprites après 60s
-
-var switch_timer: Timer
-var phase_timer: Timer
-var phase_timer2: Timer
-var win_timer : Timer
+var phase_timer_0: Timer
+var phase_timer_1: Timer
+var last_phase_timer : Timer
 var spawn_timer :Timer
-func _switch_sprites():
-	# Code pour changer les sprites
-	if phase == 1 :
-		print("entrée dans la phase 1")
-	pass
 
-func _set_phase_to_1():
-	phase = 1
+func increment_phase():
+	phase += 1
 	print("Phase is now: ", phase)
+	
+	match phase:
+		0:
+			pass
+		1:
+			pass
+		2:
+			pass
+		3:
+			_set_win()
+	
+
+
 func _set_win():
-	if player_health >0 :
+	if player_health > 0 :
 		print("bravo vous êtes arrivée a la fin ")
 		_game_over(true)
-		
-func _set_phase_to_2():
-	phase = 2
-	print("Phase is now: ", phase)
-		
+
+
 
 # Changer la liste des sprites après 60 secondes
 
@@ -325,6 +325,7 @@ func _generate_sprite():
 
 	var keys = sprite_list.keys()
 	var rand_key = keys[randi() % keys.size()]
+	#var rand_key = keys[5]
 	var rand_texture = sprite_list[rand_key]
 
 	# Vérifier si la texture est bien chargée
@@ -342,6 +343,13 @@ func _generate_sprite():
 	new_sprite.scale = Vector3.ONE * SPRITE_SCALE  # Ajuste la taille à 50%
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
+	
+	
+	var spriteColorModulate = Color.WHITE
+	if rand_key == "Note":
+		spriteColorModulate = note_color[randi() % note_color.size()]
+		new_sprite.position.y = new_sprite.position.y + 0.4
+		
 
 	# Calculer la distance entre start_pos et end_pos
 	var distance = start_pos.distance_to(end_pos)
@@ -352,7 +360,7 @@ func _generate_sprite():
 	# Animation de transparence
 	new_sprite.modulate = Color.TRANSPARENT
 	var tween2 = get_tree().create_tween()
-	tween2.tween_property(new_sprite, "modulate", Color.WHITE, 1).set_trans(Tween.TRANS_LINEAR)
+	tween2.tween_property(new_sprite, "modulate", spriteColorModulate, 1).set_trans(Tween.TRANS_LINEAR)
 
 	# Animation de déplacement
 	var tween = get_tree().create_tween()
@@ -368,7 +376,7 @@ func _generate_sprite():
 # Déplacement fluide de la caméra
 func _process(delta):
 	if showDebugMenu :
-		$Menu/DebugMenu.show()
+		$Menus/DebugMenu.show()
 		
 		debugMsg = "Time :" +  str((Time.get_ticks_msec())) + " FPS: " + str(Engine.get_frames_per_second()) + " delta: " + str(roundi(delta*1e3))  +\
 		"\nPlayback pos: " + str(roundi(musiqueCible.get_playback_position()*1000)) +\
@@ -383,27 +391,23 @@ func _process(delta):
 	
 	time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
 	if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
-		print("\nAugmentation de la difficulté")
 		time_counter = 0.0
-		if dificult <= 10 :
-			
-			object_speed *= 1.1 # augment la vitesse des sprites de 10%
-			spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
-			print("Difficulté augmenté de : 10%")
 		
 		dificult +=1
-		if dificult >= 10 :
-			print("phase finale en cours la difficulté va fortement augmenter")
-			if dificult >= 15 :
-				print("dificulté max atteinte")
+		print("\nNiveau de difficulté ", dificult)
+		if dificult <= 10 :
+			object_speed *= 1.1 # augment la vitesse des sprites de 10%
+			spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
+			print("Vitesse augmentée de 10%")
+		elif dificult <= 15:
 			object_speed *= 1.4 # augment la vitesse des sprites de 10%
 			spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
-			print("Difficulté augmenté de : 40%")
+			print("Vitesse augmentée de 40%")
+		else :
+			print("Vitesse max atteinte")
 		
-		print("nouvelle vitesse des sprites : ",object_speed)
-		print("nouveau taux d'apparition est de ",spawn_interval)
-		print ("le niveau de difficulté passe de ", dificult ," à ", dificult+1)
-	
+		print("Vitesse des sprites : ", round(object_speed * 100) * 0.01)
+		print("Taux d'apparition des sprites : ", round(spawn_interval * 100) * 0.01)
 	
 	if musicPlaying:
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
@@ -504,13 +508,12 @@ func _check_proximity():
 			if objMinX < curseurMinxX && curseurMinxX < objMaxX || objMinX < curseurMaxX && curseurMaxX < objMaxX :
 				# collision !
 				var sprite_name = sprite.get_meta("name")
-				print(sprite_name, " touché !")
 
 				# Vérifier si l'objet est dangereux
 				if sprite_name in dangerous_sprites:
 					_take_damage()
 				if sprite_name in bonus_sprites:
-					_bonus()
+					_bonus(sprite)
 				
 				# Supprimer après détection
 				sprite.modulate = Color.TRANSPARENT
@@ -523,31 +526,51 @@ func resetBonus():
 	for note:TextureRect in notem:
 		note.modulate = Color.WHITE
 
-func _bonus():
+func _bonus(touchedSprite:Sprite3D):
 	#print("vous avez obtenu un bonus")
 	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
 	var timeFadeIn = 1 # in sec
-	#print("bonus " + str(Notes))
-	if Notes == 0 :
-		notem[Notes].modulate = Color.hex(0x002cd8ff)
+	
+	# Find the value of the touched Note
+	var i_match = 0
+	var noteTargetColor:Color
+	for i in range(note_color.size()):
+		noteTargetColor = note_color[i]
+		if touchedSprite.modulate == noteTargetColor:
+			i_match = i
+			break
+	
+	
+	# check if you dont have this note yet
+	if note_collected[i_match] == false:
+		note_collected[i_match] = true
+		
+		# update allNotesCollected
+		allNotesCollected = true
+		for abool in note_collected:
+			if abool == false:
+				allNotesCollected = false
+		
+		#  modify the GUI note
+		notem[i_match].modulate = note_color[i_match]
+		
+		# modify the music
+		var audioGain = audioGainSynth
+		match i_match:
+			0:
+				audioGain = audioGainSynth
+			1:
+				audioGain = audioGainPiano
+			2:
+				audioGain = audioGainGuitare1
+			3:
+				audioGain = audioGainGuitare2
 		
 		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(audioGainSynth, "volume_db", 0, timeFadeIn)
+		tween.tween_property(audioGain, "volume_db", 0, timeFadeIn)
 		
-	if Notes == 1 :
-		notem[Notes].modulate = Color.hex(0x009e21ff)
-		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(audioGainPiano, "volume_db", 0, timeFadeIn)
-	if Notes == 2 :
-		notem[Notes].modulate = Color.hex(0xecbb00ff)
-		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(audioGainGuitare1, "volume_db", 0, timeFadeIn)
-	if Notes == 3 :
-		notem[Notes].modulate = Color.hex(0xff55c8ff)
-		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(audioGainGuitare2, "volume_db", 0, timeFadeIn)
-	Notes += 1
-	print("nombre de Note obtenue : ",Notes)
+		Notes += 1
+		print("nombre de Note obtenue : ",Notes)
 	
 # Gestion des points de vie
 func _take_damage():
@@ -581,10 +604,9 @@ func _game_over(gagne:bool):
 	$GUI/CanvasLayerNotes.offset = Vector2(-400,0)
 	$GUI/CanvasLayerNotes.layer = 128
 	spawn_timer.stop()
-	switch_timer.stop()
-	phase_timer.stop()
-	phase_timer2.stop()
-	win_timer.stop()
+	phase_timer_0.stop()
+	phase_timer_1.stop()
+	last_phase_timer.stop()
 	
 	stopMusique()
 	$Menus/EndMenu.show()
@@ -629,7 +651,7 @@ func interpretPattern(patternInput):
 	#print(str(currentPatternDelta))
 	#print(str(patternInput))
 	var matchedPattern = findPattern(patternInput)
-	print("Your pattern is " + str(matchedPattern) + "  ..Mean delta = " + str(roundi(meanDeltaDC * 1000)) + " ms")
+	#print("Your pattern is " + str(matchedPattern) + "  ..Mean delta = " + str(roundi(meanDeltaDC * 1000)) + " ms")
 	#print("")
 	
 	#match matchedPattern:
@@ -906,10 +928,9 @@ func lancementPartie():
 	musicPlaying = false
 	musicMuted = false
 	spawn_timer.start()
-	switch_timer.start()
-	phase_timer.start()
-	phase_timer2.start()
-	win_timer.start()
+	phase_timer_0.start()
+	phase_timer_1.start()
+	last_phase_timer.start()
 	dificult = 0
 	object_speed = INITIAL_OBJECT_SPEED
 	spawn_interval = 2.0
