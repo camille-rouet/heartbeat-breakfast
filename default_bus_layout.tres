@@ -1,7 +1,10 @@
-[gd_resource type="AudioBusLayout" load_steps=7 format=3 uid="uid://brmlf6wtwkn22"]
+[gd_resource type="AudioBusLayout" load_steps=8 format=3 uid="uid://brmlf6wtwkn22"]
 
 [sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_wnllw"]
 resource_name = "Amplify"
+
+[sub_resource type="AudioEffectPanner" id="AudioEffectPanner_ifmqf"]
+resource_name = "Panner"
 
 [sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_aax4t"]
 resource_name = "Amplify"
@@ -49,6 +52,8 @@ bus/4/volume_db = -4.00569
 bus/4/send = &"MusiqueEtienne1"
 bus/4/effect/0/effect = SubResource("AudioEffectAmplify_wnllw")
 bus/4/effect/0/enabled = true
+bus/4/effect/1/effect = SubResource("AudioEffectPanner_ifmqf")
+bus/4/effect/1/enabled = false
 bus/5/name = &"GuitareSamba"
 bus/5/solo = false
 bus/5/mute = false
@@ -69,7 +74,7 @@ bus/7/name = &"Synth"
 bus/7/solo = false
 bus/7/mute = false
 bus/7/bypass_fx = false
-bus/7/volume_db = -3.32682
+bus/7/volume_db = -2.71024
 bus/7/send = &"MusiqueEtienne1"
 bus/7/effect/0/effect = SubResource("AudioEffectAmplify_71sj1")
 bus/7/effect/0/enabled = true
@@ -85,7 +90,7 @@ bus/9/name = &"Basse"
 bus/9/solo = false
 bus/9/mute = false
 bus/9/bypass_fx = false
-bus/9/volume_db = 0.0
+bus/9/volume_db = 0.860514
 bus/9/send = &"MusiqueEtienne1"
 bus/9/effect/0/effect = SubResource("AudioEffectAmplify_52o03")
 bus/9/effect/0/enabled = true

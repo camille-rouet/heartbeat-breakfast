@@ -4,6 +4,7 @@ var camera: Camera3D
 var object_speed = 0
 @export var INITIAL_OBJECT_SPEED : float = 10.0 #en m/s
 @export var spawn_interval : float = 2.0
+var bonus_spawn_interval = 4.5
 
 const SPRITE_SCALE = 0.5
 
@@ -39,7 +40,7 @@ var phase = 0
 const SPRITE_HEIGHT = 2.5
 
 # Premier set de sprites
-var sprite_textures := {
+var items_textures := {
 	"Table": preload("res://assets/images/meubles/tx_table.png"),
 	"Cartons": preload("res://assets/images/meubles/tx_cartons.png"),
 	"MeubleTV": preload("res://assets/images/meubles/tx_meubletv.png"),
@@ -52,15 +53,19 @@ var note_textures := {
 	}
 	
 # Deuxième set de sprites
-var alternate_sprite_textures := {
+var alternate_items_textures := {
 	"T-shirt": preload("res://assets/images/vêtements/tx_tshirt.png"),
 	"Jeanslip": preload("res://assets/images/vêtements/tx_jeanslip.png"),
 	"string_chaussettes": preload("res://assets/images/vêtements/tx_string_chaussettes.png"),
 	"T-shirt_soutif": preload("res://assets/images/vêtements/tx_tshirt_soutif.png"),
 }
 
+enum PHASE_TUTORIAL {A_INIT, B_GAUCHE, C_DROITE, D_FINI}
+var phaseTutorial = PHASE_TUTORIAL.A_INIT
+var nTutorialSuccess = 0 
+var nTargetTutorialSuccess = 4
 
-var note_color := [Color.hex(0x002cd8ff),
+var note_color := [Color.hex(0x0062B9E9),
 					Color.hex(0x009e21ff),
 					Color.hex(0xecbb00ff),
 					Color.hex(0xff55c8ff)]
@@ -70,12 +75,9 @@ var allNotesCollected = false
 
 
 var columns = []
-var detected_sprites = []  
+var detected_sprites:Node 
 var use_alternate_sprites = false  
 
-# Sprites dangereux
-var dangerous_sprites = ["Table", "MeubleTV", "Sac","Bouteilles","Cartons"]
-var bonus_sprites = ["Note"]
 var mainLight:DirectionalLight3D
 var theWorld:WorldEnvironment
 
@@ -141,10 +143,12 @@ const RHYTHMIC_PATTERN = {
 
 
 # musique de fond
+var partieEnCours = false
 var musicPlaying = false
 var musicMuted = false
 var musicPositionMemo = 0
 var blocTempoGood = true
+var partieTimeStart = -1
 
 # erreur lorsque l'on a un pb de rhytme
 signal rhythmError
@@ -170,6 +174,9 @@ var centralCurrentPattern:Control
 var rightPattern:Control
 
 func _ready():
+	detected_sprites = $Items
+	$Menus/IntroMenu.show()
+	$Menus/StartMenu.show()
 	isRunningOnWeb = OS.has_feature("web")
 	
 	if isRunningOnWeb:
@@ -180,14 +187,14 @@ func _ready():
 
 	# Timers
 	phase_timer_0 = Timer.new()
-	phase_timer_0.wait_time = 30
+	phase_timer_0.wait_time = 20
 	phase_timer_0.one_shot = true
 	phase_timer_0.autostart = false
 	phase_timer_0.timeout.connect(increment_phase)
 	add_child(phase_timer_0)
 	
 	phase_timer_1 = Timer.new()
-	phase_timer_1.wait_time = 60
+	phase_timer_1.wait_time = 40
 	phase_timer_1.one_shot = true
 	phase_timer_1.autostart = false
 	phase_timer_1.timeout.connect(increment_phase)
@@ -195,7 +202,7 @@ func _ready():
 	
 	# 
 	last_phase_timer = Timer.new()
-	last_phase_timer.wait_time = 90
+	last_phase_timer.wait_time = 60
 	last_phase_timer.one_shot = true
 	last_phase_timer.autostart = false
 	last_phase_timer.timeout.connect(increment_phase)
@@ -207,6 +214,14 @@ func _ready():
 	spawn_timer.autostart = false
 	spawn_timer.timeout.connect(_generate_sprite)
 	add_child(spawn_timer)
+	
+	
+	# Timer pour la génération des notes (toutes les 2s)
+	bonus_spawn_timer = Timer.new()
+	bonus_spawn_timer.wait_time = bonus_spawn_interval
+	bonus_spawn_timer.autostart = false
+	bonus_spawn_timer.timeout.connect(_generate_sprite.bind(true))
+	add_child(bonus_spawn_timer)
 	
 	
 	couleurnote()
@@ -275,6 +290,7 @@ var phase_timer_0: Timer
 var phase_timer_1: Timer
 var last_phase_timer : Timer
 var spawn_timer :Timer
+var bonus_spawn_timer :Timer
 
 func increment_phase():
 	phase += 1
@@ -318,24 +334,23 @@ func _generate_sprite(note:bool=false):
 	var sprite_list = {} 
 	
 	if phase == 0:
-		sprite_list = sprite_textures
-		sprite_list.merge(note_textures)
+		sprite_list = items_textures
 	elif phase == 1:
-		sprite_list = sprite_textures.duplicate(true)
-		sprite_list.merge(alternate_sprite_textures)
-		sprite_list.merge(note_textures)
+		sprite_list = items_textures.duplicate(true)
+		sprite_list.merge(alternate_items_textures)
 	elif phase == 2:
-		sprite_list = alternate_sprite_textures
-		sprite_list.merge(note_textures)
+		sprite_list = alternate_items_textures
 
 	var keys = sprite_list.keys()
 	var rand_key = keys[randi() % keys.size()]
 	
-	if note:
-		rand_key = "Note"
-	
 	#var rand_key = keys[5]
 	var rand_texture = sprite_list[rand_key]
+	
+	if note:
+		rand_texture = note_textures["Note"]
+		rand_key = "Note"
+	
 
 	# Vérifier si la texture est bien chargée
 	if rand_texture == null:
@@ -345,7 +360,7 @@ func _generate_sprite(note:bool=false):
 	#print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
 
 	var spriteColorModulate = Color.WHITE
-	if rand_key == "Note":
+	if note:
 		if allNotesCollected:
 			spriteColorModulate = Color.from_hsv(randf(), 0.7 + 0.3 * randf(), 0.9 + 0.1 * randf())
 		else:
@@ -366,8 +381,7 @@ func _generate_sprite(note:bool=false):
 	new_sprite.position = start_pos
 	new_sprite.set_meta("name", rand_key)
 	new_sprite.scale = Vector3.ONE * SPRITE_SCALE  # Ajuste la taille à 50%
-	add_child(new_sprite)  
-	detected_sprites.append(new_sprite)
+	detected_sprites.add_child(new_sprite)
 	
 	new_sprite.shaded = true
 	new_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
@@ -400,7 +414,7 @@ func _physics_process(delta: float) -> void:
 	moveCursor(delta)
 	
 	# move sprites
-	for sprite:Sprite3D in detected_sprites:
+	for sprite:Sprite3D in detected_sprites.get_children():
 		sprite.position.z = sprite.position.z + delta * object_speed
 	
 	
@@ -416,7 +430,8 @@ func _process(delta):
 	var ms_str = str(ms)
 	if ms < 10 :
 		ms_str = "0" + ms_str
-	$GUI/MarginContainer/MarginContainer/TimeLabel.text = Time.get_time_string_from_unix_time(musiqueCible.get_playback_position() ).substr(3) + ":" + ms_str
+	var timepartie = Time.get_ticks_msec() - partieTimeStart 
+	$GUI/TimeMarginContainer/MarginContainer/TimeLabel.text = Time.get_time_string_from_unix_time(timepartie*0.001).substr(3) + ":" + ms_str
 	
 	if showDebugMenu :
 		$Menus/DebugMenu.show()
@@ -434,28 +449,28 @@ func _process(delta):
 	
 	
 	if musicPlaying:
-		time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
-		if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
-			time_counter = 0.0
-			
-			_generate_sprite(true)
-			
-			dificult +=1
-			print("\nNiveau de difficulté ", dificult)
-			if dificult <= 10 :
-				object_speed *= 1.1 # augment la vitesse des sprites de 10%
-				spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
-				print("Vitesse augmentée de 10%")
-			elif dificult <= 15:
-				object_speed *= 1.4 # augment la vitesse des sprites de 10%
-				spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
-				print("Vitesse augmentée de 40%")
-			else :
-				print("Vitesse max atteinte")
-			
-			print("Vitesse des sprites : ", round(object_speed * 100) * 0.01)
-			print("Taux d'apparition des sprites : ", round(spawn_interval * 100) * 0.01)
-	
+		
+		if partieEnCours:
+			time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
+			if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
+				time_counter = 0.0
+				
+				dificult +=1
+				print("\nNiveau de difficulté ", dificult)
+				if dificult <= 10 :
+					object_speed *= 1.1 # augment la vitesse des sprites de 10%
+					spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
+					print("Vitesse augmentée de 10%")
+				elif dificult <= 15:
+					object_speed *= 1.4 # augment la vitesse des sprites de 10%
+					spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
+					print("Vitesse augmentée de 40%")
+				else :
+					print("Vitesse max atteinte")
+				
+				print("Vitesse des sprites : ", round(object_speed * 100) * 0.01)
+				print("Taux d'apparition des sprites : ", round(spawn_interval * 100) * 0.01)
+		
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
 		if useEngineTimeInsteadOfPlaybackPosition:
 			time = ((Time.get_ticks_msec()*0.001) - audioServerLatency - LATENCY * 0.001)  - musiqueTimeStart
@@ -469,6 +484,25 @@ func _process(delta):
 			currentBeat = beat
 		var DC = int(time / DCLength)
 		var DCInBeat = (DC) % 4 + 1
+		
+		match phaseTutorial:
+			PHASE_TUTORIAL.A_INIT:
+				$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.play()
+			PHASE_TUTORIAL.B_GAUCHE:
+				$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.stop()
+				if  DCInBeat == 1 && (time / DCLength - floor(time / DCLength)) < 0.15 || DCInBeat == 4 && (time / DCLength - floor(time / DCLength)) > 0.9:
+					$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.frame = 0
+				else:
+					$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.frame = 1
+			PHASE_TUTORIAL.C_DROITE:
+				$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.stop()
+				if  DCInBeat == 1 && (time / DCLength - floor(time / DCLength)) < 0.15 || DCInBeat == 4 && (time / DCLength - floor(time / DCLength)) > 0.9:
+					$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.frame = 0
+				elif  DCInBeat == 4 && (time / DCLength - floor(time / DCLength)) < 0.15 || DCInBeat == 3 && (time / DCLength - floor(time / DCLength)) > 0.9:
+					$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.frame = 0
+				else:
+					$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.frame = 1
+			
 		if(DC > currentDC):
 			currentDC = DC
 			#var text = str("DC: ", DCInBeat, "/", "4")
@@ -524,7 +558,7 @@ func _process(delta):
 
 # Vérifier la proximité des sprites avec le joueur
 func _check_proximity():
-	for sprite:Sprite3D in detected_sprites:
+	for sprite:Sprite3D in detected_sprites.get_children():
 		
 		if sprite.position.z > lineZ - LINEZ_SHIFT:
 			var objSizeX = sprite.get_item_rect().size.x * SPRITE_SCALE * sprite.pixel_size
@@ -537,29 +571,33 @@ func _check_proximity():
 				var sprite_name = sprite.get_meta("name")
 
 				# Vérifier si l'objet est dangereux
-				if sprite_name in dangerous_sprites:
+				if sprite_name in items_textures.keys() || sprite_name in alternate_items_textures.keys():
 					_take_damage()
-				if sprite_name in bonus_sprites:
+				if sprite_name in note_textures.keys():
 					_bonus(sprite)
 				
 				# Supprimer après détection
-				detected_sprites.erase(sprite)
+				detected_sprites.remove_child(sprite)
 				sprite.queue_free()
 		
 		if sprite.position.z > lineZ + 2 * LINEZ_SHIFT :
-			# Supprimer après détection
-			detected_sprites.erase(sprite)
+			# Supprimer après dépassement
+			detected_sprites.remove_child(sprite)
 			sprite.queue_free()
 				
 
 func resetBonus():
 	Notes = 0
+	allNotesCollected = false
+	note_collected = [false, false, false, false]
 	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
 	for note:TextureRect in notem:
 		note.modulate = Color.WHITE
 
 func _bonus(touchedSprite:Sprite3D):
 	#print("vous avez obtenu un bonus")
+	$"Audio/Bruitages/Bell/133990GmajorrrTriangle".pitch_scale = 0.6 + 0.3 * randf()
+	$"Audio/Bruitages/Bell/133990GmajorrrTriangle".play()
 	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
 	var timeFadeIn = 1 # in sec
 	
@@ -636,11 +674,19 @@ func _game_over(gagne:bool):
 	$GUI/CanvasLayerNotes.offset = Vector2(-400,0)
 	$GUI/CanvasLayerNotes.layer = 128
 	spawn_timer.stop()
+	bonus_spawn_timer.stop()
 	phase_timer_0.stop()
 	phase_timer_1.stop()
 	last_phase_timer.stop()
+	partieEnCours = false
+	
+	# suppression de tous les items
+	for sprite in detected_sprites.get_children():
+		detected_sprites.remove_child(sprite)
+		sprite.queue_free()
 	
 	stopMusique()
+	partieEnCours = false
 	$Menus/EndMenu.show()
 
 
@@ -808,9 +854,11 @@ func launchMusique():
 			#musicPositionMemo = i.get_playback_position()
 			#i.stop()
 	musiqueTimeStart = Time.get_ticks_msec() * 0.001
-	for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
-		i.play()
+	if !musicPlaying:
+		for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
+			i.play()
 	
+	audioGainBasse.volume_db = -80
 	audioGainCuica.volume_db = -80
 	audioGainGuitare1.volume_db = -80
 	audioGainGuitare2.volume_db = -80
@@ -840,6 +888,17 @@ func _unhandled_input(event):
 	if event.is_action_pressed("ToucheH"):
 		showDebugMenu = !showDebugMenu
 	
+	if event.is_action_released("ToucheA") && !partieEnCours :
+		match phaseTutorial:
+			PHASE_TUTORIAL.A_INIT:
+				_tuto_fin_phase_A()
+			PHASE_TUTORIAL.B_GAUCHE:
+				if nTutorialSuccess >= nTargetTutorialSuccess:
+					_tuto_fin_phase_B()
+			PHASE_TUTORIAL.C_DROITE:
+				if nTutorialSuccess >= nTargetTutorialSuccess:
+					lancementPartie()
+		
 	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT") || event.is_action_pressed("inputManette"):
 		nInput = nInput + 1
 		
@@ -904,23 +963,35 @@ func _unhandled_input(event):
 			var firstDCinput = currentPatternInput[0]
 			match firstDCinput:
 				0:
-					pass
+					nTutorialSuccess = 0
 				1:
 					var lastDCInput = lastPatternInput[3]
 					rhythmOK.emit(lastDCInput)
 					match lastDCInput:
 							0:
+								if phaseTutorial == PHASE_TUTORIAL.B_GAUCHE:
+									nTutorialSuccess += 1
+									$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
+								else:
+									nTutorialSuccess = 0
+								updateTutorialSuccessLabel()
 								if curseurSpeed > 0:
 									curseurSpeed = -ADDED_SPEED
 								else:
 									curseurSpeed += -ADDED_SPEED
 							1:
+								if phaseTutorial == PHASE_TUTORIAL.C_DROITE:
+									nTutorialSuccess += 1
+									$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
+								else:
+									nTutorialSuccess = 0
+								updateTutorialSuccessLabel()
 								if curseurSpeed < 0:
 									curseurSpeed = ADDED_SPEED
 								else:
 									curseurSpeed += ADDED_SPEED
 				"R":
-					pass
+					nTutorialSuccess = 0
 				 
 		
 	
@@ -928,8 +999,9 @@ func _unhandled_input(event):
 	if event.is_action_pressed("mute_switch"):
 		switchMuteMusique()
 		
-	#if event.is_action_pressed("pause_switch"):
-		#switchPauseMusique()
+	if event.is_action_pressed("ToucheP"):
+		if phaseTutorial != PHASE_TUTORIAL.D_FINI:
+			lancementPartie()
 
 	
 
@@ -952,14 +1024,62 @@ func menuIntro():
 	$Menus/StartMenu.hide()
 	$Menus/IntroMenu.show()
 
-func lancementPartie():
+func lancementTutorial():
 	$Menus/StartMenu.hide()
 	$Menus/IntroMenu.hide()
 	$Menus/EndMenu.hide()
+	$GUI/TimeMarginContainer.hide()
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
+	dificult = 0
+	launchMusique()
+	updateCoeur()
+	resetBonus()
+	$GUI/CanvasLayerNotes.offset = Vector2(400,-550)
+	$GUI/CanvasLayerNotes.layer = 2
+	phase = 0
+	$Nodes3D/Perso/Nuage1.show()
+	$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.hide()
+	
+	phaseTutorial = PHASE_TUTORIAL.A_INIT
+	
+	var timer = Timer.new()
+	timer.name = "timer_bouton"
+	timer.wait_time = 2
+	timer.one_shot = true
+	timer.autostart = false
+	add_child(timer)
+	timer.timeout.connect($Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show)
+	timer.start()
+
+func _tuto_fin_phase_A():
+	phaseTutorial = PHASE_TUTORIAL.B_GAUCHE
+	nTutorialSuccess = 0
+	$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
+	updateTutorialSuccessLabel()
+
+
+func _tuto_fin_phase_B():
+	phaseTutorial = PHASE_TUTORIAL.C_DROITE
+	nTutorialSuccess = 0
+	$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
+	updateTutorialSuccessLabel()
+
+
+func lancementPartie():
+	partieTimeStart = Time.get_ticks_msec()
+	phaseTutorial = PHASE_TUTORIAL.D_FINI
+	$Menus/StartMenu.hide()
+	$Menus/IntroMenu.hide()
+	$Menus/EndMenu.hide()
+	$Nodes3D/Perso/Nuage1.hide()
+	$GUI/TimeMarginContainer.show()
+	resetRhythm()
+	partieEnCours = true
+	musicMuted = false
 	spawn_timer.start()
+	bonus_spawn_timer.start()
 	phase_timer_0.start()
 	phase_timer_1.start()
 	last_phase_timer.start()
@@ -967,15 +1087,29 @@ func lancementPartie():
 	object_speed = INITIAL_OBJECT_SPEED
 	spawn_interval = 2.0
 	
-	for obj in detected_sprites:
-		obj.queue_free
-		detected_sprites.erase(obj)
+	# suppression de tous les items
+	for sprite in detected_sprites.get_children():
+		detected_sprites.remove_child(sprite)
+		sprite.queue_free()
 	
-	detected_sprites = []
 	launchMusique()
+	audioGainBasse.volume_db = 0
 	player_health = BASE_HEALTH
 	updateCoeur()
 	resetBonus()
 	$GUI/CanvasLayerNotes.offset = Vector2(400,-550)
 	$GUI/CanvasLayerNotes.layer = 2
 	phase = 0
+
+
+func updateTutorialSuccessLabel():
+	var msg = ""
+	if phaseTutorial == PHASE_TUTORIAL.B_GAUCHE:
+		msg = "Bon commençons par aller à gauche.\nJe dois taper tous les temps.\n"
+	if phaseTutorial == PHASE_TUTORIAL.C_DROITE:
+		msg = "Yeah ça groove !\nPour aller à droite, il faut adopter le style samba.\n"
+	for i in range(nTutorialSuccess):
+		msg = msg + " ♥"
+	for i in range(nTargetTutorialSuccess - nTutorialSuccess):
+		msg = msg + " ♡"
+	$Nodes3D/Perso/Nuage1/Label3D.text = msg

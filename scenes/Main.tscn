@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=67 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/mainScript.gd" id="1_06y3i"]
 [ext_resource type="Texture2D" uid="uid://cxfg4q843v2yh" path="res://assets/images/meubles/tx_table.png" id="2_jllnr"]
@@ -14,9 +14,11 @@
 [ext_resource type="Texture2D" uid="uid://dwvlt8seqg6hn" path="res://assets/images/anim_perso_tete/anim_perso_tete_00001.png" id="12_r3ovb"]
 [ext_resource type="Texture2D" uid="uid://rt8gb5lmpels" path="res://assets/images/anim_perso_tete/anim_perso_tete_00002.png" id="13_bgy3v"]
 [ext_resource type="Texture2D" uid="uid://imb5tvoqsv7c" path="res://assets/images/anim_perso_tete/anim_perso_tete_00003.png" id="14_u1mnt"]
-[ext_resource type="Texture2D" uid="uid://c26sucxvjpp1r" path="res://assets/images/tx_perso.png" id="15_qmuus"]
 [ext_resource type="Texture2D" uid="uid://bygp7aocmlbkv" path="res://assets/images/sol/texture sol.png" id="16_bjitj"]
+[ext_resource type="Texture2D" uid="uid://b16xjrt1db478" path="res://assets/images/Bulle.png" id="16_bnoof"]
+[ext_resource type="Texture2D" uid="uid://dilwqaodc5h8" path="res://assets/images/toucheA_bas.png" id="17_06akl"]
 [ext_resource type="AudioStream" uid="uid://36geufm6piii" path="res://assets/audio/musiques/samba95bpm/Basse Samba.wav" id="17_mq548"]
+[ext_resource type="Texture2D" uid="uid://bijucrlbg8pri" path="res://assets/images/toucheA_haut.png" id="18_bi8w7"]
 [ext_resource type="AudioStream" uid="uid://wr4i51ksikon" path="res://assets/audio/musiques/samba95bpm/Bloc Tempo Bad.wav" id="18_nelmh"]
 [ext_resource type="AudioStream" uid="uid://b28j2ej6ydwlt" path="res://assets/audio/musiques/samba95bpm/Bloc Tempo Good.wav" id="19_0k2v8"]
 [ext_resource type="AudioStream" uid="uid://c6ymd1katbp0o" path="res://assets/audio/musiques/samba95bpm/Cuica (lol).wav" id="20_65ys4"]
@@ -37,8 +39,12 @@
 [ext_resource type="AudioStream" uid="uid://c60g07hkagivh" path="res://assets/audio/musiques/electro-tribal-beat-179094.mp3" id="35_b6q6p"]
 [ext_resource type="Script" path="res://scripts/canvas_layer.gd" id="36_eomoj"]
 [ext_resource type="Texture2D" uid="uid://csacbx5y3r5s6" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_grey.png" id="37_dc5ym"]
+[ext_resource type="AudioStream" uid="uid://cs8bpsf0y2af6" path="res://assets/audio/bruitage/bell/133990__gmajorrr__triangle.mp3" id="37_yg75q"]
+[ext_resource type="AudioStream" uid="uid://qppjxuqi0ihk" path="res://assets/audio/bruitage/bell/517609__samuelgremaud__claves.mp3" id="38_4xema"]
 [ext_resource type="Texture2D" uid="uid://c2r4sia63jdlc" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_grey_circle.png" id="38_7l1wp"]
+[ext_resource type="AudioStream" uid="uid://cjsd7nc6jc25s" path="res://assets/audio/bruitage/bell/634863__collinb1000__clave4.mp3" id="39_ftdbn"]
 [ext_resource type="Texture2D" uid="uid://gnwkv3r0rns7" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_round_circle.png" id="39_v3cvb"]
+[ext_resource type="AudioStream" uid="uid://c70akrdnnet8k" path="res://assets/audio/bruitage/bell/640030__iainmccurdy__tr-808-cowbell.mp3" id="40_7enrr"]
 [ext_resource type="Texture2D" uid="uid://b1chn8ucxxnje" path="res://packs/kenney-ui-pack/PNG/Red/Double/check_round_grey_circle.png" id="40_qmap7"]
 [ext_resource type="Texture2D" uid="uid://cst4q81ss65a5" path="res://packs/kenney-ui-pack/PNG/Yellow/Double/check_round_color.png" id="41_r4knr"]
 [ext_resource type="Texture2D" uid="uid://c5gh43md6jb6q" path="res://assets/images/coeur1.png" id="42_m5vwx"]
@@ -101,6 +107,20 @@ animations = [{
 "speed": 6.0
 }]
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_kedgr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_06akl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_bi8w7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
+
 [sub_resource type="BoxMesh" id="BoxMesh_ceq4n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_tg8jn"]
@@ -110,7 +130,7 @@ size = Vector2(12, 200)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6sdfs"]
 albedo_texture = ExtResource("16_bjitj")
-uv1_scale = Vector3(6, 100, 1)
+uv1_scale = Vector3(3, 50, 0.5)
 
 [sub_resource type="SystemFont" id="SystemFont_akqv3"]
 font_names = PackedStringArray("Calibri")
@@ -130,6 +150,10 @@ corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
+
+[sub_resource type="SystemFont" id="SystemFont_waqye"]
+font_names = PackedStringArray("Comic Sans MS")
+font_weight = 999
 
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(0.999995, -0.00257901, 0.00182075, 0.00257687, 0.999996, 0.00117718, -0.00182377, -0.00117249, 0.999998, 0, 0, 0)
@@ -158,7 +182,7 @@ fov = 60.1
 transform = Transform3D(1, 4.47926e-11, 0, -2.12594e-10, 1, 1.16415e-10, 0, 1.16415e-10, 1, 0, 0, 0)
 
 [node name="Perso" type="Node3D" parent="Nodes3D"]
-transform = Transform3D(3, 8.63601e-05, -0.00171077, 0.000857336, 2.5182, 1.63054, 0.00148297, -1.63054, 2.5182, 2.78744, 3.27298, 20.0014)
+transform = Transform3D(3, -0.000172915, -0.00356348, 0.00147185, 2.78957, 1.10375, 0.00324993, -1.10375, 2.78957, 2.78744, 3.27298, 20.0014)
 
 [node name="AnimatedSpritePersoCorps" type="AnimatedSprite3D" parent="Nodes3D/Perso"]
 transform = Transform3D(0.1, -1.45519e-11, 0, -1.45519e-11, 0.0999999, -3.72529e-09, 0, 0, 0.1, 0.0089798, -0.0108957, 0.0115032)
@@ -180,12 +204,27 @@ autoplay = "tete"
 frame = 2
 frame_progress = 0.115252
 
-[node name="SpritePerso" type="Sprite3D" parent="Nodes3D/Perso"]
-transform = Transform3D(0.1, 0, 0, 0, 0.0999999, 0, 0, 0, 0.1, 0, 0, 0)
-visible = false
-shaded = true
-texture_filter = 0
-texture = ExtResource("15_qmuus")
+[node name="Nuage1" type="Sprite3D" parent="Nodes3D/Perso"]
+transform = Transform3D(1, -8.73117e-11, 5.82077e-10, 8.73115e-11, 1, 2.68221e-07, -5.82077e-10, -2.68221e-07, 1, 0.124409, 0.29532, -0.307328)
+pixel_size = 0.0025
+texture = ExtResource("16_bnoof")
+
+[node name="Label3D" type="Label3D" parent="Nodes3D/Perso/Nuage1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.085, 0.845, 0)
+custom_aabb = AABB(-1.215, -0.52, 0.815, 2.405, 0.89, 0.375)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
+text = "Quel mal de crâne ! Je dois suivre la musique pour garder l’équilibre..."
+font_size = 24
+autowrap_mode = 3
+width = 400.0
+
+[node name="AnimatedSpriteButton" type="AnimatedSprite3D" parent="Nodes3D/Perso/Nuage1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.21, 0.69, 0)
+custom_aabb = AABB(-1.1, -0.805, 1.305, 2.175, 1.56, 0.435)
+pixel_size = 0.003
+sprite_frames = SubResource("SpriteFrames_kedgr")
+frame_progress = 0.332506
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Nodes3D"]
 transform = Transform3D(2, 0, -8.74547e-08, 8.80514e-08, 3.72529e-09, 2, 2.32831e-10, -40, 0, 8.99652, -0.0931386, -0.0147989)
@@ -331,6 +370,24 @@ stream = ExtResource("34_0460h")
 volume_db = 16.0
 pitch_scale = 0.75
 
+[node name="Bell" type="Node" parent="Audio/Bruitages"]
+
+[node name="133990GmajorrrTriangle" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
+stream = ExtResource("37_yg75q")
+volume_db = -6.0
+pitch_scale = 0.65
+
+[node name="517609SamuelgremaudClaves" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
+stream = ExtResource("38_4xema")
+volume_db = 6.0
+pitch_scale = 0.83
+
+[node name="634863Collinb1000Clave4" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
+stream = ExtResource("39_ftdbn")
+
+[node name="640030IainmccurdyTr-808-cowbell" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
+stream = ExtResource("40_7enrr")
+
 [node name="Electro-tribal-beat-179094" type="AudioStreamPlayer" parent="Audio"]
 stream = ExtResource("35_b6q6p")
 
@@ -356,7 +413,7 @@ texture = ExtResource("6_g4pmh")
 
 [node name="GUI" type="CanvasLayer" parent="."]
 
-[node name="MarginContainer" type="MarginContainer" parent="GUI"]
+[node name="TimeMarginContainer" type="MarginContainer" parent="GUI"]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -369,18 +426,18 @@ size_flags_vertical = 4
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="ColorRect" type="ColorRect" parent="GUI/MarginContainer"]
+[node name="ColorRect" type="ColorRect" parent="GUI/TimeMarginContainer"]
 layout_mode = 2
 color = Color(0, 0, 0, 0.313726)
 
-[node name="MarginContainer" type="MarginContainer" parent="GUI/MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="GUI/TimeMarginContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 3
 
-[node name="TimeLabel" type="Label" parent="GUI/MarginContainer/MarginContainer"]
+[node name="TimeLabel" type="Label" parent="GUI/TimeMarginContainer/MarginContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
@@ -725,15 +782,27 @@ offset_left = 143.0
 offset_top = 450.0
 offset_right = 537.0
 offset_bottom = 545.0
-theme_override_colors/font_hover_color = Color(1, 0.552941, 0.815686, 1)
-theme_override_colors/font_pressed_color = Color(1, 0, 0.764706, 1)
+theme_override_colors/font_hover_color = Color(0.903745, 0.36643, 0.673717, 1)
+theme_override_colors/font_pressed_color = Color(0.745801, 0.115501, 0.578015, 1)
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 20
 theme_override_fonts/font = SubResource("SystemFont_nwvc2")
 theme_override_font_sizes/font_size = 60
-theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
 text = "Commencer"
+
+[node name="DirectButton" type="Button" parent="Menus/StartMenu"]
+offset_left = 176.0
+offset_top = 565.0
+offset_right = 507.0
+offset_bottom = 607.0
+theme_override_colors/font_hover_color = Color(0.859813, 0.348565, 0.376747, 1)
+theme_override_colors/font_pressed_color = Color(0.760558, 0.20722, 0.24017, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = SubResource("SystemFont_waqye")
+theme_override_font_sizes/font_size = 24
+text = "(Commencer sans tutoriel)"
 
 [node name="DebugMenu" type="CanvasLayer" parent="Menus"]
 layer = 12
@@ -750,6 +819,9 @@ color = Color(0, 0, 0, 0.490196)
 [node name="Label" type="Label" parent="Menus/DebugMenu/MarginContainer"]
 layout_mode = 2
 
+[node name="Items" type="Node" parent="."]
+
 [connection signal="pressed" from="Menus/EndMenu/Button" to="." method="lancementPartie"]
-[connection signal="pressed" from="Menus/IntroMenu/Button" to="." method="lancementPartie"]
+[connection signal="pressed" from="Menus/IntroMenu/Button" to="." method="lancementTutorial"]
 [connection signal="pressed" from="Menus/StartMenu/Button" to="." method="menuIntro"]
+[connection signal="pressed" from="Menus/StartMenu/DirectButton" to="." method="lancementPartie"]
