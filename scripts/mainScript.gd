@@ -149,7 +149,7 @@ var sol:MeshInstance3D
 var isRunningOnWeb:bool = false
 
 func couleurnote ():
-	var  note = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	var  note = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
 	note[0].modulate = Color(255,255,255,1)
 	note[1].modulate = Color(255,255,255,1)
 	note[2].modulate = Color(255,255,255,1)
@@ -209,12 +209,12 @@ func _ready():
 	
 	
 	couleurnote()
-	leftPattern = $CanvasLayer/leftPattern/HBoxContainer
-	centralCurrentPattern = $CanvasLayer/currentPattern/HBoxContainer
-	rightPattern = $CanvasLayer/rightPattern/HBoxContainer
+	leftPattern = $GUI/CanvasLayerPattern/leftPattern/HBoxContainer
+	centralCurrentPattern = $GUI/CanvasLayerPattern/currentPattern/HBoxContainer
+	rightPattern = $GUI/CanvasLayerPattern/rightPattern/HBoxContainer
 	mainLight = $DirectionalLight3D
 	theWorld = $WorldEnvironment
-	sol = $Sol
+	sol = $Nodes3D/Sol
 	rhythmError.connect(_on_rhythm_error)
 	rhythmOK.connect(_on_rhythm_ok)
 	inputDCDone.connect(_on_inputDCDone)
@@ -252,17 +252,17 @@ func _ready():
 		95:
 			musiqueCible = $Audio/Samba95/Percussions
 	
-	curseur = $Perso	
+	curseur = $Nodes3D/Perso
 	curseurBasePosition = curseur.position
 	lineZ = curseur.position.z - LINEZ_SHIFT
-	tetePerso = $Perso/AnimatedSpritePersoTete
+	tetePerso = $Nodes3D/Perso/AnimatedSpritePersoTete
 	
 	# Récupérer la caméra et les colonnes
 	camera = $Camera3D  
-	columns.append($MeshInstance3D)  
-	columns.append($MeshInstance3D2)  
-	columns.append($MeshInstance3D3)  
-	columns.append($MeshInstance3D4)  
+	columns.append($Nodes3D/MeshInstance3D)  
+	columns.append($Nodes3D/MeshInstance3D2)  
+	columns.append($Nodes3D/MeshInstance3D3)  
+	columns.append($Nodes3D/MeshInstance3D4)  
 
 	## Position initiale de la caméra
 	#_align_camera_to_column(true)
@@ -368,7 +368,7 @@ func _generate_sprite():
 # Déplacement fluide de la caméra
 func _process(delta):
 	if showDebugMenu :
-		$DebugMenu.show()
+		$Menu/DebugMenu.show()
 		
 		debugMsg = "Time :" +  str((Time.get_ticks_msec())) + " FPS: " + str(Engine.get_frames_per_second()) + " delta: " + str(roundi(delta*1e3))  +\
 		"\nPlayback pos: " + str(roundi(musiqueCible.get_playback_position()*1000)) +\
@@ -379,7 +379,7 @@ func _process(delta):
 		"\ncurrentPatternInput: " + str(currentPatternInput) +\
 		"\ncurrentPatternDeltaCompleted: " + str(currentPatternDeltaCompleted)
 	else:
-		$DebugMenu.hide()
+		$Menus/DebugMenu.hide()
 	
 	time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
 	if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
@@ -476,7 +476,7 @@ func _process(delta):
 	_check_proximity()
 	
 	
-	$DebugMenu/MarginContainer/Label.text = debugMsg
+	$Menus/DebugMenu/MarginContainer/Label.text = debugMsg
 
 ## Aligner la caméra sur la colonne actuelle
 #func _align_camera_to_column(instant := false):
@@ -519,13 +519,13 @@ func _check_proximity():
 
 func resetBonus():
 	Notes = 0
-	var notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
 	for note:TextureRect in notem:
 		note.modulate = Color.WHITE
 
 func _bonus():
 	#print("vous avez obtenu un bonus")
-	var notem = $CanvasLayer3/MarginContainer/HBoxContainer.get_children()
+	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
 	var timeFadeIn = 1 # in sec
 	#print("bonus " + str(Notes))
 	if Notes == 0 :
@@ -551,7 +551,7 @@ func _bonus():
 	
 # Gestion des points de vie
 func _take_damage():
-	$"ExplRealExplosion1(id1807)Ls".play()
+	$"Audio/Bruitages/ExplRealExplosion1(id1807)Ls".play()
 	player_health -= 1
 	#print("PV restants : ", player_health)
 	
@@ -561,7 +561,7 @@ func _take_damage():
 		_game_over(false)
 
 func updateCoeur():
-	var coeurs = $CanvasLayer2/MarginContainer/HBoxContainer.get_children()
+	var coeurs = $GUI/CanvasLayerCoeur/MarginContainer/HBoxContainer.get_children()
 	
 	for i in range(BASE_HEALTH):
 		if (i+1) <= player_health:
@@ -572,14 +572,14 @@ func updateCoeur():
 # Fin de partie
 func _game_over(gagne:bool):
 	if gagne:
-		$EndMenu/FinPerdu.hide()
-		$EndMenu/FinGagne.show()
+		$Menus/EndMenu/FinPerdu.hide()
+		$Menus/EndMenu/FinGagne.show()
 	else:
-		$EndMenu/FinPerdu.show()
-		$EndMenu/FinGagne.hide()
+		$Menus/EndMenu/FinPerdu.show()
+		$Menus/EndMenu/FinGagne.hide()
 	
-	$CanvasLayer3.offset = Vector2(-400,0)
-	$CanvasLayer3.layer = 128
+	$GUI/CanvasLayerNotes.offset = Vector2(-400,0)
+	$GUI/CanvasLayerNotes.layer = 128
 	spawn_timer.stop()
 	switch_timer.stop()
 	phase_timer.stop()
@@ -587,7 +587,7 @@ func _game_over(gagne:bool):
 	win_timer.stop()
 	
 	stopMusique()
-	$EndMenu.show()
+	$Menus/EndMenu.show()
 
 
 func moveCursor(delta):
@@ -885,23 +885,23 @@ func updateMotif(canvaPattern, patternInput, DCInBeat = -1):
 	for textRect:TextureRect in canvaPattern.get_children():
 		match patternInput[index]:
 			0:
-				textRect.texture = get_node_and_resource("CanvasLayer:textureDCvide")[1]
+				textRect.texture = get_node_and_resource("GUI/CanvasLayerPattern:textureDCvide")[1]
 				if (index+1) == DCInBeat:
-					textRect.texture = get_node_and_resource("CanvasLayer:textureDCpassage")[1]
+					textRect.texture = get_node_and_resource("GUI/CanvasLayerPattern:textureDCpassage")[1]
 			1:
-				textRect.texture = get_node_and_resource("CanvasLayer:textureDCreussite")[1]
+				textRect.texture = get_node_and_resource("GUI/CanvasLayerPattern:textureDCreussite")[1]
 			"R":
-				textRect.texture = get_node_and_resource("CanvasLayer:textureDCrate")[1]
+				textRect.texture = get_node_and_resource("GUI/CanvasLayerPattern:textureDCrate")[1]
 		index = index + 1
 
 func menuIntro():
-	$StartMenu.hide()
-	$IntroMenu.show()
+	$Menus/StartMenu.hide()
+	$Menus/IntroMenu.show()
 
 func lancementPartie():
-	$StartMenu.hide()
-	$IntroMenu.hide()
-	$EndMenu.hide()
+	$Menus/StartMenu.hide()
+	$Menus/IntroMenu.hide()
+	$Menus/EndMenu.hide()
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
@@ -921,6 +921,6 @@ func lancementPartie():
 	player_health = BASE_HEALTH
 	updateCoeur()
 	resetBonus()
-	$CanvasLayer3.offset = Vector2(400,-550)
-	$CanvasLayer3.layer = 1
+	$GUI/CanvasLayerNotes.offset = Vector2(400,-550)
+	$GUI/CanvasLayerNotes.layer = 2
 	phase = 0

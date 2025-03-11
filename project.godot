@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Heartbeat Breakfast"
-run/main_scene="res://scenes/node_3dtest.tscn"
+run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 run/max_fps=60
 boot_splash/bg_color=Color(1, 0.772549, 0.905882, 1)
