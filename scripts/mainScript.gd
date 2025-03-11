@@ -36,7 +36,7 @@ var phase = 0
 @export var canapé : Texture
 @export var valise : Texture
 @export var boite : Texture
-const SPRITE_HEIGHT = 2.4
+const SPRITE_HEIGHT = 2.5
 
 # Premier set de sprites
 var sprite_textures := {
@@ -44,10 +44,13 @@ var sprite_textures := {
 	"Cartons": preload("res://assets/images/meubles/tx_cartons.png"),
 	"MeubleTV": preload("res://assets/images/meubles/tx_meubletv.png"),
 	"Sac": preload("res://assets/images/meubles/tx_sacspoubelles.png"),
-	"Bouteilles": preload("res://assets/images/meubles/tx_bouteilles.png"),
-	"Note": preload("res://assets/images/note_vide.png")
+	"Bouteilles": preload("res://assets/images/meubles/tx_bouteilles.png")
 }
 
+var note_textures := {
+	"Note": preload("res://assets/images/note_vide.png")
+	}
+	
 # Deuxième set de sprites
 var alternate_sprite_textures := {
 	"T-shirt": preload("res://assets/images/vêtements/tx_tshirt.png"),
@@ -55,6 +58,7 @@ var alternate_sprite_textures := {
 	"string_chaussettes": preload("res://assets/images/vêtements/tx_string_chaussettes.png"),
 	"T-shirt_soutif": preload("res://assets/images/vêtements/tx_tshirt_soutif.png"),
 }
+
 
 var note_color := [Color.hex(0x002cd8ff),
 					Color.hex(0x009e21ff),
@@ -298,7 +302,7 @@ func _set_win():
 # Changer la liste des sprites après 60 secondes
 
 # Générer un sprite
-func _generate_sprite():
+func _generate_sprite(note:bool=false):
 	if columns.size() == 0:
 		print("⚠️ Erreur: 'columns' est vide, impossible de générer un sprite.")
 		return
@@ -315,14 +319,21 @@ func _generate_sprite():
 	
 	if phase == 0:
 		sprite_list = sprite_textures
+		sprite_list.merge(note_textures)
 	elif phase == 1:
 		sprite_list = sprite_textures.duplicate(true)
 		sprite_list.merge(alternate_sprite_textures)
+		sprite_list.merge(note_textures)
 	elif phase == 2:
 		sprite_list = alternate_sprite_textures
+		sprite_list.merge(note_textures)
 
 	var keys = sprite_list.keys()
 	var rand_key = keys[randi() % keys.size()]
+	
+	if note:
+		rand_key = "Note"
+	
 	#var rand_key = keys[5]
 	var rand_texture = sprite_list[rand_key]
 
@@ -335,7 +346,18 @@ func _generate_sprite():
 
 	var spriteColorModulate = Color.WHITE
 	if rand_key == "Note":
-		spriteColorModulate = note_color[randi() % note_color.size()]
+		if allNotesCollected:
+			spriteColorModulate = Color.from_hsv(randf(), 0.7 + 0.3 * randf(), 0.9 + 0.1 * randf())
+		else:
+			var i_match = 0
+			var arange = range(note_color.size())
+			arange.shuffle()
+			for i in arange:
+				if note_collected[i] == false:
+					i_match = i
+					break
+			spriteColorModulate = note_color[i_match]
+			
 		start_pos.y = start_pos.y + 0.3
 	
 	# Appliquer la texture
@@ -389,6 +411,13 @@ func _physics_process(delta: float) -> void:
 
 # Déplacement fluide de la caméra
 func _process(delta):
+	
+	var ms = roundi(musiqueCible.get_playback_position() * 100) % 100
+	var ms_str = str(ms)
+	if ms < 10 :
+		ms_str = "0" + ms_str
+	$GUI/MarginContainer/MarginContainer/TimeLabel.text = Time.get_time_string_from_unix_time(musiqueCible.get_playback_position() ).substr(3) + ":" + ms_str
+	
 	if showDebugMenu :
 		$Menus/DebugMenu.show()
 		
@@ -403,27 +432,30 @@ func _process(delta):
 	else:
 		$Menus/DebugMenu.hide()
 	
-	time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
-	if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
-		time_counter = 0.0
-		
-		dificult +=1
-		print("\nNiveau de difficulté ", dificult)
-		if dificult <= 10 :
-			object_speed *= 1.1 # augment la vitesse des sprites de 10%
-			spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
-			print("Vitesse augmentée de 10%")
-		elif dificult <= 15:
-			object_speed *= 1.4 # augment la vitesse des sprites de 10%
-			spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
-			print("Vitesse augmentée de 40%")
-		else :
-			print("Vitesse max atteinte")
-		
-		print("Vitesse des sprites : ", round(object_speed * 100) * 0.01)
-		print("Taux d'apparition des sprites : ", round(spawn_interval * 100) * 0.01)
 	
 	if musicPlaying:
+		time_counter += delta  # Incrémente le compteur de temps avec le delta (temps écoulé)
+		if time_counter >= 10.0:  # Vérifie si 10 secondes se sont écoulées
+			time_counter = 0.0
+			
+			_generate_sprite(true)
+			
+			dificult +=1
+			print("\nNiveau de difficulté ", dificult)
+			if dificult <= 10 :
+				object_speed *= 1.1 # augment la vitesse des sprites de 10%
+				spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
+				print("Vitesse augmentée de 10%")
+			elif dificult <= 15:
+				object_speed *= 1.4 # augment la vitesse des sprites de 10%
+				spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
+				print("Vitesse augmentée de 40%")
+			else :
+				print("Vitesse max atteinte")
+			
+			print("Vitesse des sprites : ", round(object_speed * 100) * 0.01)
+			print("Taux d'apparition des sprites : ", round(spawn_interval * 100) * 0.01)
+	
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
 		if useEngineTimeInsteadOfPlaybackPosition:
 			time = ((Time.get_ticks_msec()*0.001) - audioServerLatency - LATENCY * 0.001)  - musiqueTimeStart
@@ -937,6 +969,8 @@ func lancementPartie():
 	
 	for obj in detected_sprites:
 		obj.queue_free
+		detected_sprites.erase(obj)
+	
 	detected_sprites = []
 	launchMusique()
 	player_health = BASE_HEALTH

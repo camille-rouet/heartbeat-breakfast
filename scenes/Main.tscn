@@ -356,6 +356,36 @@ texture = ExtResource("6_g4pmh")
 
 [node name="GUI" type="CanvasLayer" parent="."]
 
+[node name="MarginContainer" type="MarginContainer" parent="GUI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -32.0
+offset_right = -31.0
+offset_bottom = 43.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ColorRect" type="ColorRect" parent="GUI/MarginContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 0.313726)
+
+[node name="MarginContainer" type="MarginContainer" parent="GUI/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 3
+
+[node name="TimeLabel" type="Label" parent="GUI/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="CanvasLayerPattern" type="CanvasLayer" parent="GUI"]
 layer = 2
 script = ExtResource("36_eomoj")
@@ -616,6 +646,7 @@ expand_mode = 2
 stretch_mode = 4
 
 [node name="Menus" type="CanvasLayer" parent="."]
+layer = 12
 
 [node name="EndMenu" type="CanvasLayer" parent="Menus"]
 layer = 10
