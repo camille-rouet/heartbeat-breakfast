@@ -36,7 +36,7 @@ var phase = 0
 @export var canapé : Texture
 @export var valise : Texture
 @export var boite : Texture
-const SPRITE_HEIGHT = 2.6
+const SPRITE_HEIGHT = 2.4
 
 # Premier set de sprites
 var sprite_textures := {
@@ -251,7 +251,7 @@ func _ready():
 	
 	curseur = $Nodes3D/Perso
 	curseurBasePosition = curseur.position
-	lineZ = curseur.position.z - LINEZ_SHIFT
+	lineZ = curseur.position.z
 	tetePerso = $Nodes3D/Perso/AnimatedSpritePersoTete
 	
 	# Récupérer la caméra et les colonnes
@@ -306,10 +306,8 @@ func _generate_sprite():
 	var rand_column = randi() % columns.size()
 	var column = columns[rand_column]  
 	var start_pos = column.get_node("Start").global_position
-	var end_pos = column.get_node("End").global_position
 	
 	start_pos.y += SPRITE_HEIGHT
-	end_pos.y += SPRITE_HEIGHT
 	
 	
 	# Initialisation de sprite_list
@@ -335,6 +333,11 @@ func _generate_sprite():
 	
 	#print("✅ Génération de: ", rand_key, " avec la texture: ", rand_texture.resource_path)
 
+	var spriteColorModulate = Color.WHITE
+	if rand_key == "Note":
+		spriteColorModulate = note_color[randi() % note_color.size()]
+		start_pos.y = start_pos.y + 0.3
+	
 	# Appliquer la texture
 	var new_sprite:Sprite3D = Sprite3D.new()
 	new_sprite.texture = rand_texture
@@ -344,34 +347,45 @@ func _generate_sprite():
 	add_child(new_sprite)  
 	detected_sprites.append(new_sprite)
 	
+	new_sprite.shaded = true
+	new_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	new_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	
-	var spriteColorModulate = Color.WHITE
-	if rand_key == "Note":
-		spriteColorModulate = note_color[randi() % note_color.size()]
-		new_sprite.position.y = new_sprite.position.y + 0.4
+	
 		
 
-	# Calculer la distance entre start_pos et end_pos
-	var distance = start_pos.distance_to(end_pos)
-
-	# Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
-	var duration = distance / object_speed
+	## Calculer la distance entre start_pos et end_pos
+	#var distance = start_pos.distance_to(end_pos)
+#
+	## Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
+	#var duration = distance / object_speed
 	
+	## Animation de déplacement
+	#var tween = get_tree().create_tween()
+	#tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
+	#tween.tween_callback(new_sprite.queue_free)
+	#tween.tween_callback(func(): detected_sprites.erase(new_sprite))
+
 	# Animation de transparence
 	new_sprite.modulate = Color.TRANSPARENT
 	var tween2 = get_tree().create_tween()
 	tween2.tween_property(new_sprite, "modulate", spriteColorModulate, 1).set_trans(Tween.TRANS_LINEAR)
 
-	# Animation de déplacement
-	var tween = get_tree().create_tween()
-	tween.tween_property(new_sprite, "position", end_pos, duration).set_trans(Tween.TRANS_LINEAR)
-	tween.tween_callback(new_sprite.queue_free)
-	tween.tween_callback(func(): detected_sprites.erase(new_sprite))
 
 
-
-
-
+func _physics_process(delta: float) -> void:
+	
+	moveCursor(delta)
+	
+	# move sprites
+	for sprite:Sprite3D in detected_sprites:
+		sprite.position.z = sprite.position.z + delta * object_speed
+	
+	
+	# Vérifier la proximité des sprites avec le joueur
+	_check_proximity()
+	
+	
 
 # Déplacement fluide de la caméra
 func _process(delta):
@@ -456,8 +470,6 @@ func _process(delta):
 					currentPatternInput = patternDeltaToPatternInput(currentPatternDelta)
 					updateMotif(centralCurrentPattern, currentPatternInput)
 					currentPatternDeltaCompleted = false
-		
-	moveCursor(delta)
 	
 	# defilement du sol
 	var material:StandardMaterial3D = sol.get_surface_override_material(0)
@@ -466,19 +478,6 @@ func _process(delta):
 	var tailleMotifBase = planeMesh.size.y / material.uv1_scale.y
 	var decalageFrame = delta * object_speed
 	material.uv1_offset.y = material.uv1_offset.y - decalageFrame / tailleMotifBase
-	#if Input.is_action_just_pressed("motif1") and camera_column_index > 0:
-		#camera_column_index -= 1
-		#_align_camera_to_column()
-#
-	#if Input.is_action_just_pressed("motif2") and camera_column_index < columns.size() - 1:
-		#camera_column_index += 1
-		#_align_camera_to_column()
-
-	# Animation fluide vers la position cible
-	#camera.position = camera.position.lerp(target_camera_position, camera_speed * delta)
-	# Vérifier la proximité des sprites avec le joueur
-	_check_proximity()
-	
 	
 	$Menus/DebugMenu/MarginContainer/Label.text = debugMsg
 
@@ -495,11 +494,7 @@ func _process(delta):
 func _check_proximity():
 	for sprite:Sprite3D in detected_sprites:
 		
-		#var distance = curseur.position.distance_to(sprite.position)
-		##print("Distance entre", sprite.get_meta("name"), "et le curseur:", distance)
-		#if distance < detection_range:
-		
-		if sprite.position.z > lineZ :
+		if sprite.position.z > lineZ - LINEZ_SHIFT:
 			var objSizeX = sprite.get_item_rect().size.x * SPRITE_SCALE * sprite.pixel_size
 			var objMinX = sprite.position.x - 0.5 * objSizeX
 			var objMaxX = sprite.position.x + 0.5 * objSizeX
@@ -516,8 +511,13 @@ func _check_proximity():
 					_bonus(sprite)
 				
 				# Supprimer après détection
-				sprite.modulate = Color.TRANSPARENT
 				detected_sprites.erase(sprite)
+				sprite.queue_free()
+		
+		if sprite.position.z > lineZ + 2 * LINEZ_SHIFT :
+			# Supprimer après détection
+			detected_sprites.erase(sprite)
+			sprite.queue_free()
 				
 
 func resetBonus():

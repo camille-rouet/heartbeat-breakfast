@@ -56,7 +56,10 @@ sky_material = SubResource("ProceduralSkyMaterial_11rtn")
 [sub_resource type="Environment" id="Environment_mq01q"]
 background_mode = 2
 sky = SubResource("Sky_6a2p7")
-ambient_light_source = 1
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.3
 reflected_light_source = 1
 fog_enabled = true
 fog_light_color = Color(0.870205, 0.365007, 0.449773, 1)
@@ -141,7 +144,11 @@ bouteilles = ExtResource("6_g4pmh")
 environment = SubResource("Environment_mq01q")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.984873, -0.0723344, -0.157455, 0.173275, 0.412533, 0.894311, 0.000265883, -0.908066, 0.418827, 1.75784, 3.26712, 8.08508)
+transform = Transform3D(0.513888, -0.777752, 0.361968, 0.174666, 0.507966, 0.843482, -0.839888, -0.370232, 0.396884, 1.75715, 12.2561, 21.1987)
+shadow_enabled = true
+shadow_opacity = 0.5
+shadow_blur = 3.547
+sky_mode = 1
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 2.21189e-09, -7.567e-09, -2.12367e-10, 0.939693, 0.34202, 0, -0.34202, 0.939692, 4.67413, 7.46216, 24.9457)
