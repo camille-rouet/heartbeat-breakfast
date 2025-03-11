@@ -21,9 +21,9 @@ config/icon="res://assets/images/heart beat logo H no border.png"
 
 [display]
 
-window/size/resizable=false
 window/size/window_width_override=1152
 window/size/window_height_override=648
+window/stretch/mode="canvas_items"
 
 [input]
 
