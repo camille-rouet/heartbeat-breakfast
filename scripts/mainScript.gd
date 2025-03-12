@@ -1,10 +1,11 @@
 extends Node3D
 
 var camera: Camera3D
-var object_speed = 0
+var vitesse_defilement = 0
 @export var INITIAL_OBJECT_SPEED : float = 10.0 #en m/s
 @export var spawn_interval : float = 2.0
 var bonus_spawn_interval = 4.5
+var tutoriel_ending_interval = 4
 
 const SPRITE_SCALE = 0.5
 
@@ -60,7 +61,7 @@ var alternate_items_textures := {
 	"T-shirt_soutif": preload("res://assets/images/vêtements/tx_tshirt_soutif.png"),
 }
 
-enum PHASE_TUTORIAL {A_INIT, B_GAUCHE, C_DROITE, D_FINI}
+enum PHASE_TUTORIAL {A_INIT, B_GAUCHE, C_DROITE, D_CONCLUSION, E_FINI}
 var phaseTutorial = PHASE_TUTORIAL.A_INIT
 var nTutorialSuccess = 0 
 var nTargetTutorialSuccess = 4
@@ -76,7 +77,6 @@ var allNotesCollected = false
 
 var columns = []
 var detected_sprites:Node 
-var use_alternate_sprites = false  
 
 var mainLight:DirectionalLight3D
 var theWorld:WorldEnvironment
@@ -121,12 +121,13 @@ const ADDED_SPEED = 2 # in m / sec
 
 var tetePerso:Node3D
 
-var audioGainBasse:AudioEffectAmplify
 var audioGainCuica:AudioEffectAmplify
 var audioGainGuitare1:AudioEffectAmplify
 var audioGainGuitare2:AudioEffectAmplify
 var audioGainPiano:AudioEffectAmplify
 var audioGainSynth:AudioEffectAmplify
+var audioGainBasse:AudioEffectAmplify
+var audioGainPercu:AudioEffectAmplify
 
 
 var debugMsg:String
@@ -147,7 +148,6 @@ var partieEnCours = false
 var musicPlaying = false
 var musicMuted = false
 var musicPositionMemo = 0
-var blocTempoGood = true
 var partieTimeStart = -1
 
 # erreur lorsque l'on a un pb de rhytme
@@ -181,9 +181,9 @@ var phase_timer_1: Timer
 var last_phase_timer : Timer
 var spawn_timer :Timer
 var bonus_spawn_timer :Timer
+var tutoriel_ending_timer :Timer
 
 func _ready():
-	showStartMenu()
 	detected_sprites = $Items
 	isRunningOnWeb = OS.has_feature("web")
 	
@@ -192,7 +192,7 @@ func _ready():
 		useEngineTimeInsteadOfPlaybackPosition = true
 	else:
 		print("Running on " + OS.get_name())
-
+	
 	# Timers
 	phase_timer_0 = Timer.new()
 	phase_timer_0.wait_time = 20
@@ -231,8 +231,14 @@ func _ready():
 	bonus_spawn_timer.timeout.connect(_generate_sprite.bind(true))
 	add_child(bonus_spawn_timer)
 	
+	tutoriel_ending_timer = Timer.new()
+	tutoriel_ending_timer.wait_time = tutoriel_ending_interval
+	tutoriel_ending_timer.one_shot = true
+	tutoriel_ending_timer.autostart = false
+	tutoriel_ending_timer.timeout.connect(_tuto_fin_phase_D)
+	add_child(tutoriel_ending_timer)
 	
-	couleurnote()
+	
 	leftPattern = $GUI/CanvasLayerPattern/leftPattern/HBoxContainer
 	centralCurrentPattern = $GUI/CanvasLayerPattern/currentPattern/HBoxContainer
 	rightPattern = $GUI/CanvasLayerPattern/rightPattern/HBoxContainer
@@ -242,21 +248,20 @@ func _ready():
 	rhythmError.connect(_on_rhythm_error)
 	rhythmOK.connect(_on_rhythm_ok)
 	inputDCDone.connect(_on_inputDCDone)
-		
+	
+	
 	audioGainCuica = AudioServer.get_bus_effect(4, 0)
 	audioGainGuitare1 = AudioServer.get_bus_effect(5, 0)
 	audioGainPiano = AudioServer.get_bus_effect(6, 0)
 	audioGainSynth = AudioServer.get_bus_effect(7, 0)
 	audioGainGuitare2 = AudioServer.get_bus_effect(8, 0)
 	audioGainBasse = AudioServer.get_bus_effect(9, 0)
+	audioGainPercu = AudioServer.get_bus_effect(10, 0)
 	
 	audioServerLatency = AudioServer.get_output_latency()
 	
 	
-	# Affichage du motif de gauche
-	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
-	# Affichage du motif de droite
-	updateMotif(rightPattern, RHYTHMIC_PATTERN.B)
+	
 	
 	# calcul de la durée du beat et de la DC
 	beatLength = 1.0 / float(BPM) * 60.0
@@ -287,9 +292,16 @@ func _ready():
 	columns.append($Nodes3D/MeshInstance3D2)  
 	columns.append($Nodes3D/MeshInstance3D3)  
 	columns.append($Nodes3D/MeshInstance3D4)  
-
-	## Position initiale de la caméra
-	#_align_camera_to_column(true)
+	
+	showStartMenu()
+	
+	couleurnote()
+	
+	
+	# Affichage du motif de gauche
+	updateMotif(leftPattern, RHYTHMIC_PATTERN.A)
+	# Affichage du motif de droite
+	updateMotif(rightPattern, RHYTHMIC_PATTERN.B)
 
 func showStartMenu():
 	$Menus/StartMenu.show()
@@ -297,6 +309,34 @@ func showStartMenu():
 	$Menus/EndMenu.hide()
 	$GUI/SkipButtonMarginContainer.hide()
 	$GUI/TimeMarginContainer.hide()
+	$GUI/StartMenuButtonMarginContainer.hide()
+	$GUI/CanvasLayerPattern.hide()
+	$GUI/CanvasLayerCoeur.hide()
+	$GUI/CanvasLayerNotes.hide()
+	
+	spawn_timer.stop()
+	bonus_spawn_timer.stop()
+	phase_timer_0.stop()
+	phase_timer_1.stop()
+	last_phase_timer.stop()
+	tutoriel_ending_timer.stop()
+	partieEnCours = false
+	stopMusique()
+	removeAllItems(detected_sprites)
+
+func showMenuIntro():
+	$Menus/StartMenu.hide()
+	$Menus/EndMenu.hide()
+	$Menus/IntroMenu.show()
+	$GUI/SkipButtonMarginContainer.hide()
+	$GUI/TimeMarginContainer.hide()
+	$GUI/StartMenuButtonMarginContainer.show()
+	$GUI/CanvasLayerPattern.hide()
+	$GUI/CanvasLayerCoeur.hide()
+	$GUI/CanvasLayerNotes.hide()
+	
+	removeAllItems(detected_sprites)
+
 
 func increment_phase():
 	phase += 1
@@ -400,7 +440,7 @@ func _generate_sprite(note:bool=false):
 	#var distance = start_pos.distance_to(end_pos)
 #
 	## Calculer le temps nécessaire pour parcourir la distance à la vitesse donnée
-	#var duration = distance / object_speed
+	#var duration = distance / vitesse_defilement
 	
 	## Animation de déplacement
 	#var tween = get_tree().create_tween()
@@ -421,7 +461,7 @@ func _physics_process(delta: float) -> void:
 	
 	# move sprites
 	for sprite:Sprite3D in detected_sprites.get_children():
-		sprite.position.z = sprite.position.z + delta * object_speed
+		sprite.position.z = sprite.position.z + delta * vitesse_defilement
 	
 	
 	# Vérifier la proximité des sprites avec le joueur
@@ -464,17 +504,17 @@ func _process(delta):
 				dificult +=1
 				print("\nNiveau de difficulté ", dificult)
 				if dificult <= 10 :
-					object_speed *= 1.1 # augment la vitesse des sprites de 10%
+					vitesse_defilement *= 1.1 # augment la vitesse des sprites de 10%
 					spawn_interval *=0.9 # augmentation du taux d'apparition des sprites de 10%
 					print("Vitesse augmentée de 10%")
 				elif dificult <= 15:
-					object_speed *= 1.4 # augment la vitesse des sprites de 10%
+					vitesse_defilement *= 1.4 # augment la vitesse des sprites de 10%
 					spawn_interval *=0.6 # augmentation du taux d'apparition des sprites de 10%
 					print("Vitesse augmentée de 40%")
 				else :
 					print("Vitesse max atteinte")
 				
-				print("Vitesse des sprites : ", round(object_speed * 100) * 0.01)
+				print("Vitesse des sprites : ", round(vitesse_defilement * 100) * 0.01)
 				print("Taux d'apparition des sprites : ", round(spawn_interval * 100) * 0.01)
 		
 		var time = musiqueCible.get_playback_position()  - audioServerLatency - LATENCY * 0.001
@@ -548,7 +588,7 @@ func _process(delta):
 	# un offset de 1 fait bouger le motif d'une fois
 	var planeMesh:PlaneMesh = sol.mesh
 	var tailleMotifBase = planeMesh.size.y / material.uv1_scale.y
-	var decalageFrame = delta * object_speed
+	var decalageFrame = delta * vitesse_defilement
 	material.uv1_offset.y = material.uv1_offset.y - decalageFrame / tailleMotifBase
 	
 	$Menus/DebugMenu/MarginContainer/Label.text = debugMsg
@@ -582,7 +622,6 @@ func _check_proximity():
 				if sprite_name in note_textures.keys():
 					_bonus(sprite)
 				
-				# Supprimer après détection
 				detected_sprites.remove_child(sprite)
 				sprite.queue_free()
 		
@@ -670,12 +709,22 @@ func updateCoeur():
 
 # Fin de partie
 func _game_over(gagne:bool):
+	audioGainSynth.volume_db = -9
+	$"Audio/Samba85/Synth#1".play()
 	if gagne:
 		$Menus/EndMenu/FinPerdu.hide()
 		$Menus/EndMenu/FinGagne.show()
 	else:
 		$Menus/EndMenu/FinPerdu.show()
 		$Menus/EndMenu/FinGagne.hide()
+	
+	
+	$GUI/SkipButtonMarginContainer.hide()
+	$GUI/TimeMarginContainer.hide()
+	$GUI/StartMenuButtonMarginContainer.show()
+	$GUI/CanvasLayerPattern.hide()
+	$GUI/CanvasLayerCoeur.show()
+	$GUI/CanvasLayerNotes.show()
 	
 	$GUI/CanvasLayerNotes.offset = Vector2(-400,0)
 	$GUI/CanvasLayerNotes.layer = 128
@@ -684,12 +733,10 @@ func _game_over(gagne:bool):
 	phase_timer_0.stop()
 	phase_timer_1.stop()
 	last_phase_timer.stop()
+	tutoriel_ending_timer.stop()
 	partieEnCours = false
 	
-	# suppression de tous les items
-	for sprite in detected_sprites.get_children():
-		detected_sprites.remove_child(sprite)
-		sprite.queue_free()
+	removeAllItems(detected_sprites)
 	
 	stopMusique()
 	partieEnCours = false
@@ -843,7 +890,6 @@ func resetRhythm():
 	currentPatternDeltaCompleted = false
 	currentBeat = 0
 	currentDC = 0
-	blocTempoGood = true
 	
 # # # # # # METHODES AUDIO
 
@@ -854,15 +900,17 @@ func stopMusique():
 			i.stop()
 	musicPlaying = false
 
-func launchMusique():
+func lancerMusique():
 	#if musicPlaying:
 		#for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
 			#musicPositionMemo = i.get_playback_position()
 			#i.stop()
 	musiqueTimeStart = Time.get_ticks_msec() * 0.001
-	if !musicPlaying:
-		for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
-			i.play()
+	#if !musicPlaying:
+	for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
+		i.play()
+		
+	audioGainPercu.volume_db = 0
 	
 	audioGainBasse.volume_db = -80
 	audioGainCuica.volume_db = -80
@@ -898,12 +946,6 @@ func _unhandled_input(event):
 		match phaseTutorial:
 			PHASE_TUTORIAL.A_INIT:
 				_tuto_fin_phase_A()
-			PHASE_TUTORIAL.B_GAUCHE:
-				if nTutorialSuccess >= nTargetTutorialSuccess:
-					_tuto_fin_phase_B()
-			PHASE_TUTORIAL.C_DROITE:
-				if nTutorialSuccess >= nTargetTutorialSuccess:
-					lancementPartie()
 		
 	if event.is_action_pressed("ToucheA") || event.is_action_pressed("ToucheT") || event.is_action_pressed("inputManette"):
 		nInput = nInput + 1
@@ -943,9 +985,9 @@ func _unhandled_input(event):
 		#print("Ecart à la DC " + str(closerDCInBeat) + " (ms) " + str(roundi(deltaToucheDC * 1000)) )
 		
 		#envoie une erreur en cas de defaillance rhytmique
+		var DCtempoGood = true
 		if abs(deltaToucheDC) > ACCEPTABLE_DELTA * 0.001:
-			rhythmError.emit()
-			blocTempoGood = false
+			DCtempoGood = false
 		
 		# update the rhytmic pattern delta
 		currentPatternDelta[closerDCInBeat - 1] = roundi(deltaToucheDC * 1000)
@@ -954,60 +996,86 @@ func _unhandled_input(event):
 		# update the mean error on DC
 		meanDeltaDC = (meanDeltaDC * (nInput-1) + deltaToucheDC) / nInput
 		
-		#joue un son
-		if blocTempoGood:
-			$Audio/Bruitages/BlocGood.play()
-		else:
-			$Audio/Bruitages/BlocBad.play()
-		blocTempoGood = true
-		
-		#change l'affichage du motif central
-		
 		
 		# deplacement du personnage au premier beat
 		if closerDCInBeat == 1 && lastPatternInput != null:
 			var firstDCinput = currentPatternInput[0]
 			match firstDCinput:
 				0:
-					nTutorialSuccess = 0
+					pass
 				1:
 					var lastDCInput = lastPatternInput[3]
 					rhythmOK.emit(lastDCInput)
 					match lastDCInput:
 							0:
-								if phaseTutorial == PHASE_TUTORIAL.B_GAUCHE:
-									nTutorialSuccess += 1
-									$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
-								else:
-									nTutorialSuccess = 0
-								updateTutorialSuccessLabel()
 								if curseurSpeed > 0:
 									curseurSpeed = -ADDED_SPEED
 								else:
 									curseurSpeed += -ADDED_SPEED
 							1:
-								if phaseTutorial == PHASE_TUTORIAL.C_DROITE:
-									nTutorialSuccess += 1
-									$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
-								else:
-									nTutorialSuccess = 0
-								updateTutorialSuccessLabel()
 								if curseurSpeed < 0:
 									curseurSpeed = ADDED_SPEED
 								else:
 									curseurSpeed += ADDED_SPEED
+					if phaseTutorial == PHASE_TUTORIAL.A_INIT:
+						curseurSpeed = 0
 				"R":
-					nTutorialSuccess = 0
+					pass
 				 
 		
+		# gestion du tutorial
+		match phaseTutorial:
+			PHASE_TUTORIAL.A_INIT, PHASE_TUTORIAL.D_CONCLUSION, PHASE_TUTORIAL.E_FINI:
+				DCtempoGood = true
+			
+			PHASE_TUTORIAL.B_GAUCHE:
+				if DCtempoGood && closerDCInBeat == 1 && lastPatternInput[3] == 0:
+					nTutorialSuccess += 1
+					updateTutorialSuccessLabel()
+					if nTutorialSuccess < nTargetTutorialSuccess:
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".pitch_scale=0.85
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
+					else:
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".pitch_scale += 0.4
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
+						_tuto_fin_phase_B()
+				else:
+					DCtempoGood = false
+					nTutorialSuccess = 0
+					updateTutorialSuccessLabel()
+					
+			PHASE_TUTORIAL.C_DROITE:
+				if DCtempoGood && closerDCInBeat == 1 && lastPatternInput[3] == 1 :
+					nTutorialSuccess += 1
+					updateTutorialSuccessLabel()
+					if nTutorialSuccess < nTargetTutorialSuccess:
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".pitch_scale=0.85
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
+					else:
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".pitch_scale += 0.4
+						$"Audio/Bruitages/Bell/517609SamuelgremaudClaves".play()
+						_tuto_fin_phase_C()
+				elif DCtempoGood && closerDCInBeat == 4 :
+					pass
+				else:
+					DCtempoGood = false
+					nTutorialSuccess = 0
+					updateTutorialSuccessLabel()
+		
+		
+		
+		
+		
+		#joue un son
+		if DCtempoGood:
+			$Audio/Bruitages/BlocGood.play()
+		else:
+			$Audio/Bruitages/BlocBad.play()
+			rhythmError.emit()
 	
 	
 	if event.is_action_pressed("mute_switch"):
 		switchMuteMusique()
-		
-	if event.is_action_pressed("ToucheP"):
-		if phaseTutorial != PHASE_TUTORIAL.D_FINI:
-			lancementPartie()
 
 	
 
@@ -1026,31 +1094,38 @@ func updateMotif(canvaPattern, patternInput, DCInBeat = -1):
 				textRect.texture = get_node_and_resource("GUI/CanvasLayerPattern:textureDCrate")[1]
 		index = index + 1
 
-func showMenuIntro():
-	$Menus/StartMenu.hide()
-	$Menus/EndMenu.hide()
-	$Menus/IntroMenu.show()
 
 func lancementTutorial():
+	removeAllItems(detected_sprites)
+	phaseTutorial = PHASE_TUTORIAL.A_INIT
 	$Menus/StartMenu.hide()
 	$Menus/IntroMenu.hide()
 	$Menus/EndMenu.hide()
 	$GUI/TimeMarginContainer.hide()
 	$GUI/SkipButtonMarginContainer.show()
-	resetRhythm()
+	$GUI/StartMenuButtonMarginContainer.show()
+	$GUI/CanvasLayerPattern.show()
+	$GUI/CanvasLayerCoeur.show()
+	$GUI/CanvasLayerNotes.show()
 	musicPlaying = false
 	musicMuted = false
+	phase = 0
 	dificult = 0
-	launchMusique()
+	vitesse_defilement = 0
+	spawn_interval = 2.0
+	curseurSpeed = 0
+	curseurAccel = 0
+	curseur.position = curseurBasePosition
+	lancerMusique()
+	updateTutorialSuccessLabel()
 	updateCoeur()
 	resetBonus()
+	resetRhythm()
 	$GUI/CanvasLayerNotes.offset = Vector2(400,-550)
 	$GUI/CanvasLayerNotes.layer = 2
-	phase = 0
 	$Nodes3D/Perso/Nuage1.show()
 	$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.hide()
 	
-	phaseTutorial = PHASE_TUTORIAL.A_INIT
 	
 	var timer = Timer.new()
 	timer.name = "timer_bouton"
@@ -1064,26 +1139,50 @@ func lancementTutorial():
 func _tuto_fin_phase_A():
 	phaseTutorial = PHASE_TUTORIAL.B_GAUCHE
 	nTutorialSuccess = 0
-	$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
 	updateTutorialSuccessLabel()
 
 
 func _tuto_fin_phase_B():
 	phaseTutorial = PHASE_TUTORIAL.C_DROITE
 	nTutorialSuccess = 0
-	$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
 	updateTutorialSuccessLabel()
+	
 
+func _tuto_fin_phase_C():
+	phaseTutorial = PHASE_TUTORIAL.D_CONCLUSION
+	nTutorialSuccess = 0
+	updateTutorialSuccessLabel()
+	curseurSpeed = 0
+	curseurAccel = 0
+	curseur.position = curseurBasePosition
+	tutoriel_ending_timer.start()
+	
+	var tween = tutoriel_ending_timer.create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(audioGainPercu, "volume_db", -30, 0.9 * tutoriel_ending_interval)
+	
+	
+
+
+func _tuto_fin_phase_D():
+	phaseTutorial = PHASE_TUTORIAL.E_FINI
+	nTutorialSuccess = 0
+	lancementPartie()
 
 func lancementPartie():
+	phaseTutorial = PHASE_TUTORIAL.E_FINI
 	partieTimeStart = Time.get_ticks_msec()
-	phaseTutorial = PHASE_TUTORIAL.D_FINI
 	$Menus/StartMenu.hide()
 	$Menus/IntroMenu.hide()
 	$Menus/EndMenu.hide()
 	$Nodes3D/Perso/Nuage1.hide()
-	$GUI/TimeMarginContainer.show()
 	$GUI/SkipButtonMarginContainer.hide()
+	$GUI/TimeMarginContainer.show()
+	$GUI/StartMenuButtonMarginContainer.show()
+	$GUI/CanvasLayerPattern.show()
+	$GUI/CanvasLayerCoeur.show()
+	$GUI/CanvasLayerNotes.show()
 	resetRhythm()
 	partieEnCours = true
 	musicMuted = false
@@ -1093,15 +1192,18 @@ func lancementPartie():
 	phase_timer_1.start()
 	last_phase_timer.start()
 	dificult = 0
-	object_speed = INITIAL_OBJECT_SPEED
+	vitesse_defilement = INITIAL_OBJECT_SPEED
 	spawn_interval = 2.0
+	curseurSpeed = 0
+	curseurAccel = 0
+	curseur.position = curseurBasePosition
+	#var atween:Tween = curseur.create_tween()
+	#atween.set_trans(Tween.TRANS_SINE)
+	#atween.set_ease(Tween.EASE_OUT)
+	#atween.tween_property(curseur, "position", curseurBasePosition, 0.2)
+	removeAllItems(detected_sprites)
 	
-	# suppression de tous les items
-	for sprite in detected_sprites.get_children():
-		detected_sprites.remove_child(sprite)
-		sprite.queue_free()
-	
-	launchMusique()
+	lancerMusique()
 	audioGainBasse.volume_db = 0
 	player_health = BASE_HEALTH
 	updateCoeur()
@@ -1113,12 +1215,32 @@ func lancementPartie():
 
 func updateTutorialSuccessLabel():
 	var msg = ""
-	if phaseTutorial == PHASE_TUTORIAL.B_GAUCHE:
-		msg = "Bon commençons par aller à gauche.\nJe dois taper tous les temps.\n"
-	if phaseTutorial == PHASE_TUTORIAL.C_DROITE:
-		msg = "Yeah ça groove !\nPour aller à droite, il faut adopter le style samba.\n"
-	for i in range(nTutorialSuccess):
-		msg = msg + " ♥"
-	for i in range(nTargetTutorialSuccess - nTutorialSuccess):
-		msg = msg + " ♡"
+	
+	match phaseTutorial:
+		PHASE_TUTORIAL.A_INIT:
+			msg = "Quel mal de crâne ! Je dois suivre la musique pour garder l’équilibre..."
+		PHASE_TUTORIAL.B_GAUCHE:
+			msg = "Bon, commençons par aller à gauche.\nJe dois taper tous les temps.\n"
+			$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
+		PHASE_TUTORIAL.C_DROITE:
+			msg = "Yeah ça groove !\nPour aller à droite, il faut adopter le style samba.\n"
+			$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
+		PHASE_TUTORIAL.D_CONCLUSION:
+			msg = "Je maîtrise ! Plus qu’à traverser le salon pour rejoindre la chambre.\nJ’arrive mon amour !!\n"
+			$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.hide()
+	
+	
+	
+	if phaseTutorial in [PHASE_TUTORIAL.B_GAUCHE, PHASE_TUTORIAL.C_DROITE]:
+		for i in range(nTutorialSuccess):
+			msg = msg + " 𝅘𝅥"
+		for i in range(nTargetTutorialSuccess - nTutorialSuccess):
+			msg = msg + " -"
 	$Nodes3D/Perso/Nuage1/Label3D.text = msg
+
+
+# suppression de tous les items
+func removeAllItems(detected_sprites):
+	for sprite in detected_sprites.get_children():
+		detected_sprites.remove_child(sprite)
+		sprite.queue_free()

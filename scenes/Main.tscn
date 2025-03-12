@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3 uid="uid://dla6hghx5nurp"]
+[gd_scene load_steps=73 format=3 uid="uid://dla6hghx5nurp"]
 
 [ext_resource type="Script" path="res://scripts/mainScript.gd" id="1_06y3i"]
 [ext_resource type="Texture2D" uid="uid://cxfg4q843v2yh" path="res://assets/images/meubles/tx_table.png" id="2_jllnr"]
@@ -132,6 +132,32 @@ size = Vector2(12, 200)
 albedo_texture = ExtResource("16_bjitj")
 uv1_scale = Vector3(3, 50, 0.5)
 
+[sub_resource type="Gradient" id="Gradient_0ot7n"]
+interpolation_mode = 1
+colors = PackedColorArray(0, 0, 0, 0.356863, 0.71472, 0.4032, 0.72, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_y0dly"]
+frequency = 0.0015
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dqt2g"]
+width = 32
+height = 32
+color_ramp = SubResource("Gradient_0ot7n")
+noise = SubResource("FastNoiseLite_y0dly")
+
+[sub_resource type="Gradient" id="Gradient_hub8m"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0.376569)
+colors = PackedColorArray(0.172833, 0.172833, 0.172833, 0.768627)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mukde"]
+gradient = SubResource("Gradient_hub8m")
+width = 32
+height = 32
+repeat = 2
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_iurc3"]
+
 [sub_resource type="SystemFont" id="SystemFont_akqv3"]
 font_names = PackedStringArray("Calibri")
 
@@ -214,7 +240,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.085, 0.845, 0)
 custom_aabb = AABB(-1.215, -0.52, 0.815, 2.405, 0.89, 0.375)
 modulate = Color(0, 0, 0, 1)
 outline_modulate = Color(1, 1, 1, 1)
-text = "Quel mal de crâne ! Je dois suivre la musique pour garder l’équilibre..."
 font_size = 24
 autowrap_mode = 3
 width = 400.0
@@ -347,7 +372,7 @@ bus = &"GuitareSamba"
 [node name="Percussions" type="AudioStreamPlayer" parent="Audio/Samba85"]
 stream = ExtResource("29_ikcg3")
 volume_db = 6.0
-bus = &"MusiqueEtienne1"
+bus = &"Percu"
 
 [node name="PianoSamba" type="AudioStreamPlayer" parent="Audio/Samba85"]
 stream = ExtResource("30_nyccb")
@@ -380,7 +405,7 @@ pitch_scale = 0.65
 [node name="517609SamuelgremaudClaves" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
 stream = ExtResource("38_4xema")
 volume_db = 6.0
-pitch_scale = 0.83
+pitch_scale = 0.85
 
 [node name="634863Collinb1000Clave4" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
 stream = ExtResource("39_ftdbn")
@@ -412,14 +437,15 @@ transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 1.11633, -2.45043, 2
 texture = ExtResource("6_g4pmh")
 
 [node name="GUI" type="CanvasLayer" parent="."]
+layer = 3
 
 [node name="TimeMarginContainer" type="MarginContainer" parent="GUI"]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -32.0
-offset_right = -31.0
-offset_bottom = 43.0
+offset_left = -10.5
+offset_right = 10.5
+offset_bottom = 49.0
 grow_horizontal = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -457,6 +483,46 @@ theme_override_constants/margin_bottom = 10
 [node name="SkipTutoButton" type="Button" parent="GUI/SkipButtonMarginContainer"]
 layout_mode = 2
 text = "Passer le tutoriel"
+
+[node name="StartMenuButtonMarginContainer" type="MarginContainer" parent="GUI"]
+offset_right = 52.0
+offset_bottom = 52.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Button" type="TextureButton" parent="GUI/StartMenuButtonMarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture_normal = SubResource("NoiseTexture2D_dqt2g")
+texture_hover = SubResource("GradientTexture2D_mukde")
+
+[node name="Control" type="Control" parent="GUI/StartMenuButtonMarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Node2D" type="Node2D" parent="GUI/StartMenuButtonMarginContainer/Control"]
+
+[node name="Label" type="Label" parent="GUI/StartMenuButtonMarginContainer/Control/Node2D"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -117.5
+offset_top = -43.5
+offset_right = 117.5
+offset_bottom = 38.66
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxEmpty_iurc3")
+text = "⟳"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CanvasLayerPattern" type="CanvasLayer" parent="GUI"]
 layer = 2
@@ -721,8 +787,6 @@ stretch_mode = 4
 layer = 12
 
 [node name="EndMenu" type="CanvasLayer" parent="Menus"]
-layer = 10
-visible = false
 
 [node name="FinPerdu" type="Sprite2D" parent="Menus/EndMenu"]
 scale = Vector2(0.6, 0.6)
@@ -762,8 +826,6 @@ theme_override_font_sizes/normal_font_size = 30
 text = "Score"
 
 [node name="IntroMenu" type="CanvasLayer" parent="Menus"]
-layer = 10
-visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Menus/IntroMenu"]
 scale = Vector2(0.6, 0.6)
@@ -786,8 +848,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
 text = "c'est parti ^^"
 
 [node name="StartMenu" type="CanvasLayer" parent="Menus"]
-layer = 11
-visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Menus/StartMenu"]
 scale = Vector2(0.6, 0.6)
@@ -821,8 +881,53 @@ theme_override_fonts/font = SubResource("SystemFont_waqye")
 theme_override_font_sizes/font_size = 24
 text = "(Commencer sans tutoriel)"
 
+[node name="TextMarginContainer" type="MarginContainer" parent="Menus/StartMenu"]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -121.0
+offset_bottom = 121.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ColorRect" type="ColorRect" parent="Menus/StartMenu/TextMarginContainer"]
+layout_mode = 2
+color = Color(1, 1, 1, 0.141176)
+
+[node name="MarginContainer" type="MarginContainer" parent="Menus/StartMenu/TextMarginContainer"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 10
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Menus/StartMenu/TextMarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.165656, 0.165656, 0.165656, 1)
+bbcode_enabled = true
+text = "[i][font_size=12]Programmation[/font_size][/i]
+   ﻿Atheo Newton
+   ﻿Camille Rouet
+[i][font_size=12]Graphisme[/font_size][/i]
+   ﻿Nicolas Trotignon
+[i][font_size=12]Sound Design[/font_size][/i]
+   ﻿Etienne Guilhot[font=Tahoma]
+[i][font_size=12]Game Design[/font_size][/i]
+   ﻿Bansuri Bashyal
+   ﻿Lola Gibert"
+fit_content = true
+scroll_active = false
+
 [node name="DebugMenu" type="CanvasLayer" parent="Menus"]
-layer = 12
+layer = 10
 visible = false
 
 [node name="MarginContainer" type="MarginContainer" parent="Menus/DebugMenu"]
@@ -839,6 +944,7 @@ layout_mode = 2
 [node name="Items" type="Node" parent="."]
 
 [connection signal="pressed" from="GUI/SkipButtonMarginContainer/SkipTutoButton" to="." method="lancementPartie"]
+[connection signal="pressed" from="GUI/StartMenuButtonMarginContainer/Button" to="." method="showStartMenu"]
 [connection signal="pressed" from="Menus/EndMenu/Button" to="." method="lancementPartie"]
 [connection signal="pressed" from="Menus/IntroMenu/Button" to="." method="lancementTutorial"]
 [connection signal="pressed" from="Menus/StartMenu/Button" to="." method="showMenuIntro"]
