@@ -819,14 +819,24 @@ text = "Rejouer
 position = Vector2(32, 559)
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Menus/EndMenu"]
-offset_left = 126.0
-offset_top = 524.0
-offset_right = 298.0
-offset_bottom = 594.0
+offset_left = 37.0
+offset_top = 519.0
+offset_right = 281.0
+offset_bottom = 580.0
 theme_override_font_sizes/normal_font_size = 30
 text = "Score"
 
+[node name="RichTextLabel2" type="RichTextLabel" parent="Menus/EndMenu"]
+offset_left = 208.0
+offset_top = 531.0
+offset_right = 320.0
+offset_bottom = 557.0
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "[i](vise 200 !)[/i]"
+
 [node name="IntroMenu" type="CanvasLayer" parent="Menus"]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Menus/IntroMenu"]
 scale = Vector2(0.6, 0.6)
@@ -849,6 +859,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_fo35j")
 text = "c'est parti ^^"
 
 [node name="StartMenu" type="CanvasLayer" parent="Menus"]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Menus/StartMenu"]
 scale = Vector2(0.6, 0.6)

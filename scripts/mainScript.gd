@@ -18,7 +18,7 @@ const CURSEUR_WIDTH = 1.63 # width of curseur
 @export var detection_range : float = 3.5 #4.5
 
 
-@export var Notes : float = 0 # ne pas modifier
+var nCollectedNotes : float = 0 # ne pas modifier
 
 
 var dificult = 0
@@ -634,7 +634,7 @@ func _check_proximity():
 				
 
 func resetBonus():
-	Notes = 0
+	nCollectedNotes = 0
 	allNotesCollected = false
 	note_collected = [false, false, false, false]
 	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
@@ -642,7 +642,7 @@ func resetBonus():
 		note.modulate = Color.WHITE
 
 func _bonus(touchedSprite:Sprite3D):
-	#print("vous avez obtenu un bonus")
+	nCollectedNotes += 1
 	$"Audio/Bruitages/Bell/133990GmajorrrTriangle".pitch_scale = 0.6 + 0.3 * randf()
 	$"Audio/Bruitages/Bell/133990GmajorrrTriangle".play()
 	var notem = $GUI/CanvasLayerNotes/MarginContainer/HBoxContainer.get_children()
@@ -656,6 +656,7 @@ func _bonus(touchedSprite:Sprite3D):
 		if touchedSprite.modulate == noteTargetColor:
 			i_match = i
 			break
+	
 	
 	
 	# check if you dont have this note yet
@@ -688,8 +689,7 @@ func _bonus(touchedSprite:Sprite3D):
 		tween.set_meta("audio_tween", true)
 		tween_list.append(tween)
 		
-		Notes += 1
-		print("nombre de Note obtenue : ",Notes)
+		print("nombre de notes obtenues : ", nCollectedNotes)
 	
 # Gestion des points de vie
 func _take_damage():
@@ -715,7 +715,9 @@ func updateCoeur():
 func _game_over(gagne:bool):
 	audioGainSynth.volume_db = -9
 	$"Audio/Samba85/Synth#1".play()
+	var score = nCollectedNotes * 10 + player_health * 5
 	if gagne:
+		score += 100
 		$Menus/EndMenu/FinPerdu.hide()
 		$Menus/EndMenu/FinGagne.show()
 	else:
@@ -732,6 +734,7 @@ func _game_over(gagne:bool):
 	
 	$GUI/CanvasLayerNotes.offset = Vector2(-400,0)
 	$GUI/CanvasLayerNotes.layer = 128
+	$Menus/EndMenu/RichTextLabel.text = "Score : " + str(score)
 	spawn_timer.stop()
 	bonus_spawn_timer.stop()
 	phase_timer_0.stop()
@@ -1137,6 +1140,7 @@ func lancementTutorial():
 	curseurAccel = 0
 	curseur.position = curseurBasePosition
 	lancerMusique(true)
+	player_health = BASE_HEALTH
 	updateTutorialSuccessLabel()
 	updateCoeur()
 	resetBonus()
