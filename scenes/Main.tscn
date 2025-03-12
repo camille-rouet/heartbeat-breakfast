@@ -208,7 +208,7 @@ fov = 60.1
 transform = Transform3D(1, 4.47926e-11, 0, -2.12594e-10, 1, 1.16415e-10, 0, 1.16415e-10, 1, 0, 0, 0)
 
 [node name="Perso" type="Node3D" parent="Nodes3D"]
-transform = Transform3D(3, -0.000172915, -0.00356348, 0.00147185, 2.78957, 1.10375, 0.00324993, -1.10375, 2.78957, 2.78744, 3.27298, 20.0014)
+transform = Transform3D(3, -0.000172916, -0.00356348, 0.00147185, 2.78957, 1.10375, 0.00324993, -1.10375, 2.78957, 3.517, 3.2711, 20.0027)
 
 [node name="AnimatedSpritePersoCorps" type="AnimatedSprite3D" parent="Nodes3D/Perso"]
 transform = Transform3D(0.1, -1.45519e-11, 0, -1.45519e-11, 0.0999999, -3.72529e-09, 0, 0, 0.1, 0.0089798, -0.0108957, 0.0115032)
@@ -240,6 +240,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.085, 0.845, 0)
 custom_aabb = AABB(-1.215, -0.52, 0.815, 2.405, 0.89, 0.375)
 modulate = Color(0, 0, 0, 1)
 outline_modulate = Color(1, 1, 1, 1)
+text = "test test test"
 font_size = 24
 autowrap_mode = 3
 width = 400.0
@@ -371,7 +372,6 @@ bus = &"GuitareSamba"
 
 [node name="Percussions" type="AudioStreamPlayer" parent="Audio/Samba85"]
 stream = ExtResource("29_ikcg3")
-volume_db = 6.0
 bus = &"Percu"
 
 [node name="PianoSamba" type="AudioStreamPlayer" parent="Audio/Samba85"]
@@ -386,9 +386,11 @@ bus = &"Synth"
 
 [node name="BlocBad" type="AudioStreamPlayer" parent="Audio/Bruitages"]
 stream = ExtResource("32_wtaeq")
+volume_db = -6.0
 
 [node name="BlocGood" type="AudioStreamPlayer" parent="Audio/Bruitages"]
 stream = ExtResource("33_0jddb")
+volume_db = -6.0
 
 [node name="ExplRealExplosion1(id1807)Ls" type="AudioStreamPlayer" parent="Audio/Bruitages"]
 stream = ExtResource("34_0460h")
@@ -404,7 +406,6 @@ pitch_scale = 0.65
 
 [node name="517609SamuelgremaudClaves" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]
 stream = ExtResource("38_4xema")
-volume_db = 6.0
 pitch_scale = 0.85
 
 [node name="634863Collinb1000Clave4" type="AudioStreamPlayer" parent="Audio/Bruitages/Bell"]

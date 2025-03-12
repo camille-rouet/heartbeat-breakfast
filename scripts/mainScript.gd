@@ -1,11 +1,13 @@
 extends Node3D
 
+var tween_list = []
+
 var camera: Camera3D
 var vitesse_defilement = 0
 @export var INITIAL_OBJECT_SPEED : float = 10.0 #en m/s
 @export var spawn_interval : float = 2.0
 var bonus_spawn_interval = 4.5
-var tutoriel_ending_interval = 4
+var tutoriel_ending_interval = 6
 
 const SPRITE_SCALE = 0.5
 
@@ -683,6 +685,8 @@ func _bonus(touchedSprite:Sprite3D):
 		
 		var tween = musiqueCible.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(audioGain, "volume_db", 0, timeFadeIn)
+		tween.set_meta("audio_tween", true)
+		tween_list.append(tween)
 		
 		Notes += 1
 		print("nombre de Note obtenue : ",Notes)
@@ -900,19 +904,24 @@ func stopMusique():
 			i.stop()
 	musicPlaying = false
 
-func lancerMusique():
-	#if musicPlaying:
-		#for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
-			#musicPositionMemo = i.get_playback_position()
-			#i.stop()
+func lancerMusique(nobass:bool = false):
 	musiqueTimeStart = Time.get_ticks_msec() * 0.001
-	#if !musicPlaying:
+	
 	for i:AudioStreamPlayer in musiqueCible.get_parent().get_children():
 		i.play()
-		
-	audioGainPercu.volume_db = 0
 	
-	audioGainBasse.volume_db = -80
+	
+	for twe:Tween in tween_list.duplicate():
+		if twe.has_meta("audio_tween"):
+			tween_list.erase(twe)
+			twe.kill()
+	
+	audioGainPercu.volume_db = 0
+	if nobass:
+		audioGainBasse.volume_db = -80
+	else:
+		audioGainBasse.volume_db = 0
+		
 	audioGainCuica.volume_db = -80
 	audioGainGuitare1.volume_db = -80
 	audioGainGuitare2.volume_db = -80
@@ -1024,12 +1033,16 @@ func _unhandled_input(event):
 				 
 		
 		# gestion du tutorial
+		var lastDC4input = 0
+		if lastPatternInput != null :
+			lastDC4input = lastPatternInput[3]
 		match phaseTutorial:
 			PHASE_TUTORIAL.A_INIT, PHASE_TUTORIAL.D_CONCLUSION, PHASE_TUTORIAL.E_FINI:
 				DCtempoGood = true
 			
 			PHASE_TUTORIAL.B_GAUCHE:
-				if DCtempoGood && closerDCInBeat == 1 && lastPatternInput[3] == 0:
+				
+				if DCtempoGood && closerDCInBeat == 1 && typeof(lastDC4input) != TYPE_STRING && lastDC4input == 0:
 					nTutorialSuccess += 1
 					updateTutorialSuccessLabel()
 					if nTutorialSuccess < nTargetTutorialSuccess:
@@ -1045,7 +1058,7 @@ func _unhandled_input(event):
 					updateTutorialSuccessLabel()
 					
 			PHASE_TUTORIAL.C_DROITE:
-				if DCtempoGood && closerDCInBeat == 1 && lastPatternInput[3] == 1 :
+				if DCtempoGood && closerDCInBeat == 1 && typeof(lastDC4input) != TYPE_STRING && lastDC4input == 1 :
 					nTutorialSuccess += 1
 					updateTutorialSuccessLabel()
 					if nTutorialSuccess < nTargetTutorialSuccess:
@@ -1107,6 +1120,13 @@ func lancementTutorial():
 	$GUI/CanvasLayerPattern.show()
 	$GUI/CanvasLayerCoeur.show()
 	$GUI/CanvasLayerNotes.show()
+	$Nodes3D/Perso/Nuage1/Label3D.show()
+	$Nodes3D/Perso/Nuage1.modulate = Color.WHITE
+	
+	$GUI/CanvasLayerPattern/currentPattern.hide()
+	$GUI/CanvasLayerPattern/leftPattern.hide()
+	$GUI/CanvasLayerPattern/rightPattern.hide()
+	
 	musicPlaying = false
 	musicMuted = false
 	phase = 0
@@ -1116,7 +1136,7 @@ func lancementTutorial():
 	curseurSpeed = 0
 	curseurAccel = 0
 	curseur.position = curseurBasePosition
-	lancerMusique()
+	lancerMusique(true)
 	updateTutorialSuccessLabel()
 	updateCoeur()
 	resetBonus()
@@ -1140,12 +1160,19 @@ func _tuto_fin_phase_A():
 	phaseTutorial = PHASE_TUTORIAL.B_GAUCHE
 	nTutorialSuccess = 0
 	updateTutorialSuccessLabel()
+	
+	$GUI/CanvasLayerPattern/currentPattern.show()
+	$GUI/CanvasLayerPattern/leftPattern.show()
+	$GUI/CanvasLayerPattern/rightPattern.hide()
 
 
 func _tuto_fin_phase_B():
 	phaseTutorial = PHASE_TUTORIAL.C_DROITE
 	nTutorialSuccess = 0
 	updateTutorialSuccessLabel()
+	$GUI/CanvasLayerPattern/currentPattern.show()
+	$GUI/CanvasLayerPattern/leftPattern.show()
+	$GUI/CanvasLayerPattern/rightPattern.show()
 	
 
 func _tuto_fin_phase_C():
@@ -1154,21 +1181,35 @@ func _tuto_fin_phase_C():
 	updateTutorialSuccessLabel()
 	curseurSpeed = 0
 	curseurAccel = 0
-	curseur.position = curseurBasePosition
-	tutoriel_ending_timer.start()
 	
-	var tween = tutoriel_ending_timer.create_tween()
-	tween.set_trans(Tween.TRANS_SINE)
-	tween.set_ease(Tween.EASE_IN)
+	# animation : perso revient au point initial + musique fade out + bulle qui disparait
+	var tween = musiqueCible.create_tween()
+	tween.set_parallel(true)
 	tween.tween_property(audioGainPercu, "volume_db", -30, 0.9 * tutoriel_ending_interval)
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(curseur, "position", curseurBasePosition, 0.9 * tutoriel_ending_interval)	
+	tween.set_meta("audio_tween", true)
+	tween_list.append(tween)
+	
+	var tween3:Tween = tutoriel_ending_timer.create_tween()
+	tween3.set_trans(Tween.TRANS_EXPO)
+	tween3.set_ease(Tween.EASE_OUT)
+	tween3.tween_interval(0.66 * tutoriel_ending_interval)
+	tween3.tween_callback($Nodes3D/Perso/Nuage1/Label3D.hide)
+	tween3.tween_property($Nodes3D/Perso/Nuage1, "modulate", Color.TRANSPARENT, 0.16 * tutoriel_ending_interval)
+	
+	$GUI/SkipButtonMarginContainer.hide()
+	tutoriel_ending_timer.start()
 	
 	
 
 
 func _tuto_fin_phase_D():
-	phaseTutorial = PHASE_TUTORIAL.E_FINI
-	nTutorialSuccess = 0
-	lancementPartie()
+	if phaseTutorial == PHASE_TUTORIAL.D_CONCLUSION:
+		phaseTutorial = PHASE_TUTORIAL.E_FINI
+		nTutorialSuccess = 0
+		lancementPartie()
 
 func lancementPartie():
 	phaseTutorial = PHASE_TUTORIAL.E_FINI
@@ -1183,6 +1224,10 @@ func lancementPartie():
 	$GUI/CanvasLayerPattern.show()
 	$GUI/CanvasLayerCoeur.show()
 	$GUI/CanvasLayerNotes.show()
+	
+	$GUI/CanvasLayerPattern/currentPattern.show()
+	$GUI/CanvasLayerPattern/leftPattern.show()
+	$GUI/CanvasLayerPattern/rightPattern.show()
 	resetRhythm()
 	partieEnCours = true
 	musicMuted = false
@@ -1192,7 +1237,10 @@ func lancementPartie():
 	phase_timer_1.start()
 	last_phase_timer.start()
 	dificult = 0
-	vitesse_defilement = INITIAL_OBJECT_SPEED
+	
+	#vitesse de défilement augmente petit a petit
+	vitesse_defilement = 0.3 * INITIAL_OBJECT_SPEED
+	sol.create_tween().tween_property(self, "vitesse_defilement", INITIAL_OBJECT_SPEED, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	spawn_interval = 2.0
 	curseurSpeed = 0
 	curseurAccel = 0
@@ -1202,9 +1250,7 @@ func lancementPartie():
 	#atween.set_ease(Tween.EASE_OUT)
 	#atween.tween_property(curseur, "position", curseurBasePosition, 0.2)
 	removeAllItems(detected_sprites)
-	
 	lancerMusique()
-	audioGainBasse.volume_db = 0
 	player_health = BASE_HEALTH
 	updateCoeur()
 	resetBonus()
@@ -1218,12 +1264,12 @@ func updateTutorialSuccessLabel():
 	
 	match phaseTutorial:
 		PHASE_TUTORIAL.A_INIT:
-			msg = "Quel mal de crâne ! Je dois suivre la musique pour garder l’équilibre..."
+			msg = "Quel mal de crâne !\nJe dois suivre la musique pour garder l’équilibre..."
 		PHASE_TUTORIAL.B_GAUCHE:
-			msg = "Bon, commençons par aller à gauche.\nJe dois taper tous les temps.\n"
+			msg = "Commençons par aller à gauche.\nJe dois taper tous les temps :\ntap tap tap...\n"
 			$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
 		PHASE_TUTORIAL.C_DROITE:
-			msg = "Yeah ça groove !\nPour aller à droite, il faut adopter le style samba.\n"
+			msg = "Yeah ça groove !\nPour aller à droite, c'est le\nstyle samba :\ntam ta-tam ta-tam...\n"
 			$Nodes3D/Perso/Nuage1/AnimatedSpriteButton.show()
 		PHASE_TUTORIAL.D_CONCLUSION:
 			msg = "Je maîtrise ! Plus qu’à traverser le salon pour rejoindre la chambre.\nJ’arrive mon amour !!\n"
