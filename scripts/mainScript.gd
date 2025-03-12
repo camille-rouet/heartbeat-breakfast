@@ -173,10 +173,18 @@ var leftPattern:Control
 var centralCurrentPattern:Control
 var rightPattern:Control
 
+
+
+# Timer pour changer les sprites après 60s
+var phase_timer_0: Timer
+var phase_timer_1: Timer
+var last_phase_timer : Timer
+var spawn_timer :Timer
+var bonus_spawn_timer :Timer
+
 func _ready():
+	showStartMenu()
 	detected_sprites = $Items
-	$Menus/IntroMenu.show()
-	$Menus/StartMenu.show()
 	isRunningOnWeb = OS.has_feature("web")
 	
 	if isRunningOnWeb:
@@ -283,14 +291,12 @@ func _ready():
 	## Position initiale de la caméra
 	#_align_camera_to_column(true)
 
-	
-
-	# Timer pour changer les sprites après 60s
-var phase_timer_0: Timer
-var phase_timer_1: Timer
-var last_phase_timer : Timer
-var spawn_timer :Timer
-var bonus_spawn_timer :Timer
+func showStartMenu():
+	$Menus/StartMenu.show()
+	$Menus/IntroMenu.hide()
+	$Menus/EndMenu.hide()
+	$GUI/SkipButtonMarginContainer.hide()
+	$GUI/TimeMarginContainer.hide()
 
 func increment_phase():
 	phase += 1
@@ -1020,8 +1026,9 @@ func updateMotif(canvaPattern, patternInput, DCInBeat = -1):
 				textRect.texture = get_node_and_resource("GUI/CanvasLayerPattern:textureDCrate")[1]
 		index = index + 1
 
-func menuIntro():
+func showMenuIntro():
 	$Menus/StartMenu.hide()
+	$Menus/EndMenu.hide()
 	$Menus/IntroMenu.show()
 
 func lancementTutorial():
@@ -1029,6 +1036,7 @@ func lancementTutorial():
 	$Menus/IntroMenu.hide()
 	$Menus/EndMenu.hide()
 	$GUI/TimeMarginContainer.hide()
+	$GUI/SkipButtonMarginContainer.show()
 	resetRhythm()
 	musicPlaying = false
 	musicMuted = false
@@ -1075,6 +1083,7 @@ func lancementPartie():
 	$Menus/EndMenu.hide()
 	$Nodes3D/Perso/Nuage1.hide()
 	$GUI/TimeMarginContainer.show()
+	$GUI/SkipButtonMarginContainer.hide()
 	resetRhythm()
 	partieEnCours = true
 	musicMuted = false

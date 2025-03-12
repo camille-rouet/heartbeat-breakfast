@@ -443,6 +443,21 @@ theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SkipButtonMarginContainer" type="MarginContainer" parent="GUI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -69.5
+offset_right = 69.5
+offset_bottom = 51.0
+grow_horizontal = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SkipTutoButton" type="Button" parent="GUI/SkipButtonMarginContainer"]
+layout_mode = 2
+text = "Passer le tutoriel"
+
 [node name="CanvasLayerPattern" type="CanvasLayer" parent="GUI"]
 layer = 2
 script = ExtResource("36_eomoj")
@@ -748,6 +763,7 @@ text = "Score"
 
 [node name="IntroMenu" type="CanvasLayer" parent="Menus"]
 layer = 10
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Menus/IntroMenu"]
 scale = Vector2(0.6, 0.6)
@@ -771,6 +787,7 @@ text = "c'est parti ^^"
 
 [node name="StartMenu" type="CanvasLayer" parent="Menus"]
 layer = 11
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Menus/StartMenu"]
 scale = Vector2(0.6, 0.6)
@@ -821,7 +838,8 @@ layout_mode = 2
 
 [node name="Items" type="Node" parent="."]
 
+[connection signal="pressed" from="GUI/SkipButtonMarginContainer/SkipTutoButton" to="." method="lancementPartie"]
 [connection signal="pressed" from="Menus/EndMenu/Button" to="." method="lancementPartie"]
 [connection signal="pressed" from="Menus/IntroMenu/Button" to="." method="lancementTutorial"]
-[connection signal="pressed" from="Menus/StartMenu/Button" to="." method="menuIntro"]
+[connection signal="pressed" from="Menus/StartMenu/Button" to="." method="showMenuIntro"]
 [connection signal="pressed" from="Menus/StartMenu/DirectButton" to="." method="lancementPartie"]
